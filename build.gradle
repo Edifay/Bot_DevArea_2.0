@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'devarea.Main'
+    }
+}
+
+repositories {
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.reflections:reflections:0.10.2'
+    implementation group:'org.slf4j', name: 'slf4j-api', version: '2.0.6'
+    implementation group:'org.slf4j', name: 'slf4j-simple', version: '2.0.6'
+
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.14.1'
+
+    implementation 'com.discord4j:discord4j-core:3.3.0-SNAPSHOT'
+
+    implementation 'org.mongodb:mongo-java-driver:3.10.0'
+
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17

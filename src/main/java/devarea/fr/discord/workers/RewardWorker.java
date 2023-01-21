@@ -3,10 +3,15 @@ package devarea.fr.discord.workers;
 import devarea.fr.discord.entity.ActionEvent;
 import devarea.fr.utils.Logger;
 
-public class TestWorker implements Worker {
+import java.util.HashMap;
+
+public class RewardWorker implements Worker {
+
+    private static HashMap<String, String> cooldown = new HashMap<>();
+
     @Override
     public void onStart() {
-        Logger.logMessage("TestWorker Created !");
+        Logger.logMessage("RewardWorker Created !");
     }
 
     @Override

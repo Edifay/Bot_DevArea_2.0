@@ -8,24 +8,19 @@ import java.io.FileNotFoundException;
 
 public class Main {
 
-    public static final boolean developing = true;
+    public static final boolean developing = false;
 
     public static void main(String[] args) {
-        /*try {
+        DBManager.initDB();
+
+        try {
             DevArea.initDevArea();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }*/
-
-        DBManager.initDB();
-
-        //DevArea.client.onDisconnect().block();
-
-        try {
-            Thread.sleep(1000000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
+
+        DevArea.client.onDisconnect().block();
+
     }
 
         /*

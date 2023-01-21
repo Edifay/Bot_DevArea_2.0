@@ -24,7 +24,13 @@ public class CachedMember extends CachedObject<Mem> {
     @Override
     public Mem fetch() {
         try {
-            this.object_cached = Mem.of(DevArea.devarea.getMemberById(Snowflake.of(this.object_id)).block());
+            Member member = DevArea.devarea.getMemberById(Snowflake.of(this.object_id)).block();
+
+            if (this.object_cached != null)
+                this.object_cached.update(member);
+            else
+                this.object_cached = Mem.of(member);
+
         } catch (Exception e) {
             System.err.println("ERROR: Member couldn't be fetched !");
             this.object_cached = null;
@@ -37,5 +43,14 @@ public class CachedMember extends CachedObject<Mem> {
 
         this.last_fetch = System.currentTimeMillis();
         return this.object_cached;
+    }
+
+    @Override
+    public void use(Mem object_cached) throws Exception {
+        if (this.object_id.equals(object_cached.getId().asString())) {
+            this.object_cached.update(object_cached.entity);
+            this.last_fetch = System.currentTimeMillis();
+        } else
+            throw new Exception("Wrong member usage !");
     }
 }

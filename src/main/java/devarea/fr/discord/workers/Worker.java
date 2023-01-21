@@ -1,12 +1,12 @@
 package devarea.fr.discord.workers;
 
-import devarea.fr.discord.entity.OneEvent;
+import devarea.fr.discord.entity.ActionEvent;
 
 public interface Worker {
 
     void onStart();
 
-    OneEvent<?> setupEvent();
+    ActionEvent<?> setupEvent();
 
     void onStop();
 

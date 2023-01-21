@@ -3,9 +3,8 @@ package devarea.fr.discord.entity.events_filler;
 import devarea.fr.discord.commands.Context;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 
-public class MessageCreateInChannelFiller extends Filler<MessageCreateEvent> {
-
-    public MessageCreateInChannelFiller(final MessageCreateEvent event) {
+public class MessageCreateEventFiller extends Filler<MessageCreateEvent> {
+    public MessageCreateEventFiller(MessageCreateEvent event) {
         super(event);
     }
 
@@ -16,5 +15,4 @@ public class MessageCreateInChannelFiller extends Filler<MessageCreateEvent> {
                 .channelId(event.getMessage().getChannelId().asString())
                 .build();
     }
-
 }

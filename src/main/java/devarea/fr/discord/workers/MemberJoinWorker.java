@@ -1,9 +1,10 @@
 package devarea.fr.discord.workers;
 
+import devarea.fr.db.DBManager;
 import devarea.fr.discord.DevArea;
 import devarea.fr.discord.cache.ChannelCache;
 import devarea.fr.discord.cache.MemberCache;
-import devarea.fr.discord.entity.OneEvent;
+import devarea.fr.discord.entity.ActionEvent;
 import devarea.fr.discord.entity.events_filler.MemberJoinEventFiller;
 import devarea.fr.discord.statics.ColorsUsed;
 import devarea.fr.discord.statics.TextMessage;
@@ -24,8 +25,11 @@ import static devarea.fr.utils.ThreadHandler.startAway;
 public class MemberJoinWorker implements Worker {
 
     @Override
-    public OneEvent<?> setupEvent() {
-        return (OneEvent<MemberJoinEventFiller>) event -> {
+    public ActionEvent<?> setupEvent() { // TODO refactor the old code.
+        return (ActionEvent<MemberJoinEventFiller>) event -> {
+
+            DBManager.memberJoin(event.mem.getId().asString());
+
             Member member = event.mem.entity;
 
             member.addRole(DevArea.data.rulesAccepted_role).subscribe();
@@ -35,16 +39,14 @@ public class MemberJoinWorker implements Worker {
                 startAway(() -> {
                     privateChannel.createMessage(TextMessage.helpEmbed).block();
 
-                    // TODO
-
-                    //final String code = RequestHandlerAuth.getCodeForMember(member.getId().asString());
+                    final String code = AuthWorker.getCodeForMember(member.getId().asString());
 
                     final Message message_at_edit = privateChannel.createMessage(MessageCreateSpec.builder()
                             .addEmbed(EmbedCreateSpec.builder()
                                     .title("Authentification au site de Dev'area !")
                                     .description("Vous venez de vous authentifier sur le site de dev'area" +
                                             " !\n\nPour vous connecter utilisez ce lien :\n\n" + DOMAIN_NAME + "?code" +
-                                            "=" + /*code*/ "TODO" + "\n\nCe message sera supprimé d'ici **5 " +
+                                            "=" + code + "\n\nCe message sera supprimé d'ici **5 " +
                                             "minutes** pour sécuriser l'accès. Si vous avez besoin de le " +
                                             "retrouver exécutez de nouveau la commande !")
                                     .color(ColorsUsed.just)

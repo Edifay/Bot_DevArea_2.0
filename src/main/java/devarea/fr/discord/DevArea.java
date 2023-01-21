@@ -1,7 +1,9 @@
 package devarea.fr.discord;
 
 import devarea.fr.discord.cache.MemberCache;
-import devarea.fr.discord.entity.OneEvent;
+import devarea.fr.discord.entity.ActionEvent;
+import devarea.fr.discord.entity.EventOwner;
+import devarea.fr.discord.entity.events_filler.Filler;
 import devarea.fr.discord.setup.InitialData;
 import devarea.fr.discord.workers.Worker;
 import devarea.fr.utils.Logger;
@@ -11,6 +13,7 @@ import discord4j.core.event.domain.guild.MemberJoinEvent;
 import discord4j.core.event.domain.guild.MemberLeaveEvent;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
+import discord4j.core.event.domain.interaction.ModalSubmitInteractionEvent;
 import discord4j.core.event.domain.interaction.SelectMenuInteractionEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.*;
@@ -33,7 +36,7 @@ public class DevArea {
     public static GatewayDiscordClient client;
     public static InitialData data;
     public static Guild devarea;
-    public static ArrayList<OneEvent<?>> globalListeners = new ArrayList<>();
+    protected static ArrayList<EventOwner<?>> globalListeners = new ArrayList<>();
 
     public static void initDevArea() throws FileNotFoundException {
         data = InitialData.loadInitialData();
@@ -66,7 +69,7 @@ public class DevArea {
     }
 
     public static void setupDiscordEvent() {
-        client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> startAway(Dispatcher::onReadyEvent));
+        client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> startAway(() -> Dispatcher.onReadyEvent(event)));
         client.getEventDispatcher().on(ButtonInteractionEvent.class).subscribe(event -> startAway(() -> Dispatcher.onButtonInteractionEvent(event)));
         client.getEventDispatcher().on(MemberJoinEvent.class).subscribe(event -> startAway(() -> Dispatcher.onMemberJoinEvent(event)));
         client.getEventDispatcher().on(MemberLeaveEvent.class).subscribe(event -> startAway(() -> Dispatcher.onMemberLeaveEvent(event)));
@@ -78,6 +81,7 @@ public class DevArea {
         client.getEventDispatcher().on(SelectMenuInteractionEvent.class).subscribe(event -> startAway(() -> Dispatcher.onSelectMenuInteractionEvent(event)));
         client.getEventDispatcher().on(VoiceStateUpdateEvent.class).subscribe(event -> startAway(() -> Dispatcher.onVoiceStateUpdateEvent(event)));
         client.getEventDispatcher().on(ChatInputInteractionEvent.class).subscribe(event -> startAway(() -> Dispatcher.onChatInputInteractionEvent(event)));
+        client.getEventDispatcher().on(ModalSubmitInteractionEvent.class).subscribe(event -> startAway(() -> Dispatcher.onModalSubmitInteractionEvent(event)));
     }
 
     public static int setupWorkers() {
@@ -91,9 +95,9 @@ public class DevArea {
                 Worker worker = workerClass.getConstructor().newInstance();
                 Logger.separate();
                 worker.onStart();
-                OneEvent<?> event;
+                ActionEvent<?> event;
                 if ((event = worker.setupEvent()) != null)
-                    globalListeners.add(event);
+                    globalListeners.add(new EventOwner<>(event, true));
 
                 count += 1;
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
@@ -105,12 +109,29 @@ public class DevArea {
         return count;
     }
 
-    public static void executeGlobal(Object event) {
-        for (OneEvent<?> oneEvent : globalListeners) {
-            boolean started = oneEvent.persistent(true).execute(event);
-            if (oneEvent.isTerminalEvent() && started)
+    public static void executeGlobal(Filler<?> event) {
+        for (EventOwner<?> eventOwner : globalListeners) {
+            boolean started = eventOwner.persistent(true).execute(event);
+            if (eventOwner.isTerminalEvent() && started)
                 break;
         }
     }
+
+    public static void listen(final ActionEvent<?> event) {
+        listen(event, true);
+    }
+
+    public static void listen(final ActionEvent<?> event, final boolean persistent) {
+        globalListeners.add(new EventOwner<>(event, persistent));
+    }
+
+    public static void listenFirst(final ActionEvent<?> event, final boolean persistent) {
+        listenFirst(event, persistent, true);
+    }
+
+    public static void listenFirst(final ActionEvent<?> event, final boolean persistent, final boolean terminator) {
+        globalListeners.add(0, new EventOwner<>(event, persistent, terminator));
+    }
+
 
 }

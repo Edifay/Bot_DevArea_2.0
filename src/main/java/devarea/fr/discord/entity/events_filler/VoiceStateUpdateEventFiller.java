@@ -1,10 +1,10 @@
 package devarea.fr.discord.entity.events_filler;
 
 import devarea.fr.discord.commands.Context;
-import discord4j.core.event.domain.lifecycle.ReadyEvent;
+import discord4j.core.event.domain.VoiceStateUpdateEvent;
 
-public class ReadyEventFiller extends Filler<ReadyEvent> {
-    public ReadyEventFiller(ReadyEvent event) {
+public class VoiceStateUpdateEventFiller extends Filler<VoiceStateUpdateEvent> {
+    public VoiceStateUpdateEventFiller(VoiceStateUpdateEvent event) {
         super(event);
     }
 

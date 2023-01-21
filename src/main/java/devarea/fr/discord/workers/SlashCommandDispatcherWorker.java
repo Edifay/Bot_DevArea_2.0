@@ -2,7 +2,7 @@ package devarea.fr.discord.workers;
 
 import devarea.fr.discord.DevArea;
 import devarea.fr.discord.commands.SlashCommand;
-import devarea.fr.discord.entity.OneEvent;
+import devarea.fr.discord.entity.ActionEvent;
 import devarea.fr.discord.entity.events_filler.SlashCommandFiller;
 import devarea.fr.utils.Logger;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
@@ -61,19 +61,19 @@ public class SlashCommandDispatcherWorker implements Worker {
     }
 
     @Override
-    public OneEvent<?> setupEvent() {
-        return (OneEvent<ChatInputInteractionEvent>) event -> {
-            Logger.logTitle("Receive SlashCommand " + event.getCommandName());
+    public ActionEvent<?> setupEvent() {
+        return (ActionEvent<SlashCommandFiller>) filler -> {
+            Logger.logTitle("Receive SlashCommand " + filler.event.getCommandName());
 
             try {
 
-                SlashCommand command = slashCommands.get(event.getCommandName()).newInstance();
+                SlashCommand command = slashCommands.get(filler.event.getCommandName()).newInstance();
 
-                if (event.getInteraction().getMember().isPresent())
-                    if (command.permissions() == null || command.permissions().isMemberHasPermissions(event.getInteraction().getMember().get()))
-                        command.play(new SlashCommandFiller(event));
+                if (filler.event.getInteraction().getMember().isPresent())
+                    if (command.permissions() == null || command.permissions().isMemberHasPermissions(filler.event.getInteraction().getMember().get()))
+                        command.play(filler);
                     else
-                        notPermissionToExecute(event);
+                        notPermissionToExecute(filler.event);
 
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);

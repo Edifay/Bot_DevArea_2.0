@@ -23,7 +23,14 @@ public class CachedChannel extends CachedObject<Chan> {
     @Override
     public Chan fetch() {
         try {
-            this.object_cached = Chan.of(DevArea.devarea.getChannelById(Snowflake.of(this.object_id)).block());
+
+            GuildChannel channel = DevArea.devarea.getChannelById(Snowflake.of(this.object_id)).block();
+            
+            if (this.object_cached != null)
+                this.object_cached.update(channel);
+            else
+                this.object_cached = Chan.of(channel);
+
         } catch (Exception e) {
             System.err.println("ERROR: Channel couldn't be fetched !");
             this.object_cached = null;

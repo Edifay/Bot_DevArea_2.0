@@ -1,9 +1,12 @@
 package devarea.fr.discord.statics;
 
+import devarea.fr.db.data.DBMission;
 import devarea.fr.discord.DevArea;
+import discord4j.common.util.Snowflake;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
 import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
 import discord4j.core.spec.MessageCreateSpec;
 
 import java.time.Instant;
@@ -90,7 +93,7 @@ public class TextMessage {
             .title("Voici la liste des commandes :")
             .description("Voici la liste de toutes les commandes :")
             .addField("Les commandes globales :", "`/help` -> donne cette liste.\n`/ping` -> donne le temps de " +
-                    "latence du bot.\n`/start` -> envoie un message qui permet de bien commencer dans un langage.\n"
+                            "latence du bot.\n`/start` -> envoie un message qui permet de bien commencer dans un langage.\n"
                     , false)
             .addField("Communication :", "`/devhelp` -> mentionne les membres ayant pris le rôle Dev'Helper" +
                     ".\n`/ask` -> donne les informations pour bien poser une question.\n`/meetup` -> permet de " +
@@ -402,15 +405,15 @@ public class TextMessage {
                         .build())
                 .build();
     }
-/*
-    public static MessageCreateSpec missionFollowedCreateMessageExplication(Snowflake member_react_id, Mission mission){
+
+    public static MessageCreateSpec missionFollowedCreateMessageExplication(Snowflake member_react_id, DBMission mission) {
         return MessageCreateSpec.builder()
-                .content("<@" + member_react_id.asString() + "> -> <@" + mission.getMemberId() + ">")
+                .content("<@" + member_react_id.asString() + "> -> <@" + mission.getCreatedById() + ">")
                 .addEmbed(EmbedCreateSpec.builder()
                         .title("Suivi de Mission !")
                         .description("Bienvenue dans ce channel !\n\n" +
                                 "Ce channel a été créé car <@" + member_react_id.asString() + "> est intéressé " +
-                                "par la mission de <@" + mission.getMemberId() + ">." +
+                                "par la mission de <@" + mission.getCreatedById() + ">." +
                                 "\n\nCe channel est dédié pour vous, ainsi qu'à la mise en place de la mission et" +
                                 " nous vous demandons de passer exclusivement par ce channel pour toute " +
                                 "discussion à propos de celle-ci." +
@@ -424,13 +427,13 @@ public class TextMessage {
                 .build();
     }
 
-    public static MessageCreateSpec missionFollowMissionPreview(Mission mission){
+    public static MessageCreateSpec missionFollowMissionPreview(DBMission mission) {
         return MessageCreateSpec.builder()
                 .addEmbed(EmbedCreateSpec.builder()
                         .title(mission.getTitle())
-                        .description(mission.getDescriptionText() + "\n\nPrix: " + mission.getBudget() + "\nDate " +
+                        .description(mission.getDescription() + "\n\nPrix: " + mission.getBudget() + "\nDate " +
                                 "de retour: " + mission.getDeadLine() + "\nType de support: " + mission.getSupport()
-                                + "\nLangage: " + mission.getLanguage() + "\nNiveau estimé: " + mission.getNiveau())
+                                + "\nLangage: " + mission.getLanguage() + "\nNiveau estimé: " + mission.getDifficulty())
                         .color(ColorsUsed.just)
                         .build())
                 .build();
@@ -452,5 +455,5 @@ public class TextMessage {
                     .description("Vous suivez déjà cette mission !")
                     .color(ColorsUsed.wrong)
                     .build())
-            .build();*/
+            .build();
 }

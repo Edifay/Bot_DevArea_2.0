@@ -1,7 +1,7 @@
 package devarea.fr.discord.statics;
 
 import devarea.fr.db.data.DBMission;
-import devarea.fr.discord.DevArea;
+import devarea.fr.discord.Core;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
@@ -44,7 +44,7 @@ public class TextMessage {
     public static final String firstText = "Pour que tu puisses bien t'intégrer au serveur, je vais te donner " +
             "quelques informations, et t'en demander quelques-unes pour que je puisse bien te diriger !\n\nTu en as " +
             "pour maximum **2min**, mais attention, tu seras kick après 10min sans avoir complété le questionnaire " +
-            "!\n\nPour passer à la suite il te faut réagir <:ayy:" + DevArea.data.yes.asString() + "> ! Bonne " +
+            "!\n\nPour passer à la suite il te faut réagir <:ayy:" + Core.data.yes.asString() + "> ! Bonne " +
             "chance !";
     /*
         Les règles pour que la communication lors du code soit correcte
@@ -58,33 +58,33 @@ public class TextMessage {
             " as effectuées (avant de poser une question, va regarder rapidement sur google pour être sûr que la " +
             "réponse n'y est pas déjà).\n\n" + "- Fais attention où tu parles ! **ATTENTION** : le serveur est très " +
             "structuré, pour la bonne compréhension essaye de respecter les channels.\n\nSi tu as bien lu ces règles," +
-            " réagis avec <:ayy:" + DevArea.data.yes.asString() + ">";
+            " réagis avec <:ayy:" + Core.data.yes.asString() + ">";
     /*
         Les règles pour demander des missions
      */
     public static final String rulesForAskCode = "Si tu es sur ce serveur c'est donc que tu as besoin de développeurs" +
-            ". \nLes channels : <#" + DevArea.data.freelance_channel.asString() + "> et <#" + DevArea.data.paidMissions_channel.asString() + "> te permettent de proposer des missions/projets. \n\nCliques sur : <:ayy:" + DevArea.data.yes.asString() + "> pour accéder à la suite.";
+            ". \nLes channels : <#" + Core.data.freelance_channel.asString() + "> et <#" + Core.data.paidMissions_channel.asString() + "> te permettent de proposer des missions/projets. \n\nCliques sur : <:ayy:" + Core.data.yes.asString() + "> pour accéder à la suite.";
     /*
         Le message de règles
      */
     public static final String rules = "Tu dois maintenant accepter les règles :" + "\n\nLes règles classiques " +
             "s'appliquent sur ce serveur, la sanction pour toute forme de violation de ces règles de vie, sera pour " +
             "tout le monde le bannissement." + "\n\nNous n'aiderons en aucun cas, à la production de logiciel " +
-            "malveillant, programme lié au darknet, recherche de failles de sécurité ou autres mauvaises intentions." + "\n\nLe serveur ne prend pas en charge la sûreté des missions payantes, en effet le serveur ne s'implique en aucun cas de la fiabilité du client ou du développeur." + "\n\nN'hésitez pas à venir dire Salut dans le channel général. D'autres personnes seront certainement là pour vous expliquer le fonctionnement du discord." + "\n\nCliques sur : <:ayy:" + DevArea.data.yes.asString() + "> pour accéder à la suite.";
+            "malveillant, programme lié au darknet, recherche de failles de sécurité ou autres mauvaises intentions." + "\n\nLe serveur ne prend pas en charge la sûreté des missions payantes, en effet le serveur ne s'implique en aucun cas de la fiabilité du client ou du développeur." + "\n\nN'hésitez pas à venir dire Salut dans le channel général. D'autres personnes seront certainement là pour vous expliquer le fonctionnement du discord." + "\n\nCliques sur : <:ayy:" + Core.data.yes.asString() + "> pour accéder à la suite.";
     /*
         Le message mettant en avant le channel présentation
      */
     public static final String presentation = "Avant d'aller parler dans les channels et de rencontrer les membres de" +
             " la communauté, essaye de faire une présentation de toi qui permettra d'entamer la discussion, et d'en " +
-            "savoir un peu plus sur toi ! <#" + DevArea.data.presentation_channel.asString() + ">" + "\n\nClique sur" +
-            " : <:ayy:" + DevArea.data.yes.asString() + "> pour accéder à la suite.";
+            "savoir un peu plus sur toi ! <#" + Core.data.presentation_channel.asString() + ">" + "\n\nClique sur" +
+            " : <:ayy:" + Core.data.yes.asString() + "> pour accéder à la suite.";
     /*
         Le message mettant en avant le channel des rôles
      */
-    public static final String roles = "Tu as maintenant accès au <#" + DevArea.data.roles_channel.asString() + ">, " +
+    public static final String roles = "Tu as maintenant accès au <#" + Core.data.roles_channel.asString() + ">, " +
             "tu dois choisir tes rôles avec précision, **attention cela est la base du serveur**.\n\nJe te donne accès au " +
             "serveur dans 30 secondes (ne t'inquiète pas si tu prends plus que 30 secondes tu as tout le temps qu'il " +
-            "te faut) tu as donc le temps de prendre tes <#" + DevArea.data.roles_channel.asString() + ">.\n" +
+            "te faut) tu as donc le temps de prendre tes <#" + Core.data.roles_channel.asString() + ">.\n" +
             "\nBienvenue !";
     /*
         le message lors de la commande help
@@ -110,7 +110,7 @@ public class TextMessage {
             .addField("Développeurs <-> Clients :", "`/mission` -> permet de gérer les missions créées" +
                     ".\n`/freelance` permet de gérer le message freelance.\n\n`creationMissions` & " +
                     "`creationFreeLance` -> ne se lancent pas comme des commandes classiques, une réaction dans le " +
-                    "channel : <#" + DevArea.data.paidMissions_channel.asString() + "> & <#" + DevArea.data.freelance_channel.asString() + ">" +
+                    "channel : <#" + Core.data.paidMissions_channel.asString() + "> & <#" + Core.data.freelance_channel.asString() + ">" +
                     " permet de commencer la commande.\n\n", false)
             .addField("Le site", "Le serveur Dev'Area possède aussi un site internet qui permet de gérer certaines " +
                     "fonctionnalités du serveur.\n\n   -> https://devarea.fr/", false)
@@ -160,7 +160,7 @@ public class TextMessage {
                     ".org/downloads/\n\nChoisissez celui qui vous fait le plus envie :)", false)
             .addField("Bonne Chance !", "Maintenant vous pouvez naviguer dans les tutos, cours, et vidéos pour " +
                     "apprendre le java. Le serveur est là si vous rencontrez certains problèmes.", false)
-            .author(DevArea.client.getSelf().block().getUsername(), null, DevArea.client.getSelf().block().getAvatarUrl())
+            .author(Core.client.getSelf().block().getUsername(), null, Core.client.getSelf().block().getAvatarUrl())
             .timestamp(Instant.now()).build();
 
     public static final EmbedCreateSpec startCSharp = EmbedCreateSpec.builder()
@@ -204,7 +204,7 @@ public class TextMessage {
                     "https://visualstudio.microsoft.com/fr/\nRider => https://www.jetbrains.com/fr-fr/rider/", false)
             .addField("Bonne Chance !", "Maintenant vous pouvez naviguer dans les tutos, cours, et vidéos pour " +
                     "apprendre le C#. Le serveur est là si vous rencontrez certains problèmes.", false)
-            .author(DevArea.client.getSelf().block().getUsername(), null, DevArea.client.getSelf().block().getAvatarUrl())
+            .author(Core.client.getSelf().block().getUsername(), null, Core.client.getSelf().block().getAvatarUrl())
             .timestamp(Instant.now())
             .color(ColorsUsed.same).build();
 
@@ -235,7 +235,7 @@ public class TextMessage {
                     "vous fait le plus envie :)", false)
             .addField("Bonne Chance !", "Maintenant vous pouvez naviguer dans les tutos, cours, et vidéos pour " +
                     "apprendre le python. Le serveur est là si vous rencontrez certains problèmes.", false)
-            .author(DevArea.client.getSelf().block().getUsername(), null, DevArea.client.getSelf().block().getAvatarUrl())
+            .author(Core.client.getSelf().block().getUsername(), null, Core.client.getSelf().block().getAvatarUrl())
             .timestamp(Instant.now()).build();
 
     public static final EmbedCreateSpec startHtmlCss = EmbedCreateSpec.builder()
@@ -263,7 +263,7 @@ public class TextMessage {
                     "envie :)", false)
             .addField("Bonne Chance !", "Maintenant vous pouvez naviguer dans les tutos, cours, et vidéos pour " +
                     "apprendre l'HTML/CSS. Le serveur est là si vous rencontrez certains problèmes.", false)
-            .author(DevArea.client.getSelf().block().getUsername(), null, DevArea.client.getSelf().block().getAvatarUrl())
+            .author(Core.client.getSelf().block().getUsername(), null, Core.client.getSelf().block().getAvatarUrl())
             .timestamp(Instant.now()).build();
 
 

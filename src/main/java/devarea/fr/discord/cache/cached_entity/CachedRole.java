@@ -1,6 +1,6 @@
 package devarea.fr.discord.cache.cached_entity;
 
-import devarea.fr.discord.DevArea;
+import devarea.fr.discord.Core;
 import devarea.fr.discord.cache.MemberCache;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Role;
@@ -20,7 +20,7 @@ public class CachedRole extends CachedObject<Role> {
 
     @Override
     public Role fetch() {
-        this.object_cached = DevArea.devarea.getRoleById(Snowflake.of(this.object_id)).block();
+        this.object_cached = Core.devarea.getRoleById(Snowflake.of(this.object_id)).block();
         return this.object_cached;
     }
 

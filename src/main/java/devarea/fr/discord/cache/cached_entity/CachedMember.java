@@ -1,9 +1,9 @@
 package devarea.fr.discord.cache.cached_entity;
 
 
-import devarea.fr.discord.DevArea;
+import devarea.fr.discord.Core;
 import devarea.fr.discord.cache.MemberCache;
-import devarea.fr.discord.entity.Mem;
+import devarea.fr.discord.entities.Mem;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Member;
 
@@ -24,7 +24,7 @@ public class CachedMember extends CachedObject<Mem> {
     @Override
     public Mem fetch() {
         try {
-            Member member = DevArea.devarea.getMemberById(Snowflake.of(this.object_id)).block();
+            Member member = Core.devarea.getMemberById(Snowflake.of(this.object_id)).block();
 
             if (this.object_cached != null)
                 this.object_cached.update(member);

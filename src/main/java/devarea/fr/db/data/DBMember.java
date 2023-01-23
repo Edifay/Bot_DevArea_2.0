@@ -2,7 +2,7 @@ package devarea.fr.db.data;
 
 import devarea.fr.db.DBManager;
 import devarea.fr.discord.cache.MemberCache;
-import devarea.fr.discord.entity.Mem;
+import devarea.fr.discord.entities.Mem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +53,10 @@ public class DBMember {
 
     public Mem getMember() {
         return MemberCache.get(this.id);
+    }
+
+    public String getId() {
+        return this.id;
     }
 
 }

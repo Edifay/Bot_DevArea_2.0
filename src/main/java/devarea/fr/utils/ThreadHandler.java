@@ -14,7 +14,6 @@ public class ThreadHandler {
                     Thread.sleep(millis);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
             }
         });
     }

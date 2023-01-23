@@ -28,3 +28,5 @@ replay_pid*
 build/
 token.token
 db.url
+judge.properties
+judge.json

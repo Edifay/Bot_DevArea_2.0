@@ -1,7 +1,7 @@
 package devarea.fr;
 
 import devarea.fr.db.DBManager;
-import devarea.fr.discord.DevArea;
+import devarea.fr.discord.Core;
 
 import java.io.FileNotFoundException;
 
@@ -14,19 +14,13 @@ public class Main {
         DBManager.initDB();
 
         try {
-            DevArea.initDevArea();
+            Core.initCoreDiscordClient();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        DevArea.client.onDisconnect().block();
+        Core.client.onDisconnect().block();
 
     }
-
-        /*
-        Reflections reflections = new Reflections("devarea.fr");
-        Set<Class<? extends CommandDefinition>> classes = reflections.getSubTypesOf(CommandDefinition.class);
-        System.out.println(classes);
-        */
 
 }

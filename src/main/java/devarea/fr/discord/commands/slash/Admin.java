@@ -1,14 +1,11 @@
 package devarea.fr.discord.commands.slash;
 
-import devarea.fr.discord.cache.MemberCache;
 import devarea.fr.discord.commands.Permissions;
 import devarea.fr.discord.commands.SlashCommand;
-import devarea.fr.discord.entity.ActionEvent;
-import devarea.fr.discord.entity.Mem;
-import devarea.fr.discord.entity.events_filler.SelectMenuInteractionEventFiller;
-import devarea.fr.discord.entity.events_filler.SlashCommandFiller;
+import devarea.fr.discord.entities.ActionEvent;
+import devarea.fr.discord.entities.events_filler.SelectMenuInteractionEventFiller;
+import devarea.fr.discord.entities.events_filler.SlashCommandFiller;
 import devarea.fr.discord.statics.ColorsUsed;
-import discord4j.core.event.domain.interaction.SelectMenuInteractionEvent;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.SelectMenu;
 import discord4j.core.spec.EmbedCreateSpec;

@@ -1,7 +1,7 @@
 package devarea.fr.discord.commands.slash;
 
 import devarea.fr.discord.commands.SlashCommand;
-import devarea.fr.discord.entity.events_filler.SlashCommandFiller;
+import devarea.fr.discord.entities.events_filler.SlashCommandFiller;
 import devarea.fr.discord.statics.ColorsUsed;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;

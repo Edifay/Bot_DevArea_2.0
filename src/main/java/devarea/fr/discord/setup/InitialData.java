@@ -69,7 +69,6 @@ public class InitialData {
     public Snowflake roles_channel = null;
     public Snowflake welcome_channel = null;
     public Snowflake general_channel = null;
-    public Snowflake noMic_channel = null;
     public Snowflake meetupVerif_channel = null;
     public Snowflake meetupAnnounce_channel = null;
     public Snowflake bump_channel = null;
@@ -77,7 +76,7 @@ public class InitialData {
     public Snowflake freelance_channel = null;
 
     // Voice Channel
-    public Snowflake Help_voiceChannel = null;
+    public Snowflake help_voiceChannel = null;
 
     // Category
     public Snowflake join_category = null;

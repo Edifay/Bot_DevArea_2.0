@@ -3,7 +3,7 @@ package devarea.fr.discord.commands.slash;
 import devarea.fr.discord.cache.ChannelCache;
 import devarea.fr.discord.commands.Permissions;
 import devarea.fr.discord.commands.SlashCommand;
-import devarea.fr.discord.entity.events_filler.SlashCommandFiller;
+import devarea.fr.discord.entities.events_filler.SlashCommandFiller;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;

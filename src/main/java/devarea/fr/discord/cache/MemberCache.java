@@ -1,7 +1,7 @@
 package devarea.fr.discord.cache;
 
 import devarea.fr.discord.cache.cached_entity.CachedMember;
-import devarea.fr.discord.entity.Mem;
+import devarea.fr.discord.entities.Mem;
 import discord4j.core.object.entity.Member;
 import reactor.util.annotation.NonNull;
 

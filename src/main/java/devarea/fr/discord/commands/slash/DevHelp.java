@@ -1,13 +1,11 @@
 package devarea.fr.discord.commands.slash;
 
-import devarea.fr.discord.DevArea;
+import devarea.fr.discord.Core;
 import devarea.fr.discord.cache.ChannelCache;
 import devarea.fr.discord.commands.SlashCommand;
-import devarea.fr.discord.entity.Chan;
-import devarea.fr.discord.entity.events_filler.SlashCommandFiller;
-import devarea.fr.utils.Logger;
+import devarea.fr.discord.entities.Chan;
+import devarea.fr.discord.entities.events_filler.SlashCommandFiller;
 import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.entity.channel.ThreadChannel;
@@ -46,7 +44,7 @@ public class DevHelp extends SlashCommand {
         if (parentId == null)
             return;
 
-        if (parentId.equals(DevArea.data.assistance_category)) {
+        if (parentId.equals(Core.data.assistance_category)) {
             if (!timer.contains(channel.getId())) {
 
                 startAway(() -> {
@@ -57,11 +55,11 @@ public class DevHelp extends SlashCommand {
                 ((GuildMessageChannel) ChannelCache.watch(filler.event.getInteraction().getChannelId().asString()).entity).createMessage(
                         MessageCreateSpec.builder()
                                 .allowedMentions(AllowedMentions.builder()
-                                        .allowRole(DevArea.data.devHelper_role)
+                                        .allowRole(Core.data.devHelper_role)
                                         .allowUser(filler.mem.getId())
                                         .build())
                                 .content("<@" + filler.mem.getId().asString() + ">, a demandé de " +
-                                        "l'aide ! <@&" + DevArea.data.devHelper_role.asString() + ">.").build()
+                                        "l'aide ! <@&" + Core.data.devHelper_role.asString() + ">.").build()
                 ).subscribe();
 
                 timer.add(channel.getId());

@@ -1,7 +1,7 @@
 package devarea.fr.discord.cache;
 
 import devarea.fr.discord.cache.cached_entity.CachedChannel;
-import devarea.fr.discord.entity.Chan;
+import devarea.fr.discord.entities.Chan;
 import discord4j.core.object.entity.channel.GuildChannel;
 import reactor.util.annotation.NonNull;
 

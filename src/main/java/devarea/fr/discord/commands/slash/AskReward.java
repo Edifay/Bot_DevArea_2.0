@@ -2,8 +2,8 @@ package devarea.fr.discord.commands.slash;
 
 import devarea.fr.discord.cache.MemberCache;
 import devarea.fr.discord.commands.SlashCommand;
-import devarea.fr.discord.entity.Mem;
-import devarea.fr.discord.entity.events_filler.SlashCommandFiller;
+import devarea.fr.discord.entities.Mem;
+import devarea.fr.discord.entities.events_filler.SlashCommandFiller;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
@@ -28,7 +28,7 @@ public class AskReward extends SlashCommand {
     public void play(SlashCommandFiller filler) {
 
         Mem target = MemberCache.get(filler.event.getOption("mention").get().getValue().get().asSnowflake().asString());
-
+        filler.event.reply("La commande n'as pas encore été implémentée.").subscribe();
     }
 
 }

@@ -31,8 +31,8 @@ public class DBMission implements DBItem {
         this.language = (String) document.get("language");
         this.support = (String) document.get("support");
         this.difficulty = (String) document.get("difficulty");
-
-        this.message = new DBMessage((Document) document.get("message"));
+        if (document.get("message") != null)
+            this.message = new DBMessage((Document) document.get("message"));
         this.createdAt = (long) document.get("createdAt");
         this.createdById = (String) document.get("createdById");
         this.lastUpdate = (long) document.get("lastUpdate");
@@ -130,7 +130,8 @@ public class DBMission implements DBItem {
                 Updates.set("language", this.language),
                 Updates.set("support", this.support),
                 Updates.set("difficulty", this.difficulty),
-                Updates.set("message", this.message.toDocument()),
+                Updates.set("message", this.message == null ? Updates.unset("message") :
+                        Updates.set("message", this.message.toDocument())),
                 Updates.set("createdAt", this.createdAt),
                 Updates.set("createdById", this.createdById),
                 Updates.set("lastUpdate", this.lastUpdate),

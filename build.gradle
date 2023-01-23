@@ -27,6 +27,8 @@ dependencies {
 
     implementation 'org.mongodb:mongo-java-driver:3.10.0'
 
+    implementation group: 'org.springframework', name: 'spring-web', version: '6.0.0'
+
 }
 
 sourceCompatibility = JavaVersion.VERSION_17

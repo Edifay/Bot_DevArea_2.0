@@ -2,18 +2,16 @@ package devarea.fr.discord.commands.slash;
 
 import devarea.fr.discord.cache.MemberCache;
 import devarea.fr.discord.commands.SlashCommand;
-import devarea.fr.discord.entity.Mem;
-import devarea.fr.discord.entity.events_filler.SlashCommandFiller;
+import devarea.fr.discord.entities.Mem;
+import devarea.fr.discord.entities.events_filler.SlashCommandFiller;
 import devarea.fr.discord.statics.ColorsUsed;
 import devarea.fr.discord.statics.DefaultData;
-import devarea.fr.discord.workers.AuthWorker;
-import discord4j.core.object.entity.Member;
+import devarea.fr.discord.workers.self.AuthWorker;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
 import discord4j.core.spec.InteractionReplyEditSpec;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 import static devarea.fr.utils.ThreadHandler.startAway;

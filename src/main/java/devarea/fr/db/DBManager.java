@@ -3,9 +3,10 @@ package devarea.fr.db;
 import com.mongodb.Block;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
 import devarea.fr.db.data.*;
-import devarea.fr.discord.workers.StatsWorker;
+import devarea.fr.discord.workers.self.StatsWorker;
 import devarea.fr.utils.Logger;
 import org.bson.Document;
 
@@ -76,7 +77,8 @@ public class DBManager {
     }
 
     public static void memberJoin(final String id) {
-        USERDATA.insertOne(MemberAdapter.memberToDocument(id));
+        if (USERDATA.find(MemberAdapter.memberToDocument(id)).first() == null)
+            USERDATA.insertOne(MemberAdapter.memberToDocument(id));
         transferXPLeftToXP(id);
     }
 
@@ -120,7 +122,7 @@ public class DBManager {
     }
 
     public static Iterator<Document> listOfXP() {
-        return USERDATA.find().projection(Projections.include("_id", "xp")).sort(new Document("xp", 1)).iterator();
+        return USERDATA.find().projection(Projections.include("_id", "xp")).sort(Sorts.descending("xp")).iterator();
     }
 
     public static HashMap<String, Integer> getXPHistory(final String id) {
@@ -183,6 +185,7 @@ public class DBManager {
             return null;
         return new DBMission(mission);
     }
+
 
     public static ArrayList<DBMissionFollow> getMissionFollowOf(final String id) {
         FindIterable<Document> documents = MISSIONS_FOLLOW.find(or(new Document("client_id", id), new Document("dev_id", id)));
@@ -273,6 +276,11 @@ public class DBManager {
     public static void transferXPToXPLeft(final String id) {
         setXPLeft(id, getXP(id));
     }
+
+    public static FindIterable<Document> getSortedXPList() {
+        return USERDATA.find().sort(Sorts.descending("xp")).limit(10).projection(Projections.include("_id"));
+    }
+
 
     public static Iterator<Document> getUSERDATA() {
         return USERDATA.find().iterator();

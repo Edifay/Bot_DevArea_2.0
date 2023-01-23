@@ -1,8 +1,8 @@
 package devarea.fr.discord.cache.cached_entity;
 
-import devarea.fr.discord.DevArea;
+import devarea.fr.discord.Core;
 import devarea.fr.discord.cache.ChannelCache;
-import devarea.fr.discord.entity.Chan;
+import devarea.fr.discord.entities.Chan;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.channel.GuildChannel;
 
@@ -24,7 +24,7 @@ public class CachedChannel extends CachedObject<Chan> {
     public Chan fetch() {
         try {
 
-            GuildChannel channel = DevArea.devarea.getChannelById(Snowflake.of(this.object_id)).block();
+            GuildChannel channel = Core.devarea.getChannelById(Snowflake.of(this.object_id)).block();
             
             if (this.object_cached != null)
                 this.object_cached.update(channel);

@@ -24,8 +24,8 @@ public class Logger {
     private static final DateFormat logDateFormat = new SimpleDateFormat("[HH:mm:ss-dd/MM/yy] ");
 
     public static void initLogger() {
-        if (!developing) { // TODO uncomment
-           /* DateFormat format = new SimpleDateFormat("MM-dd-yy_HH-mm");
+        if (!developing) {
+            DateFormat format = new SimpleDateFormat("MM-dd-yy_HH-mm");
 
             File file = new File(DefaultData.LOG_FOLDER + format.format(Date.from(Instant.now())) + ".log");
             if (!file.exists()) {
@@ -39,7 +39,7 @@ public class Logger {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }*/
+            }
         }
     }
 

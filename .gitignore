@@ -30,3 +30,4 @@ token.token
 db.url
 judge.properties
 judge.json
+config.json

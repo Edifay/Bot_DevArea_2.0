@@ -31,3 +31,5 @@ db.url
 judge.properties
 judge.json
 config.json
+
+old/

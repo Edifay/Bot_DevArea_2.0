@@ -1,6 +1,8 @@
 package devarea.fr.discord.badges;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import devarea.fr.discord.badges.role_badge.RolesBadges;
 import devarea.fr.discord.badges.success_badge.SuccessBadge;
 import devarea.fr.discord.badges.time_badge.TimeOnServerBadge;
@@ -12,9 +14,13 @@ import java.util.ArrayList;
 
 public abstract class Badges {
 
+    @JsonProperty
     protected final String name;
+    @JsonProperty
     protected final String url_icon;
+    @JsonProperty
     protected final String description;
+    @JsonIgnore
     protected final BufferedImage local_icon;
 
     public Badges(final String name, final String url_icon, final String description, final BufferedImage local_icon) {

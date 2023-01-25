@@ -14,10 +14,6 @@ import static devarea.fr.Main.developing;
 
 public class Logger {
 
-    static {
-        initLogger();
-    }
-
     private static final String separator = "----------------------------------------";
     private static final String enter = "\n";
 
@@ -61,6 +57,6 @@ public class Logger {
     }
 
     public static void logError(final Object error) {
-        System.out.println(now() + "[ERROR]" + separator + enter + "   -> " + error);
+        System.out.println(now() + "[ERROR]" + separator + enter + "       -> " + error);
     }
 }

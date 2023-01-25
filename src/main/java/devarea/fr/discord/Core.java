@@ -21,6 +21,7 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.gateway.intent.IntentSet;
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -116,7 +117,7 @@ public class Core {
     public static int setupWorkers() {
         int count = 0;
 
-        Reflections reflections = new Reflections("devarea.fr");
+        Reflections reflections = new Reflections(new ConfigurationBuilder().forPackages("devarea.fr"));
         Set<Class<? extends Worker>> classes = reflections.getSubTypesOf(Worker.class);
 
         for (Class<? extends Worker> workerClass : classes) {

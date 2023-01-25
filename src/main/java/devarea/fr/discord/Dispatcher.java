@@ -12,6 +12,7 @@ import discord4j.core.event.domain.interaction.ModalSubmitInteractionEvent;
 import discord4j.core.event.domain.interaction.SelectMenuInteractionEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.*;
+import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
 
 public class Dispatcher {
 
@@ -86,6 +87,13 @@ public class Dispatcher {
     public static void onChatInputInteractionEvent(final ChatInputInteractionEvent event) {
         if (event.getInteraction().getMember().isPresent())
             MemberCache.use(event.getInteraction().getMember().get());
+        else {
+            event.reply(InteractionApplicationCommandCallbackSpec.builder()
+                            .ephemeral(true)
+                            .content("Les commandes sont désactivées dans les messages privés.")
+                    .build()).subscribe();
+            return;
+        }
         Core.executeGlobal(new SlashCommandFiller(event));
         MemberCache.get(event.getInteraction().getUser().getId().asString()).execute(new SlashCommandFiller(event));
     }

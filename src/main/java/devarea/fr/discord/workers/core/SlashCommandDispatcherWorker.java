@@ -10,6 +10,7 @@ import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -47,7 +48,7 @@ public class SlashCommandDispatcherWorker implements Worker {
         Logger.logMessage("SlashCommandDispatcherWorker starting.");
         Logger.logMessage("Loading SlashCommand.");
 
-        Reflections reflections = new Reflections("devarea.fr.discord.commands.slash");
+        Reflections reflections = new Reflections(new ConfigurationBuilder().forPackages("devarea.fr.discord.commands.slash"));
         Set<Class<? extends SlashCommand>> classes = reflections.getSubTypesOf(SlashCommand.class);
         Logger.logMessage(classes.size() + " SlashCommand found.");
 

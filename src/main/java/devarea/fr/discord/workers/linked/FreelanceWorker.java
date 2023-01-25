@@ -7,6 +7,7 @@ import devarea.fr.discord.Core;
 import devarea.fr.discord.cache.ChannelCache;
 import devarea.fr.discord.cache.MemberCache;
 import devarea.fr.discord.entities.ActionEvent;
+import devarea.fr.discord.entities.Mem;
 import devarea.fr.discord.statics.ColorsUsed;
 import devarea.fr.discord.statics.DefaultData;
 import devarea.fr.discord.workers.Worker;
@@ -17,10 +18,15 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
+import discord4j.core.spec.MessageEditSpec;
 import discord4j.rest.util.AllowedMentions;
 
+import java.util.ArrayList;
+
+import static devarea.fr.discord.statics.DefaultData.DOMAIN_NAME;
 import static devarea.fr.discord.statics.TextMessage.freelanceBottomMessage;
 import static devarea.fr.utils.ThreadHandler.startAway;
+import static devarea.fr.utils.ThreadHandler.startAwayIn;
 
 public class FreelanceWorker implements Worker {
 
@@ -28,6 +34,12 @@ public class FreelanceWorker implements Worker {
     private static final long TIME_BETWEEN_BUMP = 86400000L;
 
     private static GuildMessageChannel freelanceChannel;
+
+    /**
+     * Cooldown for edit and send a new freelance !
+     * Contain member Ids.
+     */
+    private static final ArrayList<String> coolDown = new ArrayList<>();
 
 
     @Override
@@ -68,9 +80,13 @@ public class FreelanceWorker implements Worker {
      * Resend BottomMessage to keep it at the bottom of the channel
      */
     public static void updateBottomMessage() {
-        Message msg = freelanceChannel.getLastMessage().block();
-        if (msg != null && msg.getEmbeds().size() == 1 && msg.getEmbeds().get(0).getTitle().get().equals("Proposez vos services !"))
-            startAway(() -> msg.delete());
+        try {
+            Message msg = freelanceChannel.getLastMessage().block();
+            if (msg != null && msg.getEmbeds().size() == 1 && msg.getEmbeds().get(0).getTitle().get().equals("Proposez vos services !"))
+                startAway(() -> msg.delete().subscribe());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         sendLastMessage();
     }
 
@@ -80,6 +96,52 @@ public class FreelanceWorker implements Worker {
     private static void sendLastMessage() {
         freelanceChannel.createMessage(freelanceBottomMessage).subscribe();
     }
+
+    /**
+     * This function update, or create a freelance. Using the {@link FreelanceMapper} to pass the datas of the new freelance.
+     * <p>
+     * If the {@code mem} have already a freelance, it will update the message with modifications. And send update to the db.
+     * If the {@code mem} don't have freelance, it will send a new message with the freelance embed, update the bottomMessage, and insert the freelance
+     * for the member.
+     *
+     * @param mapper the mapper {@link FreelanceMapper} contains all the informations of an update, or a creation of a freelance.
+     * @param mem    the member who's updating or creating the freelance.
+     * @return if the update or send could be done. true if yes, false if not.
+     */
+    public static boolean setFreelance(FreelanceMapper mapper, Mem mem) {
+        if (coolDown.contains(mem.getSId()))
+            return false;
+
+        DBFreelance freelance = mem.db().hasFreelance() ? mem.db().getFreelance() : new DBFreelance(mem.getSId());
+
+        freelance.setName(mapper.name);
+        freelance.setDescription(mapper.description);
+        freelance.setLastBump(System.currentTimeMillis());
+
+        ArrayList<DBFreelance.DBField> fields = new ArrayList<>();
+
+        for (FreelanceMapper.FreelanceFieldMapper fieldMapper : mapper.fields)
+            fields.add(new DBFreelance.DBField(fieldMapper.title, fieldMapper.description, fieldMapper.prix, fieldMapper.temps, fieldMapper.inline));
+        freelance.setFields(fields);
+
+        if (mem.db().hasFreelance())
+            freelance.getMessage().getMessage().edit(MessageEditSpec.builder()
+                    .addEmbed(getEmbedOf(freelance))
+                    .build()).subscribe();
+        else {
+            Message message = sendFreelanceMessage(freelance);
+            freelance.setMessage(new DBMessage(message));
+            updateBottomMessage();
+        }
+
+        coolDown.add(mem.getSId());
+        startAwayIn(() -> coolDown.remove(mem.getSId()), 5000);
+
+        DBManager.updateFreelance(freelance);
+
+        return true;
+    }
+
 
     /**
      * Delete previous message of a freelance and send a new one. To push the message to the bot of the channel.
@@ -123,14 +185,12 @@ public class FreelanceWorker implements Worker {
                         .content("**Freelance de <@" + freeLance.get_id() + "> :**")
                         .allowedMentions(AllowedMentions.suppressAll())
                         .addEmbed(getEmbedOf(freeLance))
-                        .addComponent(ActionRow.of(Button.link(DefaultData.DOMAIN_NAME + "member-profile?member_id=" + freeLance.get_id() +
+                        .addComponent(ActionRow.of(Button.link(DOMAIN_NAME + "member-profile?member_id=" + freeLance.get_id() +
                                         "&open=1",
                                 "devarea.fr")))
                         .build()).block();
     }
 
-
-    // ------------------- UTILS -------------------
 
     /**
      * @param id the id of the member
@@ -184,7 +244,7 @@ public class FreelanceWorker implements Worker {
     /**
      * delete the freelance
      *
-     * @param freelance the freelance at delete
+     * @param id the freelance at delete
      */
     public static void deleteFreelanceOf(final String id) {
         try {
@@ -194,4 +254,76 @@ public class FreelanceWorker implements Worker {
         DBManager.deleteFreelanceOf(id);
     }
 
+    public static FreelanceMapper freelanceMapper() {
+        return new FreelanceMapper();
+    }
+
+    /**
+     * An object who contain the data of a freelance. Only the data, {@link DBMessage} is not saved here for example.
+     * To use this classes call {@link #freelanceMapper()}, and use dynamically the methods, like a builder.
+     * <p></p>
+     * This class contains the {@link FreelanceFieldMapper}, it can be used with calling {@link #fieldMapper()}.
+     */
+    public static class FreelanceMapper {
+
+        protected String name;
+        protected String description;
+        protected ArrayList<FreelanceFieldMapper> fields = new ArrayList<>();
+
+        private FreelanceMapper() {
+
+        }
+
+        public FreelanceMapper name(final String name) {
+            this.name = name;
+            return this;
+        }
+
+        public FreelanceMapper description(final String description) {
+            this.description = description;
+            return this;
+        }
+
+        public FreelanceMapper addField(final FreelanceFieldMapper mapper) {
+            this.fields.add(mapper);
+            return this;
+        }
+
+        public static FreelanceFieldMapper fieldMapper() {
+            return new FreelanceFieldMapper();
+        }
+
+        /**
+         * Refer at the {@link FreelanceMapper} documentation.
+         */
+        public static class FreelanceFieldMapper {
+            protected String title, description, prix, temps;
+            protected boolean inline;
+
+            public FreelanceFieldMapper title(final String title) {
+                this.title = title;
+                return this;
+            }
+
+            public FreelanceFieldMapper description(final String description) {
+                this.description = description;
+                return this;
+            }
+
+            public FreelanceFieldMapper prix(final String prix) {
+                this.prix = prix;
+                return this;
+            }
+
+            public FreelanceFieldMapper temps(final String temps) {
+                this.temps = temps;
+                return this;
+            }
+
+            public FreelanceFieldMapper inline(final boolean inline) {
+                this.inline = inline;
+                return this;
+            }
+        }
+    }
 }

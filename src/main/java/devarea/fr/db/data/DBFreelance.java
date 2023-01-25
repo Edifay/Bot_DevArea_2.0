@@ -1,10 +1,14 @@
 package devarea.fr.db.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.client.model.Updates;
+import devarea.fr.discord.cache.MemberCache;
+import devarea.fr.discord.entities.Mem;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class DBFreelance implements DBItem {
 
@@ -24,6 +28,10 @@ public class DBFreelance implements DBItem {
         this.fields = new ArrayList<>();
         for (Document doc : (ArrayList<Document>) document.get("fields"))
             this.fields.add(new DBField(doc));
+    }
+
+    public DBFreelance(final String _id) {
+        this._id = _id;
     }
 
     public String getDescription() {
@@ -50,21 +58,53 @@ public class DBFreelance implements DBItem {
         return name;
     }
 
+    public Mem getMember() {
+        return MemberCache.get(this._id);
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setFields(ArrayList<DBField> fields) {
+        this.fields = fields;
+    }
+
+    public void setLastBump(long lastBump) {
+        this.lastBump = lastBump;
+    }
+
+    public void setMessage(DBMessage message) {
+        this.message = message;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public static class DBField implements DBItem {
 
+        @JsonProperty
         protected String title;
+        @JsonProperty
         protected String description;
+        @JsonProperty
         protected String prix;
+        @JsonProperty
         protected String temps;
+        @JsonProperty
         protected boolean inline;
 
         public DBField(final Document document) {
-            this.title = (String) document.get("title");
-            this.description = (String) document.get("description");
-            this.prix = (String) document.get("prix");
-            this.temps = (String) document.get("temps");
-            this.inline = (boolean) document.get("inline");
+            this((String) document.get("title"), (String) document.get("description"), (String) document.get("prix"), (String) document.get("temps"), (boolean) document.get("inline"));
+        }
+
+        public DBField(final String title, final String description, final String prix, final String temps, final boolean inline) {
+            this.title = title;
+            this.description = description;
+            this.prix = prix;
+            this.temps = temps;
+            this.inline = inline;
         }
 
         public String getTitle() {
@@ -73,6 +113,18 @@ public class DBFreelance implements DBItem {
 
         public boolean getInLine() {
             return this.inline;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getPrix() {
+            return prix;
+        }
+
+        public String getTemps() {
+            return temps;
         }
 
         public String getValue() {
@@ -125,7 +177,7 @@ public class DBFreelance implements DBItem {
                 .append("_id", this._id)
                 .append("lastBump", this.lastBump)
                 .append("message", this.message.toDocument())
-                .append("fields", this.fields.stream().map(DBField::toDocument));
+                .append("fields", this.fields.stream().map(DBField::toDocument).collect(Collectors.toList()));
     }
 
     @Override
@@ -135,7 +187,7 @@ public class DBFreelance implements DBItem {
                 Updates.set("description", this.description),
                 Updates.set("lastBump", this.lastBump),
                 Updates.set("message", this.message.toDocument()),
-                Updates.set("fields", this.fields.stream().map(DBField::toDocument))
+                Updates.set("fields", this.fields.stream().map(DBField::toDocument).collect(Collectors.toList()))
         );
     }
 

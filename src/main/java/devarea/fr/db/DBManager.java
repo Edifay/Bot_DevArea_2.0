@@ -8,6 +8,8 @@ import com.mongodb.client.model.Updates;
 import devarea.fr.db.data.*;
 import devarea.fr.discord.workers.self.StatsWorker;
 import devarea.fr.utils.Logger;
+import devarea.fr.web.backend.entities.WebReseau;
+import devarea.fr.web.backend.entities.WebStaff;
 import org.bson.Document;
 
 import java.io.File;
@@ -49,6 +51,8 @@ public class DBManager {
     private static MongoCollection<Document> AUTH;
     private static MongoCollection<Document> XP_LEFT;
     private static MongoCollection<Document> STATS_CONFIG;
+    private static MongoCollection<Document> RESEAUX;
+    private static MongoCollection<Document> STAFF;
 
     public static void initDB() {
 
@@ -66,6 +70,8 @@ public class DBManager {
             AUTH = DEVAREA_DB.getCollection("AUTH");
             XP_LEFT = DEVAREA_DB.getCollection("XP_LEFT");
             STATS_CONFIG = DEVAREA_DB.getCollection("STATS_CONFIG");
+            RESEAUX = DEVAREA_DB.getCollection("RESEAUX");
+            STAFF = DEVAREA_DB.getCollection("STAFF");
 
 
             Logger.logMessage("Connection to DEVAREA database success.");
@@ -121,9 +127,10 @@ public class DBManager {
         USERDATA.updateOne(MemberAdapter.memberToDocument(id), Updates.inc("xp", -amount));
     }
 
-    public static Iterator<Document> listOfXP() {
-        return USERDATA.find().projection(Projections.include("_id", "xp")).sort(Sorts.descending("xp")).iterator();
+    public static FindIterable<Document> listOfXP() {
+        return USERDATA.find().projection(Projections.include("_id", "xp")).sort(Sorts.descending("xp"));
     }
+
 
     public static HashMap<String, Integer> getXPHistory(final String id) {
         Document document = (Document) USERDATA.find(MemberAdapter.memberToDocument(id)).projection(Projections.include("xp_history")).first().get("xp_history");
@@ -135,7 +142,7 @@ public class DBManager {
     }
 
     public static ArrayList<DBMission> getMissions() {
-        FindIterable<Document> documents = MISSIONS.find();
+        FindIterable<Document> documents = MISSIONS.find().sort(Sorts.descending("lastUpdate"));
         ArrayList<DBMission> missions = new ArrayList<>();
 
         for (Document document : documents)
@@ -165,6 +172,10 @@ public class DBManager {
 
     public static void updateMission(final DBMission mission) {
         MISSIONS.updateOne(new Document("_id", mission.get_id()), mission.toUpdates());
+    }
+
+    public static void createMission(final DBMission mission) {
+        MISSIONS.insertOne(mission.toDocument());
     }
 
     public static DBMission getMissionFromMessage(final DBMessage message) {
@@ -221,8 +232,28 @@ public class DBManager {
         return new DBFreelance(freelance);
     }
 
+    public static boolean hasFreelanceOf(final String id) {
+        return null != getFreelanceOf(id);
+    }
+
+    public static void updateFreelance(final DBFreelance freelance) {
+        if (freelance.getMember().db().hasFreelance())
+            FREELANCES.updateOne(new Document("_id", freelance.get_id()), freelance.toUpdates());
+        else
+            FREELANCES.insertOne(freelance.toDocument());
+    }
+
     public static void deleteFreelanceOf(final String id) {
         FREELANCES.deleteOne(new Document("_id", id));
+    }
+
+    public static ArrayList<DBFreelance> getFreelancesList() {
+        FindIterable<Document> freelances = FREELANCES.find().sort(Sorts.descending("last_bump"));
+        ArrayList<DBFreelance> dbFreelances = new ArrayList<>();
+        freelances.forEach((Block<? super Document>) document -> {
+            dbFreelances.add(new DBFreelance(document));
+        });
+        return dbFreelances;
     }
 
     public static void bumpFreelanceOf(final String id, DBMessage message) {
@@ -247,8 +278,8 @@ public class DBManager {
         AUTH.deleteOne(new Document().append("_id", id));
     }
 
-    public static DBMember getMemberBy(final String authCode) {
-        return new DBMember((String) AUTH.find(new Document().append("key", authCode)).first().get("_id"));
+    public static String getMemberOfCode(final String authCode) {
+        return (String) AUTH.find(new Document().append("key", authCode)).first().get("_id");
     }
 
     public static void setXPLeft(final String id, final int xp) {
@@ -288,6 +319,22 @@ public class DBManager {
 
     public static StatsWorker.StatsConfig getStats() {
         return new StatsWorker.StatsConfig(STATS_CONFIG.find(new Document("_id", 0)).first());
+    }
+
+    public static ArrayList<WebReseau> getReseaux() {
+        ArrayList<WebReseau> webReseaux = new ArrayList<>();
+
+        RESEAUX.find().forEach((Block<? super Document>) document -> webReseaux.add(new WebReseau(document)));
+
+        return webReseaux;
+    }
+
+    public static ArrayList<WebStaff> getStaffs() {
+        ArrayList<WebStaff> webStaffs = new ArrayList<>();
+
+        STAFF.find().forEach((Block<? super Document>) document -> webStaffs.add(new WebStaff(document)));
+
+        return webStaffs;
     }
 
 }

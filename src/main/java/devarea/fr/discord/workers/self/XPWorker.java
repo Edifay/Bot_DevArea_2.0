@@ -153,7 +153,7 @@ public class XPWorker implements Worker {
      * @return the rank of the member
      */
     public synchronized static Integer getRankOfMember(final String id) {
-        Iterator<Document> sorted = DBManager.listOfXP();
+        Iterator<Document> sorted = DBManager.listOfXP().iterator();
         int current = 1;
         while (sorted.hasNext()) {
             if (sorted.next().get("_id").equals(id))

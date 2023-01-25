@@ -1,6 +1,9 @@
 package devarea.fr.db.data;
 
 import com.mongodb.client.model.Updates;
+import devarea.fr.discord.cache.MemberCache;
+import devarea.fr.discord.entities.Mem;
+import devarea.fr.utils.PasswordGenerator;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -40,6 +43,19 @@ public class DBMission implements DBItem {
             this.messageUpdate = new DBMessage((Document) document.get("messageUpdate"));
     }
 
+    public DBMission() {
+        this._id = PasswordGenerator.passwordGenerator.generate(20);
+        this.createdAt = System.currentTimeMillis();
+        this.lastUpdate = System.currentTimeMillis();
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
+    }
 
     public String get_id() {
         return _id;
@@ -93,13 +109,52 @@ public class DBMission implements DBItem {
         return messageUpdate;
     }
 
-
     public void setMessageUpdate(DBMessage messageUpdate) {
         this.messageUpdate = messageUpdate;
     }
 
     public void setLastUpdate(long lastUpdate) {
         this.lastUpdate = lastUpdate;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setMessage(DBMessage message) {
+        this.message = message;
+    }
+
+    public void setBudget(String budget) {
+        this.budget = budget;
+    }
+
+    public void setCreatedById(String createdById) {
+        this.createdById = createdById;
+    }
+
+    public void setDeadLine(String deadLine) {
+        this.deadLine = deadLine;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public void setSupport(String support) {
+        this.support = support;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Mem getMember() {
+        return MemberCache.get(this.createdById);
     }
 
     @Override
@@ -117,7 +172,7 @@ public class DBMission implements DBItem {
                 .append("createdAt", this.createdAt)
                 .append("createdById", this.createdById)
                 .append("lastUpdate", this.lastUpdate)
-                .append("messageUpdate", this.messageUpdate.toDocument());
+                .append("messageUpdate", this.messageUpdate == null ? null : this.messageUpdate.toDocument());
     }
 
     @Override

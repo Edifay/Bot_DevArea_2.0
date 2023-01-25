@@ -47,6 +47,10 @@ public class DBMember {
         return DBManager.getFreelanceOf(this.id);
     }
 
+    public boolean hasFreelance() {
+        return DBManager.hasFreelanceOf(this.id);
+    }
+
     public String getAuthCode() {
         return DBManager.getAuthCodeOf(this.id);
     }

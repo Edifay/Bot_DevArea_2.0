@@ -8,6 +8,7 @@ import devarea.fr.discord.Core;
 import devarea.fr.discord.cache.ChannelCache;
 import devarea.fr.discord.cache.MemberCache;
 import devarea.fr.discord.entities.ActionEvent;
+import devarea.fr.discord.entities.Mem;
 import devarea.fr.discord.entities.events_filler.ButtonInteractionEventFiller;
 import devarea.fr.discord.statics.ColorsUsed;
 import devarea.fr.discord.workers.Worker;
@@ -102,16 +103,25 @@ public class MissionFollowWorker implements Worker {
         if (mission != null) {
             if (mission.getCreatedById().equals(member_react_id.asString())) {
                 filler.event.reply(cannotFollowYourOwnMission).subscribe();
-                return true;
+                return false;
             }
             if (alreadyHaveAChannel(mission.getCreatedById(), member_react_id.asString())) {
                 filler.event.reply(alreadyFollowingThisMission).subscribe();
-                return true;
+                return false;
             }
             followThisMission(mission, member_react_id);
             return true;
         }
         return false;
+    }
+
+    public static String webTookMission(final DBMission mission, final Mem mem) {
+        if (mission.getCreatedById().equals(mem.getSId()))
+            return "Vous ne pouvez pas prendre votre propre mission !";
+        if (alreadyHaveAChannel(mission.getCreatedById(), mem.getSId()))
+            return "Vous avez déjà pris cette mission !";
+        followThisMission(mission, mem.getId());
+        return "Vous venez de prendre cette mission !";
     }
 
     /**
@@ -178,7 +188,7 @@ public class MissionFollowWorker implements Worker {
      */
     private static void closeFollowedMission(String memberRequest, DBMissionFollow missionFollow) {
         if (missionFollow != null) {
-            ((GuildMessageChannel) ChannelCache.watch(missionFollow.getMessage().getChannelID()))
+            ((GuildMessageChannel) ChannelCache.watch(missionFollow.getMessage().getChannelID()).entity)
                     .createMessage(missionFollowedCloseIn1Hour(memberRequest)).subscribe();
 
             missionFollow.getMessage().getMessage().edit(MessageEditSpec.builder()

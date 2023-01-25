@@ -1,7 +1,9 @@
 package devarea.fr.discord.workers.self;
 
 import devarea.fr.db.DBManager;
+import devarea.fr.discord.cache.MemberCache;
 import devarea.fr.discord.entities.ActionEvent;
+import devarea.fr.discord.entities.Mem;
 import devarea.fr.discord.entities.events_filler.MemberLeaveEventFiller;
 import devarea.fr.discord.workers.Worker;
 
@@ -14,6 +16,17 @@ public class AuthWorker implements Worker {
         if (code != null)
             return code;
         return addNewAuthForUser(id);
+    }
+
+    public static Mem getMemberOfCode(final String code) {
+        final String id = DBManager.getMemberOfCode(code);
+        if (id == null)
+            return null;
+        return MemberCache.get(id);
+    }
+
+    public static String getIdOfCode(final String code) {
+        return DBManager.getMemberOfCode(code);
     }
 
     private static String addNewAuthForUser(final String memberID) {

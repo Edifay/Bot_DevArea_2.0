@@ -65,6 +65,10 @@ public class RunCommandWorker implements Worker {
         });
 
         Core.listen((ActionEvent<MessageDeleteEventFiller>) filler -> {
+
+            if (filler.event.getMessage().isEmpty())
+                return;
+
             Snowflake replyId = latestMessages.remove(filler.event.getMessage().get().getId());
 
             if (replyId == null)
@@ -85,7 +89,7 @@ public class RunCommandWorker implements Worker {
     @Override
     public ActionEvent<?> setupEvent() {
         return (ActionEvent<MessageCreateEventFiller>) filler -> {
-            if (filler.event.getMessage().getContent().startsWith(Core.data.prefix + "run"))
+            if (filler.event.getMessage().getContent().startsWith(Core.data.prefix + "run") && filler.event.getMember().isPresent())
                 runCommand(filler.event.getMessage());
         };
     }

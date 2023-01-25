@@ -91,7 +91,7 @@ public class MemberJoinWorker implements Worker {
                             .build())
                     .build()).subscribe());
 
-            ((GuildMessageChannel) ChannelCache.watch(Core.data.general_channel.asString()))
+            ((GuildMessageChannel) ChannelCache.watch(Core.data.general_channel.asString()).entity)
                     .createMessage(msg -> msg
                             .setContent("<@" + member.getId().asString() +
                                     "> vient de rejoindre le serveur ! Pour en savoir plus sur le serveur <#1004324078531907594> \uD83D\uDE09 !"))

@@ -17,14 +17,18 @@ import devarea.fr.discord.workers.Worker;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.spec.*;
 import discord4j.discordjson.possible.Possible;
+import discord4j.rest.util.AllowedMentions;
 
+import java.time.Instant;
 import java.util.*;
 
+import static devarea.fr.discord.statics.DefaultData.DOMAIN_NAME;
 import static devarea.fr.discord.statics.TextMessage.*;
 import static devarea.fr.utils.ThreadHandler.*;
 
@@ -72,8 +76,7 @@ public class MissionWorker implements Worker {
     private static void setupBottomMessage() {
         missionChannel = (GuildMessageChannel) ChannelCache.fetch(Core.data.paidMissions_channel.asString()).entity;
         Message currentAtBottom = missionChannel.getLastMessage().block();
-        if (currentAtBottom.getEmbeds().size() == 0 || currentAtBottom.getEmbeds().get(0).getTitle().equals("Créer " +
-                "une mission."))
+        if (currentAtBottom.getEmbeds().size() == 0 || currentAtBottom.getEmbeds().get(0).getTitle().equals("Créer une mission."))
             sendLastMessage();
     }
 
@@ -82,6 +85,20 @@ public class MissionWorker implements Worker {
      */
     private static void sendLastMessage() {
         missionChannel.createMessage(missionBottomMessage).subscribe();
+    }
+
+    /**
+     * Resend BottomMessage to keep it at the bottom of the channel
+     */
+    public static void updateBottomMessage() {
+        try {
+            Message msg = missionChannel.getLastMessage().block();
+            System.out.println(msg);
+            if (msg != null && msg.getEmbeds().size() == 1 && msg.getEmbeds().get(0).getTitle().get().equals("Créer une mission."))
+                startAway(() -> msg.delete().subscribe());
+        } catch (Exception e) {
+        }
+        sendLastMessage();
     }
 
     /**
@@ -256,6 +273,12 @@ public class MissionWorker implements Worker {
         DBManager.deleteMission(mission.get_id());
     }
 
+    /**
+     * Get the mission from the _id. (id is an unique id, but it's not the id of the member)
+     *
+     * @param _id mission id
+     * @return the DBMission
+     */
     public static DBMission getMissionBy_Id(final String _id) {
         return DBManager.getMission(_id);
     }
@@ -263,6 +286,143 @@ public class MissionWorker implements Worker {
     public static void deleteMission(final String _id) {
         clearThisMission(getMissionBy_Id(_id));
         DBManager.deleteMission(_id);
+    }
+
+    /**
+     * Transform a {@link DBMission} to {@link EmbedCreateSpec} ready to send in a discord message.
+     *
+     * @param mission the DBMission to transform
+     * @return the Embed ready to send.
+     */
+    public static EmbedCreateSpec getEmbedOf(final DBMission mission) {
+        Member member = mission.getMember().entity;
+        return EmbedCreateSpec.builder()
+                .title(mission.getTitle())
+                .description(mission.getDescription() + "\n\nPrix: " + mission.getBudget() + "\nDate de retour: " + mission.getDeadLine() +
+                        "\nType de support: " + mission.getSupport() + "\nLangage: " + mission.getLanguage() + "\nNiveau estimé:" +
+                        " " + mission.getDifficulty() + "\n\nCette mission est posté par : " + "<@" + mission.getCreatedById() + ">.")
+                .color(ColorsUsed.same)
+                .author(member.getDisplayName(), member.getAvatarUrl(), member.getAvatarUrl())
+                .timestamp(Instant.now())
+                .build();
+    }
+
+    /**
+     * Couldown beetween mission create. Contain memberIds.
+     */
+    public static final ArrayList<String> cooldown_create_Mission = new ArrayList<>();
+
+    /**
+     * This function create a new mission owned by the {@link Mem}.
+     * <p>
+     * The contain of the mission is pass with {@link MissionMapper}.
+     *
+     * @param mapper the mission data
+     * @param mem    the owner of the mission
+     * @return true if the mission could be created, false if not.
+     */
+    public static boolean createMission(final MissionMapper mapper, final Mem mem) {
+        if (cooldown_create_Mission.contains(mem.getSId()))
+            return false;
+
+        DBMission mission = new DBMission();
+        mission.setCreatedById(mem.getSId());
+        mission.setTitle(mapper.title);
+        mission.setDescription(mapper.description);
+        mission.setBudget(mapper.budget);
+        mission.setDifficulty(mapper.difficulty);
+        mission.setDeadLine(mapper.deadLine);
+        mission.setSupport(mapper.support);
+        mission.setLanguage(mapper.language);
+
+        EmbedCreateSpec embed = getEmbedOf(mission);
+
+        Message message = missionChannel.createMessage(MessageCreateSpec.builder()
+                .content("**Mission proposée par <@" + mem.getSId() + "> :**")
+                .allowedMentions(AllowedMentions.suppressAll())
+                .addEmbed(embed)
+                .addComponent(ActionRow.of(Button.link(DOMAIN_NAME + "mission?id=" + mission.get_id(),
+                        "devarea.fr"), Button.secondary("took_mission", "Prendre la mission")))
+                .build()).block();
+
+        mission.setMessage(new DBMessage(message));
+
+
+        DBManager.createMission(mission);
+
+        cooldown_create_Mission.add(mem.getSId());
+        startAwayIn(() -> cooldown_create_Mission.remove(mem.getSId()), 5000);
+
+        updateBottomMessage();
+
+        return true;
+    }
+
+    /**
+     * Access to the {@link MissionMapper} like this remove the {@code new MissionMapper();} syntax.
+     *
+     * @return a MissionMapper ready to use.
+     */
+    public static MissionMapper missionMapper() {
+        return new MissionMapper();
+    }
+
+    /**
+     * To use this class call the {@link #missionMapper()} method.
+     * <p>
+     * This class is used in {@link #createMission(MissionMapper, Mem)} to pass the mission data.
+     */
+    public static class MissionMapper {
+
+        protected String title,
+                description,
+                budget,
+                deadLine,
+                language,
+                support,
+                difficulty;
+
+
+        private MissionMapper() {
+
+        }
+
+        public MissionMapper title(final String title) {
+            this.title = title;
+            return this;
+        }
+
+        public MissionMapper description(final String description) {
+            this.description = description;
+            return this;
+        }
+
+        public MissionMapper budget(final String prix) {
+            this.budget = prix;
+            return this;
+        }
+
+        public MissionMapper deadLine(final String dateRetour) {
+            this.deadLine = dateRetour;
+            return this;
+        }
+
+        public MissionMapper language(final String langage) {
+            this.language = langage;
+            return this;
+        }
+
+        public MissionMapper support(final String support) {
+            this.support = support;
+            return this;
+        }
+
+        public MissionMapper difficulty(final String niveau) {
+            this.difficulty = niveau;
+            return this;
+        }
+
+
     }
 
 

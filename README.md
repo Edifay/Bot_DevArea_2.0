@@ -1,4 +1,4 @@
-# Bot_DevArea_2.0
+[# Bot_DevArea_2.0
 Ici la version 2 du bot de Dev'Area.
 
 Version 1 ici -> https://github.com/DevAreaServer/Bot_DevArea
@@ -27,14 +27,14 @@ Worker contient 3 méthodes :
 A partir de ces methodes vous pouvez effectué ce que vous voulez.
 
 Le système d'event est comme ceci : 
-
+```
 new OneEvent<'L'event que vous écoutez'>(){
  public run(l'event filler){
   // ce que vous voulez.
  }
 
 }
-
+```
 
 
 
@@ -50,17 +50,18 @@ L'accessibilité des membres et des channels se fait à travers :
  
 Ce cache retourne une entité de stockage qui hérite de ObjectListener. C'est à dire un objet qui permet d'ajouter des listeners dessus.
 
-Mem -> pour le membre.
-Chan -> Pour les channels.
+ - Mem -> pour le membre.
+ - Chan -> Pour les channels.
 
 Un exemple :
-
+```
 Mem.listen(new OneEvent<MessageCreateFiller>(){
   public run(MessageCreateFiller filler){
       Chan<? extends GuildMessageChannel> chan = ChannelCache.watch(filler.event.getChannelId.asString());
       chan.createMessage("Vous avez envoyé " + filler.event.getMessage().getContent()).subscribe();
   }
 }
+```
 
 
 
@@ -70,7 +71,7 @@ Ceci est pour créer un worker.
 
 Si vous voulez créer une SlashCommand.
 
-Il suffit de créer une classe qui hérite de SlashCommand dans devarea.fr.discord.commands.slash.
+Il suffit de créer une classe qui hérite de `SlashCommand` dans `devarea.fr.discord.commands.slash`.
 
 Et de compléter les méthodes héritées.
 
@@ -86,3 +87,4 @@ Merci d'avance !
 
 
 
+](https://github.com/Edifay/Bot_DevArea_2.0)

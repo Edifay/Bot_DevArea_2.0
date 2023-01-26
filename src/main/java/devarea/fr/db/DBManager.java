@@ -135,9 +135,10 @@ public class DBManager {
     public static HashMap<String, Integer> getXPHistory(final String id) {
         Document document = (Document) USERDATA.find(MemberAdapter.memberToDocument(id)).projection(Projections.include("xp_history")).first().get("xp_history");
         HashMap<String, Integer> xp_history = new HashMap<>();
-        for (Map.Entry<String, Object> entrys : document.entrySet()) {
-            xp_history.put(entrys.getKey(), (Integer) entrys.getValue());
-        }
+        if (document != null)
+            for (Map.Entry<String, Object> entrys : document.entrySet()) {
+                xp_history.put(entrys.getKey(), (Integer) entrys.getValue());
+            }
         return xp_history;
     }
 

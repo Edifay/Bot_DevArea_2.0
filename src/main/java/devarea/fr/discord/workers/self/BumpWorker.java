@@ -1,5 +1,6 @@
 package devarea.fr.discord.workers.self;
 
+import devarea.fr.Main;
 import devarea.fr.discord.Core;
 import devarea.fr.discord.cache.ChannelCache;
 import devarea.fr.discord.entities.ActionEvent;
@@ -41,7 +42,8 @@ public class BumpWorker implements Worker {
                         && message.getAuthor().get().getId().equals(Core.client.getSelfId()))
                 .blockFirst();
 
-        checkBumpAvailable();
+        if (!Main.developing)
+            checkBumpAvailable();
 
         Worker.super.onStart();
     }
@@ -52,7 +54,8 @@ public class BumpWorker implements Worker {
 
             if (filler.event.getMessage().getAuthor().isPresent()
                     && filler.event.getMessage().getAuthor().get().getId().equals(Core.data.disboard_bot))
-                checkBumpAvailable();
+                if (!Main.developing)
+                    checkBumpAvailable();
         });
 
         return null;

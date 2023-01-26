@@ -57,6 +57,14 @@ public class ObjectListener<T extends Entity> implements Entity {
         touchListenersSafely(() -> this.listeners.remove(listener));
     }
 
+    public void removeListener(final ActionEvent<?> listener) {
+        touchListenersSafely(() -> this.listeners.remove(new EventOwner<>(listener)));
+    }
+
+    public boolean isListening(final ActionEvent<?> listener) {
+        return this.listeners.contains(new EventOwner<>(listener));
+    }
+
     public void execute(final Filler<?> event) {
         try {
             concurrentHandler = new Thread(() -> {

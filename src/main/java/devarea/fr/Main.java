@@ -26,7 +26,7 @@ public class Main {
             e.printStackTrace();
         }
 
-       Core.client.onDisconnect().block();
+        Core.client.onDisconnect().block();
 
     }
 

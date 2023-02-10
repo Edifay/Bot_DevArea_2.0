@@ -56,7 +56,7 @@ public class BumpWorker implements Worker {
                     && filler.event.getMessage().getAuthor().get().getId().equals(Core.data.disboard_bot))
                 if (!Main.developing)
                     checkBumpAvailable();
-        });
+        }, true);
 
         return null;
     }
@@ -80,9 +80,9 @@ public class BumpWorker implements Worker {
                         .description("Le bump est à nouveau disponible " + TimestampFormat.RELATIVE_TIME.format(instant) + ".")
                         .build();
 
-        if (botMessage != null) {
+        if (botMessage != null)
             botMessage.delete().subscribe();
-        }
+
         botMessage = bumpChannel.entity.createMessage(spec).block();
 
         waitUntilBumpAvailable(instant);

@@ -6,6 +6,7 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
 import devarea.fr.db.data.*;
+import devarea.fr.discord.workers.linked.FreelanceWorker;
 import devarea.fr.discord.workers.self.StatsWorker;
 import devarea.fr.utils.Logger;
 import devarea.fr.web.backend.entities.WebReseau;
@@ -94,7 +95,7 @@ public class DBManager {
         AUTH.deleteOne(MemberAdapter.memberToDocument(id));
         MISSIONS.deleteMany(new Document("createdById", id));
         MISSIONS_FOLLOW.deleteMany(or(new Document("dev_id", id), new Document("client_id", id)));
-        DBManager.deleteFreelanceOf(id);
+        FreelanceWorker.deleteFreelanceOf(id);
     }
 
     public static String getDescription(final String id) {

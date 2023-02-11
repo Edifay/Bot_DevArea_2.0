@@ -185,8 +185,8 @@ public class DBMission implements DBItem {
                 Updates.set("language", this.language),
                 Updates.set("support", this.support),
                 Updates.set("difficulty", this.difficulty),
-                Updates.set("message", this.message == null ? Updates.unset("message") :
-                        Updates.set("message", this.message.toDocument())),
+                this.message == null ? Updates.unset("message") :
+                        Updates.set("message", this.message.toDocument()),
                 Updates.set("createdAt", this.createdAt),
                 Updates.set("createdById", this.createdById),
                 Updates.set("lastUpdate", this.lastUpdate),

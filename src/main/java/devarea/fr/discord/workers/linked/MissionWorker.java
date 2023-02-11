@@ -14,6 +14,7 @@ import devarea.fr.discord.entities.events_filler.ButtonInteractionEventFiller;
 import devarea.fr.discord.entities.events_filler.ReadyEventFiller;
 import devarea.fr.discord.statics.ColorsUsed;
 import devarea.fr.discord.workers.Worker;
+import devarea.fr.utils.Logger;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
@@ -74,10 +75,14 @@ public class MissionWorker implements Worker {
      * If not it send a new one.
      */
     private static void setupBottomMessage() {
-        missionChannel = (GuildMessageChannel) ChannelCache.fetch(Core.data.paidMissions_channel.asString()).entity;
-        Message currentAtBottom = missionChannel.getLastMessage().block();
-        if (currentAtBottom.getEmbeds().size() == 0 || currentAtBottom.getEmbeds().get(0).getTitle().equals("Créer une mission."))
-            sendLastMessage();
+        try {
+            missionChannel = (GuildMessageChannel) ChannelCache.fetch(Core.data.paidMissions_channel.asString()).entity;
+            Message currentAtBottom = missionChannel.getLastMessage().block();
+            if (currentAtBottom.getEmbeds().size() == 0 || currentAtBottom.getEmbeds().get(0).getTitle().equals("Créer une mission."))
+                sendLastMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -147,17 +152,22 @@ public class MissionWorker implements Worker {
      * If the member didn't react during the 3days, the message is updated, and the mission is deleted.
      */
     public static void checkForUpdate() {
-        ArrayList<DBMission> spoiled_missions = new ArrayList<>();
+        try {
+            ArrayList<DBMission> spoiled_missions = new ArrayList<>();
 
-        for (DBMission mission : DBManager.getMissions())
-            if (mission.getMessageUpdate() == null && System.currentTimeMillis() - mission.getLastUpdate() > 604800000)
-                askValidate(mission);
-            else if (mission.getMessageUpdate() != null && System.currentTimeMillis() - mission.getLastUpdate() > 864000000)
-                spoiled_missions.add(mission);
+            for (DBMission mission : DBManager.getMissions())
+                if (mission.getMessageUpdate() == null && System.currentTimeMillis() - mission.getLastUpdate() > 604800000)
+                    askValidate(mission);
+                else if (mission.getMessageUpdate() != null && System.currentTimeMillis() - mission.getLastUpdate() > 864000000)
+                    spoiled_missions.add(mission);
 
 
-        for (DBMission mission : spoiled_missions)
-            validateSpoilAction(mission);
+            for (DBMission mission : spoiled_missions)
+                validateSpoilAction(mission);
+        } catch (Exception e) {
+            Logger.logError("Erreur dans le check de l'update.");
+            e.printStackTrace();
+        }
 
     }
 
@@ -286,6 +296,7 @@ public class MissionWorker implements Worker {
     public static void deleteMission(final String _id) {
         clearThisMission(getMissionBy_Id(_id));
         DBManager.deleteMission(_id);
+
     }
 
     /**

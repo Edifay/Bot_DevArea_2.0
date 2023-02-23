@@ -285,9 +285,12 @@ public class DBManager {
     }
 
     public static void setXPLeft(final String id, final int xp) {
-        XP_LEFT.insertOne(new Document()
-                .append("_id", id)
-                .append("xp", xp));
+        if (XP_LEFT.find(new Document("_id", id)).first() == null)
+            XP_LEFT.insertOne(new Document()
+                    .append("_id", id)
+                    .append("xp", xp));
+        else
+            XP_LEFT.updateOne(new Document("_id", id), Updates.set("xp", xp));
     }
 
     public static int getXPLeft(final String id) {

@@ -1,5 +1,6 @@
 package devarea.fr.discord.cache;
 
+import devarea.fr.db.DBManager;
 import devarea.fr.discord.cache.cached_entity.CachedMember;
 import devarea.fr.discord.entities.Mem;
 import discord4j.core.object.entity.Member;
@@ -77,6 +78,7 @@ public class MemberCache {
 
     public static void slash(final String memberID) {
         members.remove(memberID);
+        DBManager.memberLeft(memberID);
     }
 
     private static CachedMember getCachedMember(final String memberID) {

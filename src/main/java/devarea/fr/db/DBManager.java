@@ -250,7 +250,7 @@ public class DBManager {
     }
 
     public static ArrayList<DBFreelance> getFreelancesList() {
-        FindIterable<Document> freelances = FREELANCES.find().sort(Sorts.descending("last_bump"));
+        FindIterable<Document> freelances = FREELANCES.find().sort(Sorts.descending("lastBump"));
         ArrayList<DBFreelance> dbFreelances = new ArrayList<>();
         freelances.forEach((Block<? super Document>) document -> {
             dbFreelances.add(new DBFreelance(document));

@@ -35,6 +35,8 @@ public class FreelanceWorker implements Worker {
 
     private static GuildMessageChannel freelanceChannel;
 
+    private static Message bottomMessage;
+
     /**
      * Cooldown for edit and send a new freelance !
      * Contain member Ids.
@@ -81,9 +83,8 @@ public class FreelanceWorker implements Worker {
      */
     public static void updateBottomMessage() {
         try {
-            Message msg = freelanceChannel.getLastMessage().block();
-            if (msg != null && msg.getEmbeds().size() == 1 && msg.getEmbeds().get(0).getTitle().get().equals("Proposez vos services !"))
-                startAway(() -> msg.delete().subscribe());
+            if (bottomMessage != null)
+                startAway(() -> bottomMessage.delete().subscribe());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,7 +95,7 @@ public class FreelanceWorker implements Worker {
      * Send a new BottomMessage
      */
     private static void sendLastMessage() {
-        freelanceChannel.createMessage(freelanceBottomMessage).subscribe();
+        startAway(() -> bottomMessage = freelanceChannel.createMessage(freelanceBottomMessage).block());
     }
 
     /**

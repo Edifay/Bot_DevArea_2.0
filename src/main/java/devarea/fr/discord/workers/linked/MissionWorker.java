@@ -21,11 +21,13 @@ import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
+import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.spec.*;
 import discord4j.discordjson.possible.Possible;
 import discord4j.rest.util.AllowedMentions;
 
+import java.lang.reflect.Executable;
 import java.time.Instant;
 import java.util.*;
 
@@ -39,6 +41,8 @@ public class MissionWorker implements Worker {
      * A static channel to do rapid action on it. He is not fetched again.
      */
     private static GuildMessageChannel missionChannel;
+
+    private static Message bottomMessage;
 
     /**
      * Add 2 listeners.
@@ -89,7 +93,7 @@ public class MissionWorker implements Worker {
      * Send the bottom message.
      */
     private static void sendLastMessage() {
-        missionChannel.createMessage(missionBottomMessage).subscribe();
+        startAway(() -> bottomMessage = missionChannel.createMessage(missionBottomMessage).block());
     }
 
     /**
@@ -97,11 +101,10 @@ public class MissionWorker implements Worker {
      */
     public static void updateBottomMessage() {
         try {
-            Message msg = missionChannel.getLastMessage().block();
-            System.out.println(msg);
-            if (msg != null && msg.getEmbeds().size() == 1 && msg.getEmbeds().get(0).getTitle().get().equals("Créer une mission."))
-                startAway(() -> msg.delete().subscribe());
+            if (bottomMessage != null)
+                startAway(() -> bottomMessage.delete().subscribe());
         } catch (Exception e) {
+            e.printStackTrace();
         }
         sendLastMessage();
     }
@@ -247,19 +250,27 @@ public class MissionWorker implements Worker {
      */
     public static void askValidate(DBMission mission) {
         Mem mission_member = MemberCache.get(mission.getCreatedById());// TODO Extract message
-        Message message = mission_member.entity.getPrivateChannel().block().createMessage(MessageCreateSpec.builder()
-                .addEmbed(EmbedCreateSpec.builder()
-                        .title("Vérification de la validité d'une mission.")
-                        .description("Vous avez une mission actuellement active !\n\nLe titre de cette mission est : " +
-                                "**" + mission.getTitle() + "**\n\nIl vous reste 3 jours pour nous confirmer ou non " +
-                                "si cette mission est toujours d'actualité.\n\nSi oui : <:ayy:" + Core.data.yes.asString() + "> si non : <:ayy:" + Core.data.no.asString() + ">.")
-                        .color(ColorsUsed.same).build())
-                .addComponent(ActionRow.of(Button.primary("mission_yes", ReactionEmoji.custom(GuildEmojiCache.watch(Core.data.yes.asString()))),
-                        Button.primary("mission_no", ReactionEmoji.custom(GuildEmojiCache.watch(Core.data.no.asString())))))
-                .build()).block();
-        mission.setLastUpdate(System.currentTimeMillis() - 604800000);
-        mission.setMessageUpdate(new DBMessage(message));
-        DBManager.updateMission(mission);
+        try {
+            Message message = mission_member.entity.getPrivateChannel().block().createMessage(MessageCreateSpec.builder()
+                    .addEmbed(EmbedCreateSpec.builder()
+                            .title("Vérification de la validité d'une mission.")
+                            .description("Vous avez une mission actuellement active !\n\nLe titre de cette mission est : " +
+                                    "**" + mission.getTitle() + "**\n\nIl vous reste 3 jours pour nous confirmer ou non " +
+                                    "si cette mission est toujours d'actualité.\n\nSi oui : <:ayy:" + Core.data.yes.asString() + "> si non : <:ayy:" + Core.data.no.asString() + ">.")
+                            .color(ColorsUsed.same).build())
+                    .addComponent(ActionRow.of(Button.primary("mission_yes", ReactionEmoji.custom(GuildEmojiCache.watch(Core.data.yes.asString()))),
+                            Button.primary("mission_no", ReactionEmoji.custom(GuildEmojiCache.watch(Core.data.no.asString())))))
+                    .build()).block();
+            mission.setLastUpdate(System.currentTimeMillis() - 604800000);
+            mission.setMessageUpdate(new DBMessage(message));
+            DBManager.updateMission(mission);
+            Logger.logMessage("The private channel with " + mission_member.entity.getTag() + " be opened, validation for the mission \"" + mission.getTitle() + "\" as been sended !");
+        } catch (Exception e) {
+            Logger.logMessage("The private channel with " + mission_member.entity.getTag() + " couldn't be opened, the mission \"" + mission.getTitle() + "\" will be deleted.");
+            deleteMission(mission.get_id());
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -281,6 +292,7 @@ public class MissionWorker implements Worker {
                 .subscribe();
         clearThisMission(mission);
         DBManager.deleteMission(mission.get_id());
+        Logger.logMessage("La mission de " + mission_member.entity.getTag() + " : \"" + mission.getTitle() + "\" a été transféré au spoil. Mission data " + mission);
     }
 
     /**

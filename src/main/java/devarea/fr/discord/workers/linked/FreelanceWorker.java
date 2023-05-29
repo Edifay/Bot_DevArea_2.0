@@ -125,14 +125,16 @@ public class FreelanceWorker implements Worker {
             fields.add(new DBFreelance.DBField(fieldMapper.title, fieldMapper.description, fieldMapper.prix, fieldMapper.temps, fieldMapper.inline));
         freelance.setFields(fields);
 
-        if (mem.db().hasFreelance())
+        if (mem.db().hasFreelance()) {
             freelance.getMessage().getMessage().edit(MessageEditSpec.builder()
                     .addEmbed(getEmbedOf(freelance))
                     .build()).subscribe();
-        else {
+            Logger.logMessage(mem.entity.getTag() + " updated his freelance !");
+        } else {
             Message message = sendFreelanceMessage(freelance);
             freelance.setMessage(new DBMessage(message));
             updateBottomMessage();
+            Logger.logMessage(mem.entity.getTag() + " created his freelance !");
         }
 
         coolDown.add(mem.getSId());

@@ -14,9 +14,11 @@ public class Main {
     public static final boolean developing = false;
 
     public static void main(String[] args) {
-        Logger.initLogger();
+        Logger.preInit();
 
         SpringApplication.run(SpringBackend.class);
+
+        Logger.initLogger();
 
         DBManager.initDB();
 

@@ -12,6 +12,7 @@ import devarea.fr.discord.entities.Mem;
 import devarea.fr.discord.entities.events_filler.ButtonInteractionEventFiller;
 import devarea.fr.discord.statics.ColorsUsed;
 import devarea.fr.discord.workers.Worker;
+import devarea.fr.utils.Logger;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.PermissionOverwrite;
 import discord4j.core.object.entity.Message;
@@ -103,12 +104,15 @@ public class MissionFollowWorker implements Worker {
         if (mission != null) {
             if (mission.getCreatedById().equals(member_react_id.asString())) {
                 filler.event.reply(cannotFollowYourOwnMission).subscribe();
+                Logger.logMessage(filler.mem.entity.getTag() + " tried to follow his own mission ! (Discord input)");
                 return false;
             }
             if (alreadyHaveAChannel(mission.getCreatedById(), member_react_id.asString())) {
                 filler.event.reply(alreadyFollowingThisMission).subscribe();
+                Logger.logMessage(filler.mem.entity.getTag() + " tried to follow an already followed mission : \"" + mission.getTitle() + "\". (Discord input)");
                 return false;
             }
+            Logger.logMessage(filler.mem.entity.getTag() + " followed the mission \"" + mission.getTitle() + "\". (Discord input)");
             followThisMission(mission, member_react_id);
             return true;
         }
@@ -116,11 +120,16 @@ public class MissionFollowWorker implements Worker {
     }
 
     public static String webTookMission(final DBMission mission, final Mem mem) {
-        if (mission.getCreatedById().equals(mem.getSId()))
+        if (mission.getCreatedById().equals(mem.getSId())) {
+            Logger.logMessage(mem.entity.getTag() + " tried to follow his own mission ! (Site input)");
             return "Vous ne pouvez pas prendre votre propre mission !";
-        if (alreadyHaveAChannel(mission.getCreatedById(), mem.getSId()))
+        }
+        if (alreadyHaveAChannel(mission.getCreatedById(), mem.getSId())) {
+            Logger.logMessage(mem.entity.getTag() + " tried to follow an already followed mission : \"" + mission.getTitle() + "\". (Site input)");
             return "Vous avez déjà pris cette mission !";
+        }
         followThisMission(mission, mem.getId());
+        Logger.logMessage(mem.entity.getTag() + " followed the mission \"" + mission.getTitle() + "\". (Site input)");
         return "Vous venez de prendre cette mission !";
     }
 
@@ -151,7 +160,6 @@ public class MissionFollowWorker implements Worker {
 
         DBManager.createMissionFollow(new DBMissionFollow(DBManager.currentMissionFollowCount(), new DBMessage(message),
                 mission.getCreatedById(), member_react_id.asString()));
-
     }
 
     /**

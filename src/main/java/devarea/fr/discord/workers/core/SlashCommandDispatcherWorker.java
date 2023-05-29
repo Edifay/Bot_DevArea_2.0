@@ -9,6 +9,7 @@ import devarea.fr.utils.Logger;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
 import discord4j.discordjson.json.ApplicationCommandRequest;
+import org.apache.juli.logging.Log;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
@@ -90,18 +91,23 @@ public class SlashCommandDispatcherWorker implements Worker {
     @Override
     public ActionEvent<?> setupEvent() {
         return (ActionEvent<SlashCommandFiller>) filler -> {
-            Logger.logTitle("Receive SlashCommand " + filler.event.getCommandName());
+            if (filler.event.getInteraction().getMember().isEmpty())
+                return;
+
+            Logger.logTitle("Member " + filler.mem.entity.getTag() + " ask to execute " + filler.event.getCommandName() + ".");
 
             try {
 
                 SlashCommand command = slashCommands.get(filler.event.getCommandName()).newInstance();
 
                 if (filler.event.getInteraction().getMember().isPresent())
-                    if (command.permissions() == null || command.permissions().isMemberHasPermissions(filler.event.getInteraction().getMember().get()))
+                    if (command.permissions() == null || command.permissions().isMemberHasPermissions(filler.event.getInteraction().getMember().get())) {
                         command.play(filler);
-                    else
+                        Logger.logMessage("Command " + filler.event.getCommandName() + " was executed by " + filler.mem.entity.getTag() + ".");
+                    } else {
                         notPermissionToExecute(filler.event);
-
+                        Logger.logMessage("Permission not granted for " + filler.mem.entity.getTag() + " to execute " + filler.event.getCommandName() + ".");
+                    }
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }

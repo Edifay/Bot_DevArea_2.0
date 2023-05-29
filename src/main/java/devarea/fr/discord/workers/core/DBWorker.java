@@ -8,6 +8,7 @@ import devarea.fr.discord.entities.events_filler.MemberJoinEventFiller;
 import devarea.fr.discord.entities.events_filler.MemberLeaveEventFiller;
 import devarea.fr.discord.entities.events_filler.ReadyEventFiller;
 import devarea.fr.discord.workers.Worker;
+import devarea.fr.utils.Logger;
 import discord4j.common.util.Snowflake;
 import org.bson.Document;
 
@@ -25,17 +26,20 @@ public class DBWorker implements Worker {
             while (iterator.hasNext()) {
 
                 final String id = (String) iterator.next().get("_id");
-                if (!MemberCache.cache().containsKey(id))
+                if (!MemberCache.cache().containsKey(id)) {
+                    Logger.logMessage("Emitting " + id + " left !");
                     Core.executeGlobal(new MemberLeaveEventFiller(Snowflake.of(id)));
-                else
+                } else
                     ids.add(id);
 
             }
 
             for (String id : MemberCache.cache().keySet()) {
 
-                if (!ids.contains(id))
+                if (!ids.contains(id)) {
+                    Logger.logMessage("Emitting " + id + " joined !");
                     Core.executeGlobal(new MemberJoinEventFiller(MemberCache.get(id)));
+                }
 
             }
 

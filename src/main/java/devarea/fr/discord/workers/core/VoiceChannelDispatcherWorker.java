@@ -1,6 +1,7 @@
 package devarea.fr.discord.workers.core;
 
 import devarea.fr.discord.cache.ChannelCache;
+import devarea.fr.discord.cache.MemberCache;
 import devarea.fr.discord.entities.ActionEvent;
 import devarea.fr.discord.entities.events_filler.MemberJoinVoiceEventFiller;
 import devarea.fr.discord.entities.events_filler.MemberLeaveVoiceEventFiller;

@@ -16,6 +16,9 @@ public class MessageReactorWorker implements Worker {
         return (ActionEvent<MessageCreateEventFiller>) filler -> {
             MessageCreateEvent event = filler.event;
 
+            if (filler.event.getMessage().getChannelId().equals(Core.data.log_channel))
+                return;
+
             if (messageContain(event, "devarea") || messageContain(event, "dev'area") || messageContain(event,
                     "dev area")) {
                 event.getMessage().addReaction(ReactionEmoji.custom(Objects.requireNonNull(Core.devarea.getGuildEmojiById(Snowflake.of(

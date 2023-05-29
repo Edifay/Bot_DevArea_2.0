@@ -188,10 +188,12 @@ public class MissionWorker implements Worker {
         if (current_mission != null) {
             if (filler.event.getCustomId().equals("mission_yes")) {
                 sendMissionRevalidateSuccessful(filler, current_mission);
+                Logger.logMessage(filler.mem.entity.getTag() + " revalidate his mission \"" + current_mission.getTitle() + "\".");
             } else if (filler.event.getCustomId().equals("mission_no")) {
                 sendMissionDeleteSuccessful(filler, current_mission);
                 DBManager.deleteMission(current_mission.get_id());
                 clearThisMission(current_mission);
+                Logger.logMessage(filler.mem.entity.getTag() + " spoiled his mission \"" + current_mission.getTitle() + "\".");
             }
             return true;
         }
@@ -308,7 +310,6 @@ public class MissionWorker implements Worker {
     public static void deleteMission(final String _id) {
         clearThisMission(getMissionBy_Id(_id));
         DBManager.deleteMission(_id);
-
     }
 
     /**
@@ -377,6 +378,8 @@ public class MissionWorker implements Worker {
         startAwayIn(() -> cooldown_create_Mission.remove(mem.getSId()), 5000);
 
         updateBottomMessage();
+
+        Logger.logMessage(mem.entity.getTag() + " created a mission : \"" + mission.getTitle() + "\".");
 
         return true;
     }

@@ -7,6 +7,7 @@ import devarea.fr.discord.workers.linked.FreelanceWorker;
 import devarea.fr.discord.workers.linked.MissionFollowWorker;
 import devarea.fr.discord.workers.linked.MissionWorker;
 import devarea.fr.discord.workers.Worker;
+import devarea.fr.utils.Logger;
 
 public class MemberLeaveWorker implements Worker {
 
@@ -16,6 +17,7 @@ public class MemberLeaveWorker implements Worker {
             MissionWorker.clearThisMember(event.memberId.asString());
             MissionFollowWorker.clearThisMember(event.memberId.asString());
             DBManager.memberLeft(event.memberId.asString());
+            Logger.logMessage(event.memberId + " left the server, his actions was cleared and saved his xp.");
         };
     }
 

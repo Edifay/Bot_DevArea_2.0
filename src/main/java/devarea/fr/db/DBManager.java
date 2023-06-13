@@ -6,6 +6,7 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
 import devarea.fr.db.data.*;
+import devarea.fr.discord.cache.MemberCache;
 import devarea.fr.discord.workers.linked.FreelanceWorker;
 import devarea.fr.discord.workers.self.StatsWorker;
 import devarea.fr.utils.Logger;
@@ -94,7 +95,7 @@ public class DBManager {
         USERDATA.deleteOne(MemberAdapter.memberToDocument(id));
         AUTH.deleteOne(MemberAdapter.memberToDocument(id));
         MISSIONS.deleteMany(new Document("createdById", id));
-        MISSIONS_FOLLOW.deleteMany(or(new Document("dev_id", id), new Document("client_id", id)));
+        //MISSIONS_FOLLOW.deleteMany(or(new Document("dev_id", id), new Document("client_id", id)));
         FreelanceWorker.deleteFreelanceOf(id);
     }
 
@@ -216,7 +217,8 @@ public class DBManager {
     }
 
     public static DBMissionFollow getMissionFollowFromMessage(final String id) {
-        return new DBMissionFollow(MISSIONS_FOLLOW.find(new Document("message.idMessage", id)).first());
+        Document doc = MISSIONS_FOLLOW.find(new Document("message.idMessage", id)).first();
+        return doc == null ? null : new DBMissionFollow(doc);
     }
 
     public static DBMissionFollow getMissionFollowFromPerson(final String client_id, final String dev_id) {
@@ -305,8 +307,10 @@ public class DBManager {
     }
 
     public static void transferXPLeftToXP(final String id) {
-        setXP(id, getXPLeft(id));
+        int xp = getXPLeft(id);
+        setXP(id, xp);
         deleteXPLeft(id);
+        Logger.logMessage("XP for " + MemberCache.get(id).entity.getTag() + " was setted to " + xp + " xp.");
     }
 
     public static void transferXPToXPLeft(final String id) {

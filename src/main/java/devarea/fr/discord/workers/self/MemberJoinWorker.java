@@ -17,6 +17,7 @@ import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
 import discord4j.core.spec.MessageEditSpec;
+import org.apache.juli.logging.Log;
 
 import java.util.ArrayList;
 
@@ -29,6 +30,8 @@ public class MemberJoinWorker implements Worker {
     public ActionEvent<?> setupEvent() { // TODO refactor the old code.
         return (ActionEvent<MemberJoinEventFiller>) event -> {
 
+            Logger.logMessage(event.mem.entity.getTag() + " joined the server !");
+
             DBManager.memberJoin(event.mem.getId().asString());
 
             Member member = event.mem.entity;
@@ -38,42 +41,47 @@ public class MemberJoinWorker implements Worker {
             try {
                 PrivateChannel privateChannel = member.getPrivateChannel().block();
                 startAway(() -> {
-                    privateChannel.createMessage(TextMessage.helpEmbed).block();
+                    try {
+                        privateChannel.createMessage(TextMessage.helpEmbed).block();
 
-                    final String code = AuthWorker.getCodeForMember(member.getId().asString());
+                        final String code = AuthWorker.getCodeForMember(member.getId().asString());
 
-                    final Message message_at_edit = privateChannel.createMessage(MessageCreateSpec.builder()
-                            .addEmbed(EmbedCreateSpec.builder()
-                                    .title("Authentification au site de Dev'area !")
-                                    .description("Vous venez de vous authentifier sur le site de dev'area" +
-                                            " !\n\nPour vous connecter utilisez ce lien :\n\n" + DOMAIN_NAME + "?code" +
-                                            "=" + code + "\n\nCe message sera supprimé d'ici **5 " +
-                                            "minutes** pour sécuriser l'accès. Si vous avez besoin de le " +
-                                            "retrouver exécutez de nouveau la commande !")
-                                    .color(ColorsUsed.just)
-                                    .build())
-                            .build()).block();
+                        final Message message_at_edit = privateChannel.createMessage(MessageCreateSpec.builder()
+                                .addEmbed(EmbedCreateSpec.builder()
+                                        .title("Authentification au site de Dev'area !")
+                                        .description("Vous venez de vous authentifier sur le site de dev'area" +
+                                                " !\n\nPour vous connecter utilisez ce lien :\n\n" + DOMAIN_NAME + "?code" +
+                                                "=" + code + "\n\nCe message sera supprimé d'ici **5 " +
+                                                "minutes** pour sécuriser l'accès. Si vous avez besoin de le " +
+                                                "retrouver exécutez de nouveau la commande !")
+                                        .color(ColorsUsed.just)
+                                        .build())
+                                .build()).block();
 
-                    final ArrayList<EmbedCreateSpec> embeds = new ArrayList<>();
+                        final ArrayList<EmbedCreateSpec> embeds = new ArrayList<>();
 
-                    embeds.add(EmbedCreateSpec.builder()
-                            .title("Authentification au site de Dev'area !")
-                            .description("Si vous voulez retrouver le lien d'authentification vous pouvez" +
-                                    " exécuter la commande `/auth` à nouveau !")
-                            .color(ColorsUsed.same)
-                            .build());
+                        embeds.add(EmbedCreateSpec.builder()
+                                .title("Authentification au site de Dev'area !")
+                                .description("Si vous voulez retrouver le lien d'authentification vous pouvez" +
+                                        " exécuter la commande `/auth` à nouveau !")
+                                .color(ColorsUsed.same)
+                                .build());
 
-                    startAway(() -> {
-                        try {
-                            Thread.sleep(300000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } finally {
-                            message_at_edit.edit(MessageEditSpec.builder()
-                                    .addAllEmbeds(embeds)
-                                    .build()).subscribe();
-                        }
-                    });
+                        startAway(() -> {
+                            try {
+                                Thread.sleep(300000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } finally {
+                                message_at_edit.edit(MessageEditSpec.builder()
+                                        .addAllEmbeds(embeds)
+                                        .build()).subscribe();
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        Logger.logMessage("Couldn't MP welcome message to " + member.getTag() + ".");
+                    }
 
                 });
 

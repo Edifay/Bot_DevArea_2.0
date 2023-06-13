@@ -111,5 +111,13 @@ public class Logger {
             super.println(x);
             logs.add(x);
         }
+
+
+        @Override
+        public void println(Object x) {
+            super.println(x);
+            logs.add(x.toString());
+        }
+
     }
 }

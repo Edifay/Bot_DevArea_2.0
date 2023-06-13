@@ -20,7 +20,6 @@ public class ThreadCreatorWorker implements Worker {
             Chan<? extends GuildMessageChannel> chan = ChannelCache.watch(channelId.asString());
             Logger.logMessage("Adding : " + chan.entity.getName() + " thread creator !");
             chan.listen((ActionEvent<MessageCreateInChannelFiller>) filler -> {
-                Logger.logMessage("In channel !");
                 if (filler.event.getMember().isEmpty())
                     return;
                 int characterNumber = Math.min(filler.event.getMessage().getContent().length(), 94 - filler.event.getMember().get().getDisplayName().length());

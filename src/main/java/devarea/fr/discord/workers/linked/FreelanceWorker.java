@@ -73,8 +73,8 @@ public class FreelanceWorker implements Worker {
      * Setup the bottomMessage
      */
     private static void setupLastMessage() {
-        Message msg = freelanceChannel.getLastMessage().block();
-        if (msg == null || msg.getEmbeds().size() == 0 || msg.getEmbeds().get(0).getTitle().isPresent() && !msg.getEmbeds().get(0).getTitle().get().equals("Proposez vos services !"))
+        bottomMessage = freelanceChannel.getLastMessage().block();
+        if (bottomMessage == null || bottomMessage.getEmbeds().size() == 0 || bottomMessage.getEmbeds().get(0).getTitle().isPresent() && !bottomMessage.getEmbeds().get(0).getTitle().get().equals("Proposez vos services !"))
             sendLastMessage();
     }
 

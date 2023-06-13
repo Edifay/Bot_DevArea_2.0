@@ -18,10 +18,7 @@ import discord4j.core.object.PermissionOverwrite;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.object.entity.channel.TextChannel;
-import discord4j.core.spec.EmbedCreateSpec;
-import discord4j.core.spec.MessageEditSpec;
-import discord4j.core.spec.TextChannelCreateSpec;
-import discord4j.core.spec.TextChannelEditSpec;
+import discord4j.core.spec.*;
 import discord4j.rest.util.Permission;
 import discord4j.rest.util.PermissionSet;
 
@@ -77,8 +74,19 @@ public class MissionFollowWorker implements Worker {
      * @param filler The event
      */
     public static void actionToCloseFollowedMission(final ButtonInteractionEventFiller filler) {
+        DBMissionFollow mission = getMissionFollowByMessageID(filler.event.getMessageId().asString());
+        if (mission == null) {
+            filler.event.reply(InteractionApplicationCommandCallbackSpec.builder()
+                    .addEmbed(EmbedCreateSpec.builder()
+                            .title("Erreur")
+                            .color(ColorsUsed.same)
+                            .description("Le suivis de mission que vous cherchez n'existe pas !")
+                            .build())
+                    .build()).subscribe();
+            return;
+        }
         closeFollowedMission(filler.event.getInteraction().getMember().get().getId().asString(),
-                getMissionFollowByMessageID(filler.event.getMessageId().asString()));
+                mission);
     }
 
     /**
@@ -113,7 +121,15 @@ public class MissionFollowWorker implements Worker {
                 return false;
             }
             Logger.logMessage(filler.mem.entity.getTag() + " followed the mission \"" + mission.getTitle() + "\". (Discord input)");
-            followThisMission(mission, member_react_id);
+            Snowflake channelId = followThisMission(mission, member_react_id);
+            filler.event.reply(InteractionApplicationCommandCallbackSpec.builder()
+                    .ephemeral(true)
+                    .addEmbed(EmbedCreateSpec.builder()
+                            .title("Suivis de mission")
+                            .description("Un channel privé a été créé -> <#" + channelId.asString() + "> !")
+                            .color(ColorsUsed.same)
+                            .build())
+                    .build()).subscribe();
             return true;
         }
         return false;
@@ -141,7 +157,7 @@ public class MissionFollowWorker implements Worker {
      * @param mission         the mission to follow
      * @param member_react_id the member who is following
      */
-    private static void followThisMission(DBMission mission, Snowflake member_react_id) {
+    private static Snowflake followThisMission(DBMission mission, Snowflake member_react_id) {
         // Create a channel
         Set<PermissionOverwrite> set = getPermissionsOverrideCreatePrivateChannel(mission, member_react_id);
         DBManager.incrementMissionFollowCount();
@@ -160,6 +176,8 @@ public class MissionFollowWorker implements Worker {
 
         DBManager.createMissionFollow(new DBMissionFollow(DBManager.currentMissionFollowCount(), new DBMessage(message),
                 mission.getCreatedById(), member_react_id.asString()));
+
+        return channel.getId();
     }
 
     /**

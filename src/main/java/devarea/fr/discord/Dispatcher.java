@@ -25,7 +25,7 @@ public class Dispatcher {
             MemberCache.use(event.getInteraction().getMember().get());
         Core.executeGlobal(new ButtonInteractionEventFiller(event));
         if (event.getInteraction().getMember().isPresent())
-            MemberCache.get(event.getInteraction().getMember().get().getId().asString()).execute(new ButtonInteractionEventFiller(event));
+            MemberCache.get(event.getInteraction().getUser().getId().asString()).execute(new ButtonInteractionEventFiller(event));
     }
 
     public static void onMemberJoinEvent(final MemberJoinEvent event) {
@@ -34,8 +34,8 @@ public class Dispatcher {
     }
 
     public static void onMemberLeaveEvent(final MemberLeaveEvent event) {
-        MemberCache.slash(event.getUser().getId().asString());
         Core.executeGlobal(new MemberLeaveEventFiller(event.getUser().getId()));
+        MemberCache.slash(event.getUser().getId().asString());
     }
 
     public static void onMessageCreateEvent(final MessageCreateEvent event) {
@@ -89,8 +89,8 @@ public class Dispatcher {
             MemberCache.use(event.getInteraction().getMember().get());
         else {
             event.reply(InteractionApplicationCommandCallbackSpec.builder()
-                            .ephemeral(true)
-                            .content("Les commandes sont désactivées dans les messages privés.")
+                    .ephemeral(true)
+                    .content("Les commandes sont désactivées dans les messages privés.")
                     .build()).subscribe();
             return;
         }

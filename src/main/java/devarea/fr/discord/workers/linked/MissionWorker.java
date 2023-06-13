@@ -59,6 +59,8 @@ public class MissionWorker implements Worker {
         });
         return (ActionEvent<ReadyEventFiller>) event -> {
 
+            missionChannel = (GuildMessageChannel) ChannelCache.fetch(Core.data.paidMissions_channel.asString()).entity;
+
             setupBottomMessage();
 
             repeatEachMillis(() -> {
@@ -79,14 +81,9 @@ public class MissionWorker implements Worker {
      * If not it send a new one.
      */
     private static void setupBottomMessage() {
-        try {
-            missionChannel = (GuildMessageChannel) ChannelCache.fetch(Core.data.paidMissions_channel.asString()).entity;
-            Message currentAtBottom = missionChannel.getLastMessage().block();
-            if (currentAtBottom.getEmbeds().size() == 0 || currentAtBottom.getEmbeds().get(0).getTitle().equals("Créer une mission."))
-                sendLastMessage();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        bottomMessage = missionChannel.getLastMessage().block();
+        if (bottomMessage == null || bottomMessage.getEmbeds().size() == 0 || bottomMessage.getEmbeds().get(0).getTitle().isPresent() && !bottomMessage.getEmbeds().get(0).getTitle().get().equals("Créer une mission."))
+            sendLastMessage();
     }
 
     /**

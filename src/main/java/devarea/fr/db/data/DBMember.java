@@ -35,6 +35,14 @@ public class DBMember {
         DBManager.setDescription(this.id, description);
     }
 
+    public DBMessage getDescriptionMessage() {
+        return DBManager.getMessageDescription(this.id);
+    }
+
+    public void setDescriptionMessage(final DBMessage message) {
+        DBManager.setMessageDescription(this.id, message);
+    }
+
     public HashMap<String, Integer> getXPHistory() {
         return DBManager.getXPHistory(this.id);
     }

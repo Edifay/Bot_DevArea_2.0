@@ -6,7 +6,7 @@ public class ColorsUsed {
 
     public static final Color wrong = Color.of(214, 17, 17);
 
-    public static final Color same = Color.of(47, 49, 54);
+    public static final Color same = Color.of(43, 45, 49);
 
     public static final Color just = Color.of(9, 249, 246);
 

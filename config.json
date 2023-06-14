@@ -9,7 +9,7 @@
   "logJoin_channel": "770607455435489280",
   "paidMissions_channel": "943817647060025354",
   "freeMissions_channel": "768855665766039572",
-  "presentation_channel": "775691326868029470",
+  "presentation_channel": "1118494605797769296",
   "roles_channel": "768437903860301845",
   "welcome_channel": "768435167576195092",
   "general_channel": "768782948702748672",
@@ -30,7 +30,7 @@
   "pingMeetup_role": "798482087224934422",
   "devHelper_role": "768497680385048596",
   "disboard_bot": "302050872383242240",
-  "channelsThreadCreator": ["775691326868029470", "798658085702074368", "768783443743735840", "768783525851430962", "768783164306096148", "1003936237930958899", "768855665766039572"],
+  "channelsThreadCreator": ["798658085702074368", "768783443743735840", "768783525851430962", "768783164306096148", "1003936237930958899", "768855665766039572"],
   "assetsImages": {
     "xp_background": "/assets/images/backgroundXp.jpg",
     "profile_background": "/assets/images/profile_back.png",

@@ -14,6 +14,7 @@ import devarea.fr.web.backend.entities.WebReseau;
 import devarea.fr.web.backend.entities.WebStaff;
 import org.bson.Document;
 
+import javax.print.Doc;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
@@ -105,6 +106,16 @@ public class DBManager {
 
     public static void setDescription(final String id, final String description) {
         USERDATA.updateOne(MemberAdapter.memberToDocument(id), Updates.set("description", description));
+    }
+
+    public static DBMessage getMessageDescription(final String id) {
+        Document member = USERDATA.find(MemberAdapter.memberToDocument(id)).projection(Projections.include("description_message")).first();
+        Document msg = (Document) member.get("description_message");
+        return msg == null ? null : new DBMessage(msg);
+    }
+
+    public static void setMessageDescription(final String id, final DBMessage message) {
+        USERDATA.updateOne(MemberAdapter.memberToDocument(id), Updates.set("description_message", message == null ? null : message.toDocument()));
     }
 
     public static int getXP(final String id) {

@@ -10,7 +10,7 @@ public class ButtonInteractionEventFiller extends Filler<ButtonInteractionEvent>
 
     public ButtonInteractionEventFiller(ButtonInteractionEvent event) {
         super(event);
-        this.mem = event.getInteraction().getMember().isPresent() ? MemberCache.get(event.getInteraction().getMember().get().getId().asString()) : null;
+        this.mem = MemberCache.get(event.getInteraction().getUser().getId().asString());
     }
 
     @Override

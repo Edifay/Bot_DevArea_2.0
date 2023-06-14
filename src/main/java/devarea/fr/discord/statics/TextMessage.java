@@ -394,6 +394,13 @@ public class TextMessage {
                     .build())
             .addComponent(ActionRow.of(Button.link(DOMAIN_NAME + "mission-creator", "devarea.fr"))).build();
 
+    public static final MessageCreateSpec presentationBottomMessage = MessageCreateSpec.builder()
+            .addEmbed(EmbedCreateSpec.builder().color(ColorsUsed.same)
+                    .title("Créer une présentation ?")
+                    .description("Cliquez sur le bouton ci-dessous, plus complétez la case ** *Plus sur moi...* **.")
+                    .build())
+            .addComponent(ActionRow.of(Button.link(DOMAIN_NAME + "options", "devarea.fr"))).build();
+
     public static MessageCreateSpec missionFollowedCloseIn1Hour(String memberID) {
         return MessageCreateSpec.builder()
                 .addEmbed(EmbedCreateSpec.builder()

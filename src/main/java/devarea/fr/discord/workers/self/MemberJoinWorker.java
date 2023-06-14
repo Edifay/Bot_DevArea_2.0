@@ -42,7 +42,7 @@ public class MemberJoinWorker implements Worker {
                 PrivateChannel privateChannel = member.getPrivateChannel().block();
                 startAway(() -> {
                     try {
-                        privateChannel.createMessage(TextMessage.helpEmbed).block();
+                       // privateChannel.createMessage(TextMessage.helpEmbed).block();
 
                         final String code = AuthWorker.getCodeForMember(member.getId().asString());
 

@@ -27,7 +27,7 @@ dependencies {
 
     implementation 'org.reflections:reflections:0.10.2'
 
-    implementation 'com.discord4j:discord4j-core:3.3.0-SNAPSHOT'
+    implementation 'com.discord4j:discord4j-core:3.3.0-M2'
 
     implementation 'org.mongodb:mongo-java-driver:3.12.11'
 }

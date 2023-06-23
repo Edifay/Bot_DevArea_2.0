@@ -325,7 +325,9 @@ public class DBManager {
     }
 
     public static void transferXPToXPLeft(final String id) {
-        setXPLeft(id, getXP(id));
+        int xp;
+        if ((xp = getXP(id)) != 0)
+            setXPLeft(id, xp);
     }
 
     public static FindIterable<Document> getSortedXPList() {

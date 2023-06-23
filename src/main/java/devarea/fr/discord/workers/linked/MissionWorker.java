@@ -81,7 +81,10 @@ public class MissionWorker implements Worker {
      * If not it send a new one.
      */
     private static void setupBottomMessage() {
-        bottomMessage = missionChannel.getLastMessage().block();
+        try {
+            bottomMessage = missionChannel.getLastMessage().block();
+        } catch (Exception ignored) {
+        }
         if (bottomMessage == null || bottomMessage.getEmbeds().size() == 0 || bottomMessage.getEmbeds().get(0).getTitle().isPresent() && !bottomMessage.getEmbeds().get(0).getTitle().get().equals("Créer une mission."))
             sendLastMessage();
     }

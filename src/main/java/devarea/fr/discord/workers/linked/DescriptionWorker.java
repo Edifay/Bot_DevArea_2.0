@@ -81,7 +81,10 @@ public class DescriptionWorker implements Worker {
      * If not it send a new one.
      */
     private static void setupBottomMessage() {
-        bottomMessage = presentationChannel.entity.getLastMessage().block();
+        try {
+            bottomMessage = presentationChannel.entity.getLastMessage().block();
+        }catch (Exception ignored){
+        }
         if (bottomMessage == null || bottomMessage.getEmbeds().size() == 0 || bottomMessage.getEmbeds().get(0).getTitle().isEmpty() || !bottomMessage.getEmbeds().get(0).getTitle().get().equals("Créer une présentation ?"))
             sendLastMessage();
     }

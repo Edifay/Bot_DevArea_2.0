@@ -382,8 +382,7 @@ public class TextMessage {
                             "!\n\nVisionner les freelances sur le web -> " + DOMAIN_NAME + "freelances")
                     .color(ColorsUsed.same)
                     .build())
-            .addComponent(ActionRow.of(Button.link(DOMAIN_NAME + "freelance-creator",
-                    "devarea.fr")))
+            .addComponent(ActionRow.of(Button.secondary("create_freelance_redirect", "Créer une page freelance.")))
             .build();
 
     public static final MessageCreateSpec missionBottomMessage = MessageCreateSpec.builder()
@@ -392,14 +391,14 @@ public class TextMessage {
                     .description("Cliquez sur le bouton ci-dessous pour créer une mission !" +
                             "!\n\nVisionner les missions sur web -> " + DOMAIN_NAME + "missions")
                     .build())
-            .addComponent(ActionRow.of(Button.link(DOMAIN_NAME + "mission-creator", "devarea.fr"))).build();
+            .addComponent(ActionRow.of(Button.secondary("create_mission_redirect", "Créer une mission."))).build();
 
     public static final MessageCreateSpec presentationBottomMessage = MessageCreateSpec.builder()
             .addEmbed(EmbedCreateSpec.builder().color(ColorsUsed.same)
                     .title("Créer une présentation ?")
                     .description("Cliquez sur le bouton ci-dessous, plus complétez la case ** *Plus sur moi...* **.")
                     .build())
-            .addComponent(ActionRow.of(Button.link(DOMAIN_NAME + "options", "devarea.fr"))).build();
+            .addComponent(ActionRow.of(Button.secondary("presentation_redirect", "Créer sa présentation."))).build();
 
     public static MessageCreateSpec missionFollowedCloseIn1Hour(String memberID) {
         return MessageCreateSpec.builder()

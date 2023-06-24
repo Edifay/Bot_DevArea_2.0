@@ -14,7 +14,6 @@ import devarea.fr.web.backend.entities.WebReseau;
 import devarea.fr.web.backend.entities.WebStaff;
 import org.bson.Document;
 
-import javax.print.Doc;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
@@ -56,6 +55,7 @@ public class DBManager {
     private static MongoCollection<Document> STATS_CONFIG;
     private static MongoCollection<Document> RESEAUX;
     private static MongoCollection<Document> STAFF;
+    private static MongoCollection<Document> REDIRECT_CONFIG;
 
     public static void initDB() {
 
@@ -75,6 +75,7 @@ public class DBManager {
             STATS_CONFIG = DEVAREA_DB.getCollection("STATS_CONFIG");
             RESEAUX = DEVAREA_DB.getCollection("RESEAUX");
             STAFF = DEVAREA_DB.getCollection("STAFF");
+            REDIRECT_CONFIG = DEVAREA_DB.getCollection("REDIRECT_CONFIG");
 
 
             Logger.logMessage("Connection to DEVAREA database success.");
@@ -357,6 +358,13 @@ public class DBManager {
         STAFF.find().forEach((Block<? super Document>) document -> webStaffs.add(new WebStaff(document)));
 
         return webStaffs;
+    }
+
+    public static String getRedirect(final String buttonID) {
+        Document doc = REDIRECT_CONFIG.find(new Document("_id", buttonID)).first();
+        if (doc == null)
+            return null;
+        return (String) doc.get("link");
     }
 
 }

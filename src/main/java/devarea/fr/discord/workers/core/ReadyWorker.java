@@ -1,9 +1,11 @@
 package devarea.fr.discord.workers.core;
 
 import devarea.fr.discord.Core;
+import devarea.fr.discord.cache.MemberCache;
 import devarea.fr.discord.entities.ActionEvent;
 import devarea.fr.discord.entities.events_filler.ReadyEventFiller;
 import devarea.fr.discord.workers.Worker;
+import devarea.fr.discord.workers.linked.DescriptionWorker;
 import devarea.fr.utils.Logger;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;

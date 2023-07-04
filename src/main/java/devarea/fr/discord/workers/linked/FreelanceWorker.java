@@ -165,11 +165,8 @@ public class FreelanceWorker implements Worker {
         if (canBumpFreelanceOf(id))
             return false;
 
-        startAway(() -> {
-            try {
-                freeLance.getMessage().getMessage().delete();
-            } catch (Exception ignored) {
-            }
+        freeLance.getMessage().getMessage().delete().subscribe(unused -> {
+        }, throwable -> {
         });
 
         DBMessage newMessage = new DBMessage(sendFreelanceMessage(freeLance));

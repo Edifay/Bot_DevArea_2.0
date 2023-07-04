@@ -85,8 +85,7 @@ public class MissionFollowWorker implements Worker {
                     .build()).subscribe();
             return;
         }
-        closeFollowedMission(filler.event.getInteraction().getMember().get().getId().asString(),
-                mission);
+        closeFollowedMission(filler.event.getInteraction().getMember().get().getId().asString(), mission);
     }
 
     /**
@@ -187,22 +186,14 @@ public class MissionFollowWorker implements Worker {
      * @param member_react_id the member who's following
      * @return the set of Permission to set to a channel.
      */
-    private static Set<PermissionOverwrite> getPermissionsOverrideCreatePrivateChannel(DBMission mission,
-                                                                                       Snowflake member_react_id) {
+    private static Set<PermissionOverwrite> getPermissionsOverrideCreatePrivateChannel(DBMission mission, Snowflake member_react_id) {
         Set<PermissionOverwrite> set = new HashSet<>();
-        set.add(PermissionOverwrite.forRole(Core.data.rulesAccepted_role, PermissionSet.of(),
-                PermissionSet.of(Permission.VIEW_CHANNEL)));
-        set.add(PermissionOverwrite.forRole(Core.devarea.getEveryoneRole().block().getId(), PermissionSet.of(),
-                PermissionSet.of(Permission.VIEW_CHANNEL)));
-        set.add(PermissionOverwrite.forMember(member_react_id, PermissionSet.of(Permission.VIEW_CHANNEL,
-                Permission.READ_MESSAGE_HISTORY, Permission.SEND_MESSAGES), PermissionSet.of()));
-        set.add(PermissionOverwrite.forMember(Snowflake.of(mission.getCreatedById()),
-                PermissionSet.of(Permission.VIEW_CHANNEL, Permission.READ_MESSAGE_HISTORY,
-                        Permission.SEND_MESSAGES), PermissionSet.of()));
-        set.add(PermissionOverwrite.forRole(Snowflake.of("777782222920744990"),
-                PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.of()));
-        set.add(PermissionOverwrite.forRole(Snowflake.of("768383784571240509"),
-                PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.of()));
+        set.add(PermissionOverwrite.forRole(Core.data.rulesAccepted_role, PermissionSet.of(), PermissionSet.of(Permission.VIEW_CHANNEL)));
+        set.add(PermissionOverwrite.forRole(Core.devarea.getEveryoneRole().block().getId(), PermissionSet.of(), PermissionSet.of(Permission.VIEW_CHANNEL)));
+        set.add(PermissionOverwrite.forMember(member_react_id, PermissionSet.of(Permission.VIEW_CHANNEL, Permission.READ_MESSAGE_HISTORY, Permission.SEND_MESSAGES), PermissionSet.of()));
+        set.add(PermissionOverwrite.forMember(Snowflake.of(mission.getCreatedById()), PermissionSet.of(Permission.VIEW_CHANNEL, Permission.READ_MESSAGE_HISTORY, Permission.SEND_MESSAGES), PermissionSet.of()));
+        set.add(PermissionOverwrite.forRole(Snowflake.of("777782222920744990"), PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.of()));
+        set.add(PermissionOverwrite.forRole(Snowflake.of("768383784571240509"), PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.of()));
         return set;
     }
 
@@ -244,6 +235,8 @@ public class MissionFollowWorker implements Worker {
                 startAway(() -> MemberCache.get(missionFollow.getClientId()).entity.getPrivateChannel().block().createMessage(embed).subscribe());
                 startAway(() -> MemberCache.get(missionFollow.getDevId()).entity.getPrivateChannel().block().createMessage(embed).subscribe());
 
+                // TODO Ajouter un système de notation et d'avis.
+
             }, 3600000L);
         }
     }
@@ -257,18 +250,12 @@ public class MissionFollowWorker implements Worker {
      */
     private static Set<PermissionOverwrite> getPermissionOverwritesToHideChannel(DBMissionFollow missionFollow) {
         Set<PermissionOverwrite> set = new HashSet<>();
-        set.add(PermissionOverwrite.forRole(Core.data.rulesAccepted_role, PermissionSet.of(),
-                PermissionSet.of(Permission.VIEW_CHANNEL)));
-        set.add(PermissionOverwrite.forRole(Core.devarea.getEveryoneRole().block().getId(), PermissionSet.of(),
-                PermissionSet.of(Permission.VIEW_CHANNEL)));
-        set.add(PermissionOverwrite.forMember(Snowflake.of(missionFollow.getClientId()), PermissionSet.of(),
-                PermissionSet.of(Permission.VIEW_CHANNEL)));
-        set.add(PermissionOverwrite.forMember(Snowflake.of(missionFollow.getDevId()), PermissionSet.of(),
-                PermissionSet.of(Permission.VIEW_CHANNEL)));
-        set.add(PermissionOverwrite.forRole(Snowflake.of("777782222920744990"),
-                PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.of()));
-        set.add(PermissionOverwrite.forRole(Snowflake.of("768383784571240509"),
-                PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.of()));
+        set.add(PermissionOverwrite.forRole(Core.data.rulesAccepted_role, PermissionSet.of(), PermissionSet.of(Permission.VIEW_CHANNEL)));
+        set.add(PermissionOverwrite.forRole(Core.devarea.getEveryoneRole().block().getId(), PermissionSet.of(), PermissionSet.of(Permission.VIEW_CHANNEL)));
+        set.add(PermissionOverwrite.forMember(Snowflake.of(missionFollow.getClientId()), PermissionSet.of(), PermissionSet.of(Permission.VIEW_CHANNEL)));
+        set.add(PermissionOverwrite.forMember(Snowflake.of(missionFollow.getDevId()), PermissionSet.of(), PermissionSet.of(Permission.VIEW_CHANNEL)));
+        set.add(PermissionOverwrite.forRole(Snowflake.of("777782222920744990"), PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.of()));
+        set.add(PermissionOverwrite.forRole(Snowflake.of("768383784571240509"), PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.of()));
         return set;
     }
 

@@ -326,7 +326,7 @@ public class MissionWorker implements Worker {
                         "\nType de support: " + mission.getSupport() + "\nLangage: " + mission.getLanguage() + "\nNiveau estimé:" +
                         " " + mission.getDifficulty() + "\n\nCette mission est posté par : " + "<@" + mission.getCreatedById() + ">.")
                 .color(ColorsUsed.same)
-                .author(member.getDisplayName(), member.getAvatarUrl(), member.getAvatarUrl())
+                .author(member.getDisplayName(), DOMAIN_NAME + "member-profile?member_id=" + member.getId().asString(), member.getAvatarUrl())
                 .timestamp(Instant.now())
                 .build();
     }

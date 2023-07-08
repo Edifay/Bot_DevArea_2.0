@@ -180,9 +180,9 @@ public class MissionFollowWorker implements Worker {
                 .addEmbed(EmbedCreateSpec.builder()
                         .color(ColorsUsed.same)
                         .title("Avis")
-                        .addField(client.entity.getDisplayName(), "Note " + moyeneNote(client.db()) + "/5.\n -> [Voir plus](" + DOMAIN_NAME + "/member-profile?member_id=" + client.getSId() + ")", true)
+                        .addField(client.entity.getDisplayName(), "Note " + moyeneNote(client.db()) + "/5.\n -> [Voir plus](" + DOMAIN_NAME + "/member-profile?member_id=" + client.getSId() + "&open=2)", true)
                         .addField("", "", true)
-                        .addField(dev.entity.getDisplayName(), "Note " + moyeneNote(dev.db()) + "/5.\n -> [Voir plus](" + DOMAIN_NAME + "/member-profile?member_id=" + dev.getSId() + ")", true)
+                        .addField(dev.entity.getDisplayName(), "Note " + moyeneNote(dev.db()) + "/5.\n -> [Voir plus](" + DOMAIN_NAME + "/member-profile?member_id=" + dev.getSId() + "&open=2)", true)
                         .build())
                 .build()).subscribe();
 
@@ -248,7 +248,7 @@ public class MissionFollowWorker implements Worker {
 
                     MemberCache.get(missionFollow.getClientId()).entity.getPrivateChannel().block().createMessage(MessageCreateSpec.builder()
                             .addEmbed(embed)
-                            .addComponent(ActionRow.of(Button.primary("avis_" + missionFollow.getDevId() + "_F", ReactionEmoji.codepoints("U+1F4D5"), "Laisser un avis.")))
+                            .addComponent(ActionRow.of(Button.primary("avis_" + missionFollow.getDevId() + "_C", ReactionEmoji.codepoints("U+1F4D5"), "Laisser un avis.")))
                             .build()).subscribe();
                 });
                 startAway(() -> {
@@ -260,7 +260,7 @@ public class MissionFollowWorker implements Worker {
                             .build();
                     MemberCache.get(missionFollow.getDevId()).entity.getPrivateChannel().block().createMessage(MessageCreateSpec.builder()
                             .addEmbed(embed)
-                            .addComponent(ActionRow.of(Button.primary("avis_" + missionFollow.getClientId() + "_C", ReactionEmoji.codepoints("U+1F4D5"), "Laisser un avis.")))
+                            .addComponent(ActionRow.of(Button.primary("avis_" + missionFollow.getClientId() + "_F", ReactionEmoji.codepoints("U+1F4D5"), "Laisser un avis.")))
                             .build()).subscribe();
                 });
 

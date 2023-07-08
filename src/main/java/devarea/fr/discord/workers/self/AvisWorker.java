@@ -88,7 +88,7 @@ public class AvisWorker implements Worker {
                 "avismodal_" + splitted[1] + "_" + splitted[2] + "_" + filler.event.getInteraction().getMessage().get().getId().asString(),
                 List.of(
                         ActionRow.of(TextInput.small("grade", "Note ?/5", 1, 1)),
-                        ActionRow.of(TextInput.paragraph("comment", "Points positif/négatif de votre échange.", 70, 500))
+                        ActionRow.of(TextInput.paragraph("comment", "Points positif/négatif de votre échange.", 70, 300))
                 )).subscribe();
 
     }

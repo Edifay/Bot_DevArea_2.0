@@ -63,6 +63,14 @@ public class DBMember {
         return DBManager.getAuthCodeOf(this.id);
     }
 
+    public DBAvis[] getAvis() {
+        return DBManager.getAvis(this.id);
+    }
+
+    public void addAvis(final DBAvis avis) {
+        DBManager.addAvis(this.id, avis);
+    }
+
     public Mem getMember() {
         return MemberCache.get(this.id);
     }

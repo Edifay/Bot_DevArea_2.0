@@ -50,6 +50,7 @@ public class DBManager {
     private static MongoCollection<Document> MISSIONS_FOLLOW;
     private static MongoCollection<Document> MISSIONS_FOLLOW_CONFIG;
     private static MongoCollection<Document> FREELANCES;
+    private static MongoCollection<Document> AVIS;
     private static MongoCollection<Document> AUTH;
     private static MongoCollection<Document> XP_LEFT;
     private static MongoCollection<Document> STATS_CONFIG;
@@ -76,6 +77,7 @@ public class DBManager {
             RESEAUX = DEVAREA_DB.getCollection("RESEAUX");
             STAFF = DEVAREA_DB.getCollection("STAFF");
             REDIRECT_CONFIG = DEVAREA_DB.getCollection("REDIRECT_CONFIG");
+            AVIS = DEVAREA_DB.getCollection("AVIS");
 
 
             Logger.logMessage("Connection to DEVAREA database success.");
@@ -210,6 +212,19 @@ public class DBManager {
         if (mission == null)
             return null;
         return new DBMission(mission);
+    }
+
+    public static DBAvis[] getAvis(final String _id) {
+        Document member = AVIS.find(new Document("_id", _id)).first();
+        if (member != null && member.get("avis") != null)
+            return ((ArrayList<Document>) member.get("avis")).stream().map(DBAvis::new).toList().toArray(new DBAvis[0]);
+        return new DBAvis[0];
+    }
+
+    public static void addAvis(final String _id, final DBAvis avis) {
+        if (AVIS.find(new Document("_id", _id)).first() == null)
+            AVIS.insertOne(new Document("_id", _id));
+        AVIS.updateOne(new Document("_id", _id), Updates.push("avis", avis.toDocument()));
     }
 
 

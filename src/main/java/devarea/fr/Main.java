@@ -1,5 +1,7 @@
 package devarea.fr;
 
+import devarea.fr.db.data.DBAvis;
+import devarea.fr.db.data.DBMember;
 import devarea.fr.utils.Logger;
 import devarea.fr.web.SpringBackend;
 import devarea.fr.db.DBManager;
@@ -27,6 +29,9 @@ public class Main {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
+        DBMember member = new DBMember("321673326105985025");
+        // member.addAvis(new DBAvis(3, DBAvis.Status.FREELANCE, "412625084654551050", "bien !!"));
 
         Core.client.onDisconnect().block();
 

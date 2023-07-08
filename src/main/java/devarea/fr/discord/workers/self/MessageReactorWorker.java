@@ -16,6 +16,9 @@ public class MessageReactorWorker implements Worker {
         return (ActionEvent<MessageCreateEventFiller>) filler -> {
             MessageCreateEvent event = filler.event;
 
+            if (filler.event.getMember().isEmpty())
+                return;
+
             if (filler.event.getMessage().getChannelId().equals(Core.data.log_channel))
                 return;
 

@@ -100,7 +100,7 @@ public class Dispatcher {
 
     public static void onModalSubmitInteractionEvent(final ModalSubmitInteractionEvent event) {
         Core.executeGlobal(new ModalSubmitInteractionEventFiller(event));
-        MemberCache.get(event.getInteraction().getMember().get().getId().asString()).execute(new ModalSubmitInteractionEventFiller(event));
+        MemberCache.get(event.getInteraction().getUser().getId().asString()).execute(new ModalSubmitInteractionEventFiller(event));
     }
 
 }

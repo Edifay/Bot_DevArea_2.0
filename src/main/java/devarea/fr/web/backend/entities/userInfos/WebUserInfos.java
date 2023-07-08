@@ -2,11 +2,15 @@ package devarea.fr.web.backend.entities.userInfos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import devarea.fr.db.data.DBAvis;
 import devarea.fr.discord.badges.Badges;
 import devarea.fr.discord.entities.Mem;
 import devarea.fr.discord.workers.self.XPWorker;
+import devarea.fr.web.backend.entities.WebAvis;
 import devarea.fr.web.backend.entities.WebFreelance;
 import devarea.fr.web.backend.entities.WebMission;
+
+import java.util.Arrays;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class WebUserInfos {
@@ -40,6 +44,9 @@ public abstract class WebUserInfos {
     protected WebFreelance freelance;
 
     @JsonProperty
+    protected WebAvis[] avis;
+
+    @JsonProperty
     Badges[] badges;
 
     public WebUserInfos(Mem mem) {
@@ -58,6 +65,8 @@ public abstract class WebUserInfos {
         this.missions_list = WebMission.getWebMissionsPreview(mem.db().getMissions());
 
         this.freelance = WebFreelance.of(mem);
+
+        this.avis = Arrays.stream(mem.db().getAvis()).map(WebAvis::new).toList().toArray(new WebAvis[0]);
 
         this.badges = mem.getBadges();
     }

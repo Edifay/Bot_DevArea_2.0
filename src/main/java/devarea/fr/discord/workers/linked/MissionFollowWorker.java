@@ -1,9 +1,7 @@
 package devarea.fr.discord.workers.linked;
 
 import devarea.fr.db.DBManager;
-import devarea.fr.db.data.DBMessage;
-import devarea.fr.db.data.DBMission;
-import devarea.fr.db.data.DBMissionFollow;
+import devarea.fr.db.data.*;
 import devarea.fr.discord.Core;
 import devarea.fr.discord.cache.ChannelCache;
 import devarea.fr.discord.cache.MemberCache;
@@ -15,9 +13,12 @@ import devarea.fr.discord.workers.Worker;
 import devarea.fr.utils.Logger;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.PermissionOverwrite;
+import discord4j.core.object.component.ActionRow;
+import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.spec.*;
 import discord4j.rest.util.Permission;
 import discord4j.rest.util.PermissionSet;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import static devarea.fr.discord.statics.DefaultData.DOMAIN_NAME;
 import static devarea.fr.discord.statics.TextMessage.*;
 import static devarea.fr.utils.ThreadHandler.startAway;
 import static devarea.fr.utils.ThreadHandler.startAwayIn;
@@ -162,16 +164,27 @@ public class MissionFollowWorker implements Worker {
         DBManager.incrementMissionFollowCount();
         GuildMessageChannel channel = Core.devarea.createTextChannel(TextChannelCreateSpec.builder()
                 .parentId(Core.data.mission_follow_category)
-                .name("Suivis de mission n°" + DBManager.currentMissionFollowCount())
+                .name("Suivis n°" + DBManager.currentMissionFollowCount())
                 .permissionOverwrites(set)
                 .build()).block();
 
 
         // Send basics information
         channel.createMessage(missionFollowMissionPreview(mission)).subscribe();
-
         Message message =
                 channel.createMessage(missionFollowedCreateMessageExplication(member_react_id, mission)).block();
+
+        Mem client = mission.getMember();
+        Mem dev = MemberCache.get(member_react_id.asString());
+        channel.createMessage(MessageCreateSpec.builder()
+                .addEmbed(EmbedCreateSpec.builder()
+                        .color(ColorsUsed.same)
+                        .title("Avis")
+                        .addField(client.entity.getDisplayName(), "Note " + moyeneNote(client.db()) + "/5.\n -> [Voir plus](" + DOMAIN_NAME + "/member-profile?member_id=" + client.getSId() + ")", true)
+                        .addField("", "", true)
+                        .addField(dev.entity.getDisplayName(), "Note " + moyeneNote(dev.db()) + "/5.\n -> [Voir plus](" + DOMAIN_NAME + "/member-profile?member_id=" + dev.getSId() + ")", true)
+                        .build())
+                .build()).subscribe();
 
         DBManager.createMissionFollow(new DBMissionFollow(DBManager.currentMissionFollowCount(), new DBMessage(message),
                 mission.getCreatedById(), member_react_id.asString()));
@@ -225,17 +238,31 @@ public class MissionFollowWorker implements Worker {
                         .build()).subscribe();
 
                 // Create the MP Embed
-                EmbedCreateSpec embed = EmbedCreateSpec.builder()
-                        .title("Clôture du suivi n°" + missionFollow.getN() + " !")
-                        .description("Le suivi de mission n°" + missionFollow.getN() + " a été clôturé à la " +
-                                "demande de <@" + memberRequest + ">.")
-                        .color(ColorsUsed.just)
-                        .build();
+                startAway(() -> {
+                    EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                            .title("Clôture du suivi n°" + missionFollow.getN() + " !")
+                            .description("Le suivi de mission n°" + missionFollow.getN() + " a été clôturé à la " +
+                                    "demande de <@" + memberRequest + ">.\n\nSi l'échange a mené à la réalisation de la mission n'hésitez pas à donner un avi sur <@" + missionFollow.getDevId() + "> !")
+                            .color(ColorsUsed.same)
+                            .build();
 
-                startAway(() -> MemberCache.get(missionFollow.getClientId()).entity.getPrivateChannel().block().createMessage(embed).subscribe());
-                startAway(() -> MemberCache.get(missionFollow.getDevId()).entity.getPrivateChannel().block().createMessage(embed).subscribe());
-
-                // TODO Ajouter un système de notation et d'avis.
+                    MemberCache.get(missionFollow.getClientId()).entity.getPrivateChannel().block().createMessage(MessageCreateSpec.builder()
+                            .addEmbed(embed)
+                            .addComponent(ActionRow.of(Button.primary("avis_" + missionFollow.getDevId() + "_F", ReactionEmoji.codepoints("U+1F4D5"), "Laisser un avis.")))
+                            .build()).subscribe();
+                });
+                startAway(() -> {
+                    EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                            .title("Clôture du suivi n°" + missionFollow.getN() + " !")
+                            .description("Le suivi de mission n°" + missionFollow.getN() + " a été clôturé à la " +
+                                    "demande de <@" + memberRequest + ">.\n\nSi l'échange a mené à la réalisation de la mission n'hésitez pas à donner un avi sur <@" + missionFollow.getClientId() + "> !")
+                            .color(ColorsUsed.same)
+                            .build();
+                    MemberCache.get(missionFollow.getDevId()).entity.getPrivateChannel().block().createMessage(MessageCreateSpec.builder()
+                            .addEmbed(embed)
+                            .addComponent(ActionRow.of(Button.primary("avis_" + missionFollow.getClientId() + "_C", ReactionEmoji.codepoints("U+1F4D5"), "Laisser un avis.")))
+                            .build()).subscribe();
+                });
 
             }, 3600000L);
         }
@@ -268,5 +295,15 @@ public class MissionFollowWorker implements Worker {
      */
     public static boolean alreadyHaveAChannel(final String clientID, final String devID) {
         return DBManager.getMissionFollowFromPerson(clientID, devID) != null;
+    }
+
+    public static String moyeneNote(final DBMember mem) {
+        DBAvis[] avis = mem.getAvis();
+        if (avis.length == 0)
+            return "?";
+        int moyenne = avis[0].getGrade();
+        for (int i = 1; i < avis.length; i++)
+            moyenne += avis[i].getGrade();
+        return String.valueOf(moyenne / avis.length);
     }
 }

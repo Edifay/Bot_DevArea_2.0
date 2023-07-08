@@ -9,7 +9,6 @@ import devarea.fr.discord.cache.MemberCache;
 import devarea.fr.discord.entities.ActionEvent;
 import devarea.fr.discord.entities.Mem;
 import devarea.fr.discord.statics.ColorsUsed;
-import devarea.fr.discord.statics.DefaultData;
 import devarea.fr.discord.workers.Worker;
 import devarea.fr.utils.Logger;
 import discord4j.core.object.component.ActionRow;

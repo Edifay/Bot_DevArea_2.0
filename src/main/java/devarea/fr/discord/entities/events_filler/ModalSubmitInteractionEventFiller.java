@@ -11,7 +11,7 @@ public class ModalSubmitInteractionEventFiller extends Filler<ModalSubmitInterac
 
     public ModalSubmitInteractionEventFiller(ModalSubmitInteractionEvent event) {
         super(event);
-        this.mem = event.getInteraction().getMember().isPresent() ? MemberCache.get(event.getInteraction().getMember().get().getId().asString()) : null;
+        this.mem = event.getInteraction().getMember().isPresent() ? MemberCache.get(event.getInteraction().getMember().get().getId().asString()) : MemberCache.get(event.getInteraction().getUser().getId().asString());
     }
 
     @Override

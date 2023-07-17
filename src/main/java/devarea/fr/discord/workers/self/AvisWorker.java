@@ -70,7 +70,7 @@ public class AvisWorker implements Worker {
                 filler.event.getComponents().get(1).getData().components().get().get(0).value().get()
         ));
 
-        filler.mem.entity.getPrivateChannel().block().getMessageById(Snowflake.of(splitted[3])).block().edit(MessageEditSpec.builder()
+        filler.event.getInteraction().getMessage().get().getChannel().block().getMessageById(Snowflake.of(splitted[3])).block().edit(MessageEditSpec.builder()
                 .components(Possible.of(Optional.of(List.of())))
                 .build()).subscribe();
 

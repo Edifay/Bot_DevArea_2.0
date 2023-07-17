@@ -18,6 +18,7 @@ import discord4j.core.object.component.Button;
 import discord4j.core.object.component.SelectMenu;
 import discord4j.core.object.component.TextInput;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
+import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.spec.EmbedCreateFields;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
@@ -28,15 +29,17 @@ import discord4j.rest.util.Permission;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Admin extends SlashCommand {
 
-    private static ArrayList<SelectMenu.Option> options = new ArrayList<>();
+    private static final ArrayList<SelectMenu.Option> options = new ArrayList<>();
 
     static {
-        options.add(SelectMenu.Option.of("Mission Manager", "mission_manager"));
-        options.add(SelectMenu.Option.of("Freelance Manager", "freelance_manager"));
-        options.add(SelectMenu.Option.of("Option 3", "option_3"));
+        options.add(SelectMenu.Option.of("Mission Manager", "admin_mission_manager"));
+        options.add(SelectMenu.Option.of("Freelance Manager", "admin_freelance_manager"));
+        options.add(SelectMenu.Option.of("Avis Manager", "admin_avis_manager"));
+        options.add(SelectMenu.Option.of("Option 4", "option_4"));
     }
 
 
@@ -66,13 +69,16 @@ public class Admin extends SlashCommand {
                 return;
 
             switch (fillerMenu.event.getValues().get(0)) {
-                case "mission_manager":
+                case "admin_mission_manager":
                     selectMissionToManage(fillerMenu);
                     break;
-                case "freelance_manager":
+                case "admin_freelance_manager":
                     selectFreelanceToManage(fillerMenu);
                     break;
-                case "option_3":
+                case "admin_avis_manager":
+                    selectAvisToManage(fillerMenu);
+                    break;
+                case "option_4":
                     fillerMenu.event.reply(InteractionApplicationCommandCallbackSpec.builder()
                             .ephemeral(true)
                             .content("Option 3")
@@ -80,6 +86,62 @@ public class Admin extends SlashCommand {
                     break;
             }
         }, false, SPOILED_TIME);
+    }
+
+
+    public void selectAvisToManage(final SelectMenuInteractionEventFiller filler) {
+
+        filler.event.edit(InteractionApplicationCommandCallbackSpec.builder()
+                .addEmbed(EmbedCreateSpec.builder()
+                        .title("Mission Manager")
+                        .description("Veuillez choisir l'option voulu.")
+                        .color(ColorsUsed.same)
+                        .build())
+                .components(List.of(
+                        ActionRow.of(Button.secondary("admin_avis_add", "Ajouter un avis."))
+                ))
+                .build()).subscribe();
+
+        filler.mem.listenDuring((ActionEvent<ButtonInteractionEventFiller>) this::addAvis, false, SPOILED_TIME, filler.context());
+    }
+
+    // "avis_" + id + "_F"
+    public void addAvis(final ButtonInteractionEventFiller filler) {
+        if (!filler.event.getCustomId().equals("admin_avis_add"))
+            return;
+        System.out.println("Receive event !");
+        filler.event.presentModal("Création d'un message d'ajouts d'avis.", "admin_avis_modal", List.of(
+                ActionRow.of(TextInput.small("admin_avis_aimid", "Sur quel membre voulez vous ajouter un avis ?")),
+                ActionRow.of(TextInput.small("admin_avis_status", "Quel est le type du mem ajoutant l'avis ? F/C")),
+                ActionRow.of(TextInput.small("admin_avis_messagestatus", "Message visible par tout le monde ? o/n", 1, 1))
+        )).subscribe();
+
+        filler.mem.listenDuring((ActionEvent<ModalSubmitInteractionEventFiller>) fillerModal -> {
+            final String id = fillerModal.event.getComponents().get(0).getData().components().get().get(0).value().get();
+            final String status = fillerModal.event.getComponents().get(1).getData().components().get().get(0).value().get();
+            final String message_status = fillerModal.event.getComponents().get(2).getData().components().get().get(0).value().get();
+
+            final EmbedCreateSpec embed = EmbedCreateSpec.builder()
+                    .title("Ajouter un avis.")
+                    .description("Cliquez sur le bouton ci-dessous pour ajouter un avis sur le membre <@" + id + ">.")
+                    .color(ColorsUsed.same)
+                    .build();
+
+            final Button button = Button.primary("avis_" + id + "_" + status, ReactionEmoji.codepoints("U+1F4D5"), "Laisser un avis.");
+
+            if (message_status.toLowerCase(Locale.ROOT).equals("o"))
+                fillerModal.event.reply(InteractionApplicationCommandCallbackSpec.builder()
+                        .addEmbed(embed)
+                        .components(ActionRow.of(button))
+                        .build()).subscribe();
+            else
+                fillerModal.event.reply(InteractionApplicationCommandCallbackSpec.builder()
+                        .addEmbed(embed)
+                        .ephemeral(true)
+                        .components(ActionRow.of(button))
+                        .build()).subscribe();
+
+        }, false, SPOILED_TIME, filler.context());
     }
 
     @Override

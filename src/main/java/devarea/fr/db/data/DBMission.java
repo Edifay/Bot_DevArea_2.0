@@ -30,7 +30,7 @@ public class DBMission implements DBItem {
         this.title = (String) document.get("title");
         this.description = (String) document.get("description");
         this.budget = (String) document.get("budget");
-        this.deadLine = (String) document.get("deadline");
+        this.deadLine = (String) document.get("deadLine");
         this.language = (String) document.get("language");
         this.support = (String) document.get("support");
         this.difficulty = (String) document.get("difficulty");

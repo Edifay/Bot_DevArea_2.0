@@ -63,7 +63,7 @@ Après avoir lancé le projet et après avoir créé le fichier ``db.url``, un f
 
 Il permet de donner toutes les informations nécessaires au bot, tel que les channels, les rôles et plus encore.
 
-Il suffit d'éditer le fichier avec et de le modifier avec les valeurs voulues.
+Il suffit d'éditer le fichier et de le modifier avec les valeurs voulues.
 
 Exemple :
  - ``"paidMissions_channel":null`` -> ``"paidMissions_channel":"943817647060025354"``.

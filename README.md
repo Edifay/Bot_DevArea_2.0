@@ -55,7 +55,7 @@ Pour obtenir l'url de la base de donnée, il faut tout d'abord installer mongodb
 > Généralement si mongodb est installé sur la même machine l'url par défault sera :
 >  - ``mongodb://localhost:27017/DEVAREA``
 
-À noter que le bot peut tourner avec une url non valide, cependant un bon nombre de fonctionnalités ne seront pas disponibles et plus des nombreuses erreurs provoquées.
+À noter que le bot peut tourner avec une url non valide, cependant un bon nombre de fonctionnalités ne seront pas disponibles en plus des nombreuses erreurs provoquées.
 
 ### Configurer le bot
 
@@ -73,6 +73,9 @@ Exemple :
 ### Token
 
 Il faudra créer, toujours au même endroit, un fichier ``token.token`` et y mettre le token sur la première ligne.
+
+
+Si vous recontrez un problème dans la mise en place de l'environnement de travail sur le bot, n'hésitez pas à venir envoyer un message sur le discord dans le channel support.
 
 # L'Architecture
 

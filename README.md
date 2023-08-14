@@ -74,6 +74,7 @@ Exemple :
 
 Il faudra créer, toujours au même endroit, un fichier ``token.token`` et y mettre le token sur la première ligne.
 
+### Problèmes ?
 
 Si vous recontrez un problème dans la mise en place de l'environnement de travail sur le bot, n'hésitez pas à venir envoyer un message sur le discord dans le channel support.
 

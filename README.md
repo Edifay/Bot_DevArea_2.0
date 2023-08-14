@@ -13,6 +13,67 @@ Cette version 2 a pour but de rendre le code plus portable pour les nouveautés 
 
 Mais aussi pour rendre son code plus accessible. En effet, le code du bot a pour but d'être amélioré et maintenu par la communauté. C'est pour quoi la simplicité et la facilité de créer de nouvelles commandes a été un des objectifs principal dans la conception du bot. Et cela doit rester un des objectifs pour les modifications futures apportés au code.
 
+# Sommaire
+
+- [Télécharger le projet](https://github.com/Edifay/Bot_DevArea_2.0#telecharger-le-projet-(get-started))
+- [L'Architecture](https://github.com/Edifay/Bot_DevArea_2.0#larchitecture)
+- [Ajouter une fonctionnalité](https://github.com/Edifay/Bot_DevArea_2.0#tutoriel-sur-lajout-de-fonctionnalit%C3%A9s)
+- [Conclusion](https://github.com/Edifay/Bot_DevArea_2.0#merci-)
+- [Licence](https://github.com/Edifay/Bot_DevArea_2.0#licence)
+
+
+# Télécharger le projet (get started)
+
+Pour mettre en place l'environnement pour développer sur le serveur, il faudra mettre en places quelques petites choses.
+
+> Pour afficher les logs dans la console, mettre à ``true`` la variable ``developing`` dans ``main.Main``.
+
+### Cloner le repo
+
+Tout d'abord il faudra télécharger les fichiers du projet :
+ - En utilisant git ``git clone https://github.com/Edifay/Bot_DevArea_2.0.git``.
+ - Ou en téléchargeant les fichiers à partir du repo ci-dessus.
+
+### Java & Gradle
+
+Le projet utilise le JDK 17, et le projet doit être importé comme un projet Gradle.
+
+Toutes les librairies nécessaires au fonctionnement du bot devraient être automatiquement installées par gradle à l'aide du [build.gradle](https://github.com/Edifay/Bot_DevArea_2.0/blob/main/build.gradle).
+
+### MongoDB
+
+Le bot a besoin de l'url de la base de donnée, il vous sera demandé de créer un fichier ``db.url`` dans le repertoire de lancement du programme.
+(Généralement au même niveau que ``build.gradle`` si l'exécution est faites dans l'IDE).
+
+Pour obtenir l'url de la base de donnée, il faut tout d'abord installer mongodb en suivant ces étapes :
+ - [Installer et lancer mongodb](https://www.mongodb.com/docs/manual/administration/install-community/)
+ - Puis créer et/ou compléter le fichier ``db.url`` avec l'url vers la db.
+
+> L'url de la db sera sous la forme :
+> - ``mongodb://user:password@adress:port/DEVAREA``
+> 
+> Généralement si mongodb est installé sur la même machine l'url par défault sera :
+>  - ``mongodb://localhost:27017/DEVAREA``
+
+À noter que le bot peut tourner avec une url non valide, cependant un bon nombre de fonctionnalités ne seront pas disponibles et plus des nombreuses erreurs provoquées.
+
+### Configurer le bot
+
+Après avoir lancé le projet et après avoir créé le fichier ``db.url``, un fichier ``config.json`` devrait avoir été créé à côté de celui-ci (il était possiblement déjà existant, étant fourni dans le repo).
+
+Il permet de donner toutes les informations nécessaires au bot, tel que les channels, les rôles et plus encore.
+
+Il suffit d'éditer le fichier avec et de le modifier avec les valeurs voulues.
+
+Exemple :
+ - ``"paidMissions_channel":null`` -> ``"paidMissions_channel":"943817647060025354"``.
+
+> Pensez bien à mettre les guillemets pour les ids, ils sont traités comme des chaines de caractère et non comme des nombres.
+
+### Token
+
+Il faudra créer, toujours au même endroit, un fichier ``token.token`` et y mettre le token sur la première ligne.
+
 # L'Architecture
 
 L'architecture du bot est primordiale à comprendre. Le code utilise plusieurs `lib` :

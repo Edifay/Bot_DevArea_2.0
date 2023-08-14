@@ -59,6 +59,9 @@ Pour obtenir l'url de la base de donnée, il faut tout d'abord installer mongodb
 
 ### Configurer le bot
 
+Tout d'abord il vous faudra avoir un Bot à disposition sur un serveur discord.
+ - [Créer un bot discord](https://appmaster.io/fr/blog/bot-discord-comment-le-creer-et-lajouter-au-serveur)
+
 Après avoir lancé le projet et après avoir créé le fichier ``db.url``, un fichier ``config.json`` devrait avoir été créé à côté de celui-ci (il était possiblement déjà existant, étant fourni dans le repo).
 
 Il permet de donner toutes les informations nécessaires au bot, tel que les channels, les rôles et plus encore.
@@ -73,6 +76,8 @@ Exemple :
 ### Token
 
 Il faudra créer, toujours au même endroit, un fichier ``token.token`` et y mettre le token sur la première ligne.
+
+Le token du bot est trouvable sur la page de configuration du bot créé précédemment.
 
 ### Problèmes ?
 

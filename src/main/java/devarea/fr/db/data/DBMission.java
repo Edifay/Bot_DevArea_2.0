@@ -74,7 +74,7 @@ public class DBMission implements DBItem {
     }
 
     public String getDeadLine() {
-        return deadLine;
+        return deadLine == null ? "Non définie" : deadLine;
     }
 
     public String getLanguage() {
@@ -160,57 +160,57 @@ public class DBMission implements DBItem {
     @Override
     public Document toDocument() {
         return new Document()
-                .append("_id", this._id)
-                .append("title", this.title)
-                .append("description", this.description)
-                .append("budget", this.budget)
-                .append("deadLine", this.deadLine)
-                .append("language", this.language)
-                .append("support", this.support)
-                .append("difficulty", this.difficulty)
-                .append("message", this.message.toDocument())
-                .append("createdAt", this.createdAt)
-                .append("createdById", this.createdById)
-                .append("lastUpdate", this.lastUpdate)
-                .append("messageUpdate", this.messageUpdate == null ? null : this.messageUpdate.toDocument());
+            .append("_id", this._id)
+            .append("title", this.title)
+            .append("description", this.description)
+            .append("budget", this.budget)
+            .append("deadLine", this.deadLine)
+            .append("language", this.language)
+            .append("support", this.support)
+            .append("difficulty", this.difficulty)
+            .append("message", this.message.toDocument())
+            .append("createdAt", this.createdAt)
+            .append("createdById", this.createdById)
+            .append("lastUpdate", this.lastUpdate)
+            .append("messageUpdate", this.messageUpdate == null ? null : this.messageUpdate.toDocument());
     }
 
     @Override
     public Bson toUpdates() {
         return Updates.combine(
-                Updates.set("title", this.title),
-                Updates.set("description", this.description),
-                Updates.set("budget", this.budget),
-                Updates.set("deadLine", this.deadLine),
-                Updates.set("language", this.language),
-                Updates.set("support", this.support),
-                Updates.set("difficulty", this.difficulty),
-                this.message == null ? Updates.unset("message") :
-                        Updates.set("message", this.message.toDocument()),
-                Updates.set("createdAt", this.createdAt),
-                Updates.set("createdById", this.createdById),
-                Updates.set("lastUpdate", this.lastUpdate),
-                this.messageUpdate == null ? Updates.unset("messageUpdate") :
-                        Updates.set("messageUpdate", this.messageUpdate.toDocument())
+            Updates.set("title", this.title),
+            Updates.set("description", this.description),
+            Updates.set("budget", this.budget),
+            Updates.set("deadLine", this.deadLine),
+            Updates.set("language", this.language),
+            Updates.set("support", this.support),
+            Updates.set("difficulty", this.difficulty),
+            this.message == null ? Updates.unset("message") :
+                Updates.set("message", this.message.toDocument()),
+            Updates.set("createdAt", this.createdAt),
+            Updates.set("createdById", this.createdById),
+            Updates.set("lastUpdate", this.lastUpdate),
+            this.messageUpdate == null ? Updates.unset("messageUpdate") :
+                Updates.set("messageUpdate", this.messageUpdate.toDocument())
         );
     }
 
     @Override
     public String toString() {
         return "DBMission{" +
-                "_id='" + _id + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", budget='" + budget + '\'' +
-                ", deadLine='" + deadLine + '\'' +
-                ", language='" + language + '\'' +
-                ", support='" + support + '\'' +
-                ", difficulty='" + difficulty + '\'' +
-                ", message=" + message +
-                ", createdAt=" + createdAt +
-                ", createdById='" + createdById + '\'' +
-                ", lastUpdate=" + lastUpdate +
-                ", messageUpdate=" + messageUpdate +
-                '}';
+               "_id='" + _id + '\'' +
+               ", title='" + title + '\'' +
+               ", description='" + description + '\'' +
+               ", budget='" + budget + '\'' +
+               ", deadLine='" + deadLine + '\'' +
+               ", language='" + language + '\'' +
+               ", support='" + support + '\'' +
+               ", difficulty='" + difficulty + '\'' +
+               ", message=" + message +
+               ", createdAt=" + createdAt +
+               ", createdById='" + createdById + '\'' +
+               ", lastUpdate=" + lastUpdate +
+               ", messageUpdate=" + messageUpdate +
+               '}';
     }
 }

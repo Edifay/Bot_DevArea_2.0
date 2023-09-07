@@ -23,22 +23,50 @@ import discord4j.core.spec.*;
 import discord4j.rest.util.Permission;
 import discord4j.rest.util.PermissionSet;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 import static devarea.fr.discord.statics.DefaultData.DOMAIN_NAME;
 import static devarea.fr.discord.statics.TextMessage.*;
-import static devarea.fr.utils.ThreadHandler.startAway;
-import static devarea.fr.utils.ThreadHandler.startAwayIn;
+import static devarea.fr.utils.ThreadHandler.*;
 
 public class MissionFollowWorker implements Worker {
 
     @Override
     public ActionEvent<?> setupEvent() {
-        return (ActionEvent<ButtonInteractionEventFiller>) filler -> {
-            interact(filler);
-        };
+
+        repeatEachMillis(() -> {
+            ArrayList<DBMissionFollow> missionFollows = DBManager.getMissionFollow();
+            missionFollows.forEach(dbMissionFollow -> {
+                try {
+                    GuildMessageChannel channel = dbMissionFollow.getMessage().getChannel();
+                    Message lastMessage = channel.getLastMessage().block();
+                    if (lastMessage.getTimestamp().isBefore(Instant.now().minus(2, ChronoUnit.DAYS)) && lastMessage.getAuthor().get().getId().equals(Core.client.getSelfId())) {
+                        Logger.logMessage("Auto-closing suivis-n°" + dbMissionFollow.getN() + ".");
+                        closeFollowedMission(Core.client.getSelfId().asString(), dbMissionFollow);
+                    } else if (lastMessage.getTimestamp().isBefore(Instant.now().minus(3, ChronoUnit.DAYS))) {
+                        Logger.logMessage("Ask to close suivis-n°" + dbMissionFollow.getN() + ".");
+                        channel.createMessage(MessageCreateSpec.builder()
+                            .content("<@" + dbMissionFollow.getClientId() + ">, <@" + dbMissionFollow.getDevId() + ">.")
+                            .addEmbed(EmbedCreateSpec.builder()
+                                .title("Fermeture du suivis ?")
+                                .description("Cela fait plus de 3 jours que ce suivis est inactif ! Il serait peut être temps de le fermer ?\n\nSi oui il vous suffit de cliquer sur le bouton ci-dessous.")
+                                .footer("Ceci est un message automatique.", null)
+                                .color(ColorsUsed.same)
+                                .build())
+                            .addComponent(ActionRow.of(Button.secondary("followMission_close", "Cloturer le channel")))
+                            .build()).subscribe();
+                    }
+                } catch (Exception e) {
+                    Logger.logError("Error when trying to access to suivis-n°" + dbMissionFollow.getN() + " :\n    -> " + e.getMessage());
+                }
+            });
+        }, 86400000 /*1 day*/);
+
+        return (ActionEvent<ButtonInteractionEventFiller>) MissionFollowWorker::interact;
     }
 
     @Override
@@ -76,28 +104,33 @@ public class MissionFollowWorker implements Worker {
      * @param filler The event
      */
     public static void actionToCloseFollowedMission(final ButtonInteractionEventFiller filler) {
-        DBMissionFollow mission = getMissionFollowByMessageID(filler.event.getMessageId().asString());
+        DBMissionFollow mission = getMissionFollowByChannelID(filler.event.getInteraction().getChannelId().asString());
         if (mission == null) {
             filler.event.reply(InteractionApplicationCommandCallbackSpec.builder()
-                    .addEmbed(EmbedCreateSpec.builder()
-                            .title("Erreur")
-                            .color(ColorsUsed.same)
-                            .description("Le suivis de mission que vous cherchez n'existe pas !")
-                            .build())
-                    .build()).subscribe();
+                .ephemeral(true)
+                .addEmbed(EmbedCreateSpec.builder()
+                    .title("Erreur")
+                    .color(ColorsUsed.same)
+                    .description("Le suivis de mission que vous cherchez n'existe plus !")
+                    .build())
+                .build()).subscribe();
             return;
         }
+        startAway(() -> {
+            filler.event.deferReply().block();
+            filler.event.deleteReply().subscribe();
+        });
         closeFollowedMission(filler.event.getInteraction().getMember().get().getId().asString(), mission);
     }
 
     /**
      * Get the mission follow from a message.
      *
-     * @param messageID the message Id
+     * @param channelID the channel Id
      * @return the missionFollow who own the message.
      */
-    public static DBMissionFollow getMissionFollowByMessageID(final String messageID) {
-        return DBManager.getMissionFollowFromMessage(messageID);
+    public static DBMissionFollow getMissionFollowByChannelID(final String channelID) {
+        return DBManager.getMissionFollowFromChannel(channelID);
     }
 
     /**
@@ -124,13 +157,13 @@ public class MissionFollowWorker implements Worker {
             Logger.logMessage(filler.mem.entity.getTag() + " followed the mission \"" + mission.getTitle() + "\". (Discord input)");
             Snowflake channelId = followThisMission(mission, member_react_id);
             filler.event.reply(InteractionApplicationCommandCallbackSpec.builder()
-                    .ephemeral(true)
-                    .addEmbed(EmbedCreateSpec.builder()
-                            .title("Suivis de mission")
-                            .description("Un channel privé a été créé -> <#" + channelId.asString() + "> !")
-                            .color(ColorsUsed.same)
-                            .build())
-                    .build()).subscribe();
+                .ephemeral(true)
+                .addEmbed(EmbedCreateSpec.builder()
+                    .title("Suivis de mission")
+                    .description("Un channel privé a été créé -> <#" + channelId.asString() + "> !")
+                    .color(ColorsUsed.same)
+                    .build())
+                .build()).subscribe();
             return true;
         }
         return false;
@@ -163,31 +196,31 @@ public class MissionFollowWorker implements Worker {
         Set<PermissionOverwrite> set = getPermissionsOverrideCreatePrivateChannel(mission, member_react_id);
         DBManager.incrementMissionFollowCount();
         GuildMessageChannel channel = Core.devarea.createTextChannel(TextChannelCreateSpec.builder()
-                .parentId(Core.data.mission_follow_category)
-                .name("Suivis n°" + DBManager.currentMissionFollowCount())
-                .permissionOverwrites(set)
-                .build()).block();
+            .parentId(Core.data.mission_follow_category)
+            .name("Suivis n°" + DBManager.currentMissionFollowCount())
+            .permissionOverwrites(set)
+            .build()).block();
 
 
         // Send basics information
         channel.createMessage(missionFollowMissionPreview(mission)).subscribe();
         Message message =
-                channel.createMessage(missionFollowedCreateMessageExplication(member_react_id, mission)).block();
+            channel.createMessage(missionFollowedCreateMessageExplication(member_react_id, mission)).block();
 
         Mem client = mission.getMember();
         Mem dev = MemberCache.get(member_react_id.asString());
         channel.createMessage(MessageCreateSpec.builder()
-                .addEmbed(EmbedCreateSpec.builder()
-                        .color(ColorsUsed.same)
-                        .title("Avis")
-                        .addField(client.entity.getDisplayName(), "Note " + moyeneNote(client.db()) + "/5.\n -> [Voir plus](" + DOMAIN_NAME + "/member-profile?member_id=" + client.getSId() + "&open=2)", true)
-                        .addField("", "", true)
-                        .addField(dev.entity.getDisplayName(), "Note " + moyeneNote(dev.db()) + "/5.\n -> [Voir plus](" + DOMAIN_NAME + "/member-profile?member_id=" + dev.getSId() + "&open=2)", true)
-                        .build())
-                .build()).subscribe();
+            .addEmbed(EmbedCreateSpec.builder()
+                .color(ColorsUsed.same)
+                .title("Avis")
+                .addField(client.entity.getDisplayName(), "Note " + moyeneNote(client.db()) + "/5.\n -> [Voir plus](" + DOMAIN_NAME + "/member-profile?member_id=" + client.getSId() + "&open=2)", true)
+                .addField("", "", true)
+                .addField(dev.entity.getDisplayName(), "Note " + moyeneNote(dev.db()) + "/5.\n -> [Voir plus](" + DOMAIN_NAME + "/member-profile?member_id=" + dev.getSId() + "&open=2)", true)
+                .build())
+            .build()).subscribe();
 
         DBManager.createMissionFollow(new DBMissionFollow(DBManager.currentMissionFollowCount(), new DBMessage(message),
-                mission.getCreatedById(), member_react_id.asString()));
+            mission.getCreatedById(), member_react_id.asString()));
 
         return channel.getId();
     }
@@ -219,49 +252,49 @@ public class MissionFollowWorker implements Worker {
     private static void closeFollowedMission(String memberRequest, DBMissionFollow missionFollow) {
         if (missionFollow != null) {
             ((GuildMessageChannel) ChannelCache.watch(missionFollow.getMessage().getChannelID()).entity)
-                    .createMessage(missionFollowedCloseIn1Hour(memberRequest)).subscribe();
+                .createMessage(missionFollowedCloseIn1Hour(memberRequest)).subscribe();
 
             missionFollow.getMessage().getMessage().edit(MessageEditSpec.builder()
-                    .components(new ArrayList<>())
-                    .build()).subscribe();
+                .components(new ArrayList<>())
+                .build()).subscribe();
+
+            DBManager.deleteMissionFollow(missionFollow);
 
             startAwayIn(() -> {
-
-                DBManager.deleteMissionFollow(missionFollow);
 
                 Set<PermissionOverwrite> set = getPermissionOverwritesToHideChannel(missionFollow);
 
                 // Rename channel and set Perms
                 ((TextChannel) ChannelCache.watch(missionFollow.getMessage().getChannelID()).entity).edit(TextChannelEditSpec.builder()
-                        .name("Closed n°" + missionFollow.getN())
-                        .permissionOverwrites(set)
-                        .build()).subscribe();
+                    .name("Closed n°" + missionFollow.getN())
+                    .permissionOverwrites(set)
+                    .build()).subscribe();
 
                 // Create the MP Embed
                 startAway(() -> {
                     EmbedCreateSpec embed = EmbedCreateSpec.builder()
-                            .title("Clôture du suivi n°" + missionFollow.getN() + " !")
-                            .description("Le suivi de mission n°" + missionFollow.getN() + " a été clôturé à la " +
-                                    "demande de <@" + memberRequest + ">.\n\nSi l'échange a mené à la réalisation de la mission n'hésitez pas à donner un avi sur <@" + missionFollow.getDevId() + "> !")
-                            .color(ColorsUsed.same)
-                            .build();
+                        .title("Clôture du suivi n°" + missionFollow.getN() + " !")
+                        .description("Le suivi de mission n°" + missionFollow.getN() + " a été clôturé à la " +
+                                     "demande de <@" + memberRequest + ">.\n\nSi l'échange a mené à la réalisation de la mission n'hésitez pas à donner un avi sur <@" + missionFollow.getDevId() + "> !")
+                        .color(ColorsUsed.same)
+                        .build();
 
                     MemberCache.get(missionFollow.getClientId()).entity.getPrivateChannel().block().createMessage(MessageCreateSpec.builder()
-                            .addEmbed(embed)
-                            .addComponent(ActionRow.of(Button.primary("avis_" + missionFollow.getDevId() + "_C", ReactionEmoji.codepoints("U+1F4D5"), "Laisser un avis.")))
-                            .build()).subscribe();
+                        .addEmbed(embed)
+                        .addComponent(ActionRow.of(Button.primary("avis_" + missionFollow.getDevId() + "_C", ReactionEmoji.codepoints("U+1F4D5"), "Laisser un avis.")))
+                        .build()).subscribe();
                 });
                 startAway(() -> {
                     EmbedCreateSpec embed = EmbedCreateSpec.builder()
-                            .title("Clôture du suivi n°" + missionFollow.getN() + " !")
-                            .description("Le suivi de mission n°" + missionFollow.getN() + " a été clôturé à la " +
-                                    "demande de <@" + memberRequest + ">.\n\nSi l'échange a mené à la réalisation de la mission n'hésitez pas à donner un avi sur <@" + missionFollow.getClientId() + "> !")
-                            .color(ColorsUsed.same)
-                            .build();
+                        .title("Clôture du suivi n°" + missionFollow.getN() + " !")
+                        .description("Le suivi de mission n°" + missionFollow.getN() + " a été clôturé à la " +
+                                     "demande de <@" + memberRequest + ">.\n\nSi l'échange a mené à la réalisation de la mission n'hésitez pas à donner un avi sur <@" + missionFollow.getClientId() + "> !")
+                        .color(ColorsUsed.same)
+                        .build();
                     MemberCache.get(missionFollow.getDevId()).entity.getPrivateChannel().block().createMessage(MessageCreateSpec.builder()
-                            .addEmbed(embed)
-                            .addComponent(ActionRow.of(Button.primary("avis_" + missionFollow.getClientId() + "_F", ReactionEmoji.codepoints("U+1F4D5"), "Laisser un avis.")))
-                            .build()).subscribe();
+                        .addEmbed(embed)
+                        .addComponent(ActionRow.of(Button.primary("avis_" + missionFollow.getClientId() + "_F", ReactionEmoji.codepoints("U+1F4D5"), "Laisser un avis.")))
+                        .build()).subscribe();
                 });
 
             }, 3600000L);

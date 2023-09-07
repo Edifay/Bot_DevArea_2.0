@@ -7,7 +7,7 @@ public class ThreadHandler {
     }
 
     public static void repeatEachMillis(final Runnable runnable, final long millis) {
-        startAway(()->{
+        startAway(() -> {
             try {
                 while (true) {
                     runnable.run();
@@ -19,7 +19,7 @@ public class ThreadHandler {
     }
 
     public static void startAwayIn(final Runnable runnable, final long millis) {
-        startAway(()->{
+        startAway(() -> {
             try {
                 Thread.sleep(millis);
             } catch (Exception ignored) {

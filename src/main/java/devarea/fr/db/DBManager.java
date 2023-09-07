@@ -235,6 +235,13 @@ public class DBManager {
         return missions;
     }
 
+    public static ArrayList<DBMissionFollow> getMissionFollow() {
+        FindIterable<Document> documents = MISSIONS_FOLLOW.find();
+        ArrayList<DBMissionFollow> missions = new ArrayList<>();
+        documents.forEach((Block<? super Document>) document -> missions.add(new DBMissionFollow(document)));
+        return missions;
+    }
+
     public static void createMissionFollow(final DBMissionFollow missionFollow) {
         MISSIONS_FOLLOW.insertOne(missionFollow.toDocument());
     }
@@ -243,8 +250,8 @@ public class DBManager {
         MISSIONS_FOLLOW.deleteOne(missionFollow.toDocument());
     }
 
-    public static DBMissionFollow getMissionFollowFromMessage(final String id) {
-        Document doc = MISSIONS_FOLLOW.find(new Document("message.idMessage", id)).first();
+    public static DBMissionFollow getMissionFollowFromChannel(final String id) {
+        Document doc = MISSIONS_FOLLOW.find(new Document("message.idChannel", id)).first();
         return doc == null ? null : new DBMissionFollow(doc);
     }
 

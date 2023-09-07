@@ -74,6 +74,7 @@ public class InitialData {
     public Snowflake bump_channel = null;
     public Snowflake command_channel = null;
     public Snowflake freelance_channel = null;
+    public Snowflake suggestion_channel = null;
 
     // Voice Channel
     public Snowflake help_voiceChannel = null;

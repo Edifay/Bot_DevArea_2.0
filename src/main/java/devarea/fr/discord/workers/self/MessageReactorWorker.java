@@ -22,13 +22,18 @@ public class MessageReactorWorker implements Worker {
             if (filler.event.getMessage().getChannelId().equals(Core.data.log_channel))
                 return;
 
+            if (event.getMessage().getChannelId().equals(Core.data.suggestion_channel)) {
+                event.getMessage().addReaction(ReactionEmoji.unicode("👍")).subscribe();
+                event.getMessage().addReaction(ReactionEmoji.unicode("👎")).subscribe();
+            }
+
             if (messageContain(event, "devarea") || messageContain(event, "dev'area") || messageContain(event,
-                    "dev area")) {
+                "dev area")) {
                 event.getMessage().addReaction(ReactionEmoji.custom(Objects.requireNonNull(Core.devarea.getGuildEmojiById(Snowflake.of(
-                        "983423296341176331")).block()))).subscribe();
+                    "983423296341176331")).block()))).subscribe();
             }
             if (messageContain(event, "salut") || messageContain(event, "coucou") || messageContain(event,
-                    "hey") || messageContain(event, "bonjour") || messageContain(event, "hello")) {
+                "hey") || messageContain(event, "bonjour") || messageContain(event, "hello")) {
                 event.getMessage().addReaction(ReactionEmoji.unicode("👋")).subscribe();
             }
             if (messageContain(event, "pour quoi") || messageContain(event, "pourquoi") || messageContain(event, "comment "

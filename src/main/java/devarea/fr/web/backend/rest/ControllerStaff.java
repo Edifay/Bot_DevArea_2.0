@@ -7,17 +7,23 @@ import devarea.fr.web.backend.entities.WebStaff;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 
+import static devarea.fr.web.SpringBackend.checkStatus;
+
 
 @CrossOrigin()
 @RestController
+@RequestMapping("staff")
 public class ControllerStaff {
 
-    @GetMapping(value = "staff/staff_list", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "staff_list", produces = MediaType.APPLICATION_JSON_VALUE)
     public static WebStaff[] getStaffList() {
+        checkStatus();
+
         WebStaff[] staffs = DBManager.getStaffs().toArray(WebStaff[]::new);
 
         for (WebStaff staff : staffs) {

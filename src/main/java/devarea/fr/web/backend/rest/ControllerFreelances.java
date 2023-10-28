@@ -10,13 +10,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
+import static devarea.fr.web.SpringBackend.checkStatus;
+
 @CrossOrigin()
 @RestController
+@RequestMapping("freelances")
 public class ControllerFreelances {
 
-    @GetMapping("freelances/preview")
+    @GetMapping("preview")
     public static WebFreelance.WebFreelancePreview[] preview(@RequestParam(value = "start", defaultValue = "0") int start,
                                                              @RequestParam(value = "end", defaultValue = "5") int end) {
+        checkStatus();
 
         ArrayList<DBFreelance> freelances = DBManager.getFreelancesList();
 
@@ -38,9 +42,10 @@ public class ControllerFreelances {
     }
 
 
-    @PostMapping("freelances/set")
+    @PostMapping("set")
     public static boolean setFreelance(@RequestBody() WebFreelance freelance,
                                        @RequestParam(value = "code") String code) {
+        checkStatus();
 
         Mem mem;
         if ((mem = AuthWorker.getMemberOfCode(code)) == null)
@@ -64,14 +69,16 @@ public class ControllerFreelances {
         return FreelanceWorker.setFreelance(mapper, mem);
     }
 
-    @GetMapping("freelances/delete")
+    @GetMapping("delete")
     public static boolean deleteFreelance(@RequestParam(value = "code") String code) {
+        checkStatus();
         FreelanceWorker.deleteFreelanceOf(AuthWorker.getIdOfCode(code));
         return true;
     }
 
-    @GetMapping("freelances/bump")
+    @GetMapping("bump")
     public static boolean bumpFreelance(@RequestParam(value = "code") String code) {
+        checkStatus();
         return FreelanceWorker.bumpFreeLance(AuthWorker.getIdOfCode(code));
     }
 

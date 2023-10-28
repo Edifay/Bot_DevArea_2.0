@@ -10,6 +10,7 @@ import devarea.fr.discord.cache.MemberCache;
 import devarea.fr.discord.workers.linked.FreelanceWorker;
 import devarea.fr.discord.workers.self.StatsWorker;
 import devarea.fr.utils.Logger;
+import devarea.fr.utils.PasswordGenerator;
 import devarea.fr.web.backend.entities.WebReseau;
 import devarea.fr.web.backend.entities.WebStaff;
 import org.bson.Document;
@@ -58,6 +59,9 @@ public class DBManager {
     private static MongoCollection<Document> STAFF;
     private static MongoCollection<Document> REDIRECT_CONFIG;
 
+    private static MongoCollection<Document> CHALLENGES;
+
+
     public static void initDB() {
 
         Logger.logTitle("Connection to DEVAREA database.");
@@ -78,6 +82,7 @@ public class DBManager {
             STAFF = DEVAREA_DB.getCollection("STAFF");
             REDIRECT_CONFIG = DEVAREA_DB.getCollection("REDIRECT_CONFIG");
             AVIS = DEVAREA_DB.getCollection("AVIS");
+            CHALLENGES = DEVAREA_DB.getCollection("CHALLENGES");
 
 
             Logger.logMessage("Connection to DEVAREA database success.");
@@ -134,8 +139,8 @@ public class DBManager {
 
     public static void incrementXP(final String id, final int incrementation) {
         USERDATA.updateOne(MemberAdapter.memberToDocument(id), Updates.combine(
-                Updates.inc("xp", incrementation),
-                Updates.inc("xp_history." + new SimpleDateFormat("dd-MM-yyyy").format(Date.from(Instant.now())), incrementation)
+            Updates.inc("xp", incrementation),
+            Updates.inc("xp_history." + new SimpleDateFormat("dd-MM-yyyy").format(Date.from(Instant.now())), incrementation)
         ));
     }
 
@@ -296,8 +301,8 @@ public class DBManager {
 
     public static void bumpFreelanceOf(final String id, DBMessage message) {
         FREELANCES.updateOne(new Document("_id", id), Updates.combine(
-                Updates.set("message", message.toDocument()),
-                Updates.set("lastBump", System.currentTimeMillis())
+            Updates.set("message", message.toDocument()),
+            Updates.set("lastBump", System.currentTimeMillis())
         ));
     }
 
@@ -323,8 +328,8 @@ public class DBManager {
     public static void setXPLeft(final String id, final int xp) {
         if (XP_LEFT.find(new Document("_id", id)).first() == null)
             XP_LEFT.insertOne(new Document()
-                    .append("_id", id)
-                    .append("xp", xp));
+                .append("_id", id)
+                .append("xp", xp));
         else
             XP_LEFT.updateOne(new Document("_id", id), Updates.set("xp", xp));
     }
@@ -387,6 +392,31 @@ public class DBManager {
         if (doc == null)
             return null;
         return (String) doc.get("link");
+    }
+
+
+    public static DBChallenge getChallengeForId(final String _id) {
+        Document doc = CHALLENGES.find(new Document("_id", _id)).first();
+        if (doc == null)
+            return addKeyChallengeFor(_id, PasswordGenerator.passwordGenerator.generate(15));
+        return new DBChallenge(doc);
+    }
+
+    public static DBChallenge addKeyChallengeFor(final String _id, final String key) {
+        DBChallenge challenge = new DBChallenge(_id, key);
+        CHALLENGES.insertOne(challenge.toDocument());
+        return challenge;
+    }
+
+    public static void updateChallenge(final DBChallenge challenge) {
+        CHALLENGES.updateOne(new Document("_id", challenge.getId()), challenge.toUpdates());
+    }
+
+    public static DBChallenge getChallengeForKey(final String key) {
+        Document doc = CHALLENGES.find(new Document("key", key)).first();
+        if (doc == null)
+            return null;
+        return new DBChallenge(doc);
     }
 
 }

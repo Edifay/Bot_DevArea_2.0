@@ -41,6 +41,8 @@ public class Core {
     public static GatewayDiscordClient client;
     public static InitialData data;
     public static Guild devarea;
+
+    public static boolean initStatus = true;
     protected static final ArrayList<EventOwner<?>> globalListeners = new ArrayList<>();
 
     public static void initCoreDiscordClient() throws FileNotFoundException {
@@ -53,10 +55,10 @@ public class Core {
         Logger.logTitle("Connecting to discord.");
         final String token = new Scanner(new FileInputStream("./token.token")).nextLine();
         client = discord4j.core.DiscordClient.create(token)
-                .gateway()
-                .setEnabledIntents(IntentSet.all())
-                .login()
-                .block();
+            .gateway()
+            .setEnabledIntents(IntentSet.all())
+            .login()
+            .block();
         Logger.logMessage("Connection to discord success.");
 
         Logger.logTitle("Fetching Dev'Area Guild.");
@@ -75,6 +77,7 @@ public class Core {
         setupDiscordEvent();
         Logger.logMessage("Events setup success.");
 
+        initStatus = true;
     }
 
     private static void assetsLoader() {

@@ -1,5 +1,6 @@
 package devarea.fr.discord.workers.linked;
 
+import devarea.fr.Main;
 import devarea.fr.db.DBManager;
 import devarea.fr.db.data.*;
 import devarea.fr.discord.Core;
@@ -37,6 +38,8 @@ public class MissionFollowWorker implements Worker {
 
     @Override
     public ActionEvent<?> setupEvent() {
+        if (Main.developing)
+            return null;
 
         repeatEachMillis(() -> {
             ArrayList<DBMissionFollow> missionFollows = DBManager.getMissionFollow();

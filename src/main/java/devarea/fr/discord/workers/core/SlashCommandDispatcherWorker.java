@@ -9,7 +9,6 @@ import devarea.fr.utils.Logger;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
 import discord4j.discordjson.json.ApplicationCommandRequest;
-import org.apache.juli.logging.Log;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 

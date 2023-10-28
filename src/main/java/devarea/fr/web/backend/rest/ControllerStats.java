@@ -15,21 +15,22 @@ import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Role;
 import org.bson.Document;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
+import static devarea.fr.web.SpringBackend.checkStatus;
+
 @CrossOrigin()
 @RestController
+@RequestMapping("stats")
 public class ControllerStats {
 
     private final static ObjectMapper mapper = new ObjectMapper();
 
-    @GetMapping(value = "stats/rolesCount_list", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "rolesCount_list", produces = MediaType.APPLICATION_JSON_VALUE)
     public static WebRoleCount[] rolesCounts_list(@RequestParam(value = "roles", defaultValue = "") String rolesString) {
+        checkStatus();
 
         try {
 
@@ -56,7 +57,7 @@ public class ControllerStats {
         return null;
     }
 
-    @GetMapping(value = "/stats/xp_list")
+    @GetMapping(value = "xp_list")
     public static WebXPMember[] xp_list(@RequestParam(value = "start", defaultValue = "0") int start, @RequestParam(value = "end", defaultValue = "50") int end) {
 
         if (start > end) {
@@ -86,7 +87,7 @@ public class ControllerStats {
         return xpList.toArray(WebXPMember[]::new);
     }
 
-    @GetMapping(value = "/stats/member_count")
+    @GetMapping(value = "member_count")
     public static int getMemberCount() {
         return MemberCache.cacheSize();
     }

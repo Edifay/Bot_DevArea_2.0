@@ -38,7 +38,7 @@ public class ProfileLinkWorker implements Worker {
     public void onStart() {
         try {
             font = Font.createFont(Font.TRUETYPE_FONT,
-                    Core.class.getResource("/assets/fonts/font.otf").openStream());
+                Core.class.getResource("/assets/fonts/font.otf").openStream());
         } catch (FontFormatException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -91,19 +91,19 @@ public class ProfileLinkWorker implements Worker {
                 try {
                     // Creating a new message Builder
                     MessageCreateSpec.Builder msgBuilder = MessageCreateSpec.builder()
-                            .addEmbed(EmbedCreateSpec.builder()
-                                    .title("Profil de : " + mem.entity.getDisplayName())
-                                    .image("attachment://profile.png")
-                                    .color(discord4j.rest.util.Color.of(255, 87, 51)).build()
-                            );
+                        .addEmbed(EmbedCreateSpec.builder()
+                            .title("Profil de : " + mem.entity.getDisplayName())
+                            .image("attachment://profile.png")
+                            .color(discord4j.rest.util.Color.of(255, 87, 51)).build()
+                        );
 
                     // Creating components to draw !
                     ByteArrayInputStream image_stream = generateImageStreamForMember(mem);
 
                     // Finalize builder
                     msgBuilder
-                            .addFile("profile.png", image_stream)
-                            .addComponent(ActionRow.of(Button.link(DOMAIN_NAME + "member-profile?member_id=" + mem.getId().asString(), "devarea.fr")));
+                        .addFile("profile.png", image_stream)
+                        .addComponent(ActionRow.of(Button.link(DOMAIN_NAME + "member-profile?member_id=" + mem.getId().asString(), "devarea.fr")));
 
                     chan.entity.createMessage(msgBuilder.build()).subscribe();
                 } catch (Exception e) {
@@ -126,8 +126,8 @@ public class ProfileLinkWorker implements Worker {
 
         // Draw Member Icon !
         g.drawImage(makeRoundedCorner(ImageIO.read(new URL(mem.entity.getAvatarUrl())), 10000), 25, 20, 210,
-                210,
-                null);
+            210,
+            null);
 
         // Draw UserName
         g.setFont(font);
@@ -138,17 +138,17 @@ public class ProfileLinkWorker implements Worker {
         int level = XPWorker.getLevelForXp(xp);
 
         float percentage =
-                (float) (xp - XPWorker.getAmountForLevel(level)) / (XPWorker.getAmountForLevel(level + 1) - XPWorker.getAmountForLevel(level));
+            (float) (xp - XPWorker.getAmountForLevel(level)) / (XPWorker.getAmountForLevel(level + 1) - XPWorker.getAmountForLevel(level));
 
         // Xp bar
         g.setColor(Color.black);
         g.setStroke(new BasicStroke(38.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, null,
-                0.0f));
+            0.0f));
         g.draw(new Line2D.Float(249, 300, 1151, 300));
 
         g.setColor(Color.white);
         g.setStroke(new BasicStroke(35.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, null,
-                0.0f));
+            0.0f));
         g.draw(new Line2D.Float(250, 300, 1150, 300));
         g.setColor(new Color(248, 176, 86));
         g.draw(new Line2D.Float(250, 300, 250 + (percentage * 900), 300));
@@ -174,9 +174,9 @@ public class ProfileLinkWorker implements Worker {
         // Draw max of 4 badges inline
         for (int i = 0; i < badges.length && i < 4; i++) {
             g.drawImage(badges[i].getLocal_icon(), inset_x + 68 + (i * 250),
-                    inset_y + 10, 107, 107, null);
+                inset_y + 10, 107, 107, null);
             drawCenteredString(g, badges[i].getName(), inset_x + 120 + (i * 250), inset_y + 150,
-                    badges_font);
+                badges_font);
         }
 
         // Transform image to output

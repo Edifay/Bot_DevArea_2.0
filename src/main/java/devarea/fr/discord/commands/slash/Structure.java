@@ -27,7 +27,7 @@ public class Structure extends SlashCommand {
                      "- Pose ta question dans le bon salon. Pour obtenir ces derniers rends toi ici : <id:customize>.\n\n" +
                      "- Si tu prends le rôle intermédiaire ou pro, on sera moins sympa si tu poses une question évidente <:ayy:814189080232722492>.\n\n" +
                      "- Pense à nous présenter proprement ton code formaté sur discord, tu peux insérer 3 \"back tics\" (alt-gr + 7)  au début et à la fin de ton code, cela nous permet de le tester facilement.\n\n" +
-                     "- De ce fait, évite les capture d'écrans, c'est compliqué à copier/coller et à debugger.\n\n" +
+                     "- De ce fait, évite les captures d'écrans, c'est compliqué à copier/coller et à debugger.\n\n" +
                      "- Pense à nous montrer ton/tes messages d'erreurs, pense aussi à les lire toi même.\n\n" +
                      "- N'oublie pas de te référer à la documentation ou de poser tes questions à Google avant de la poser ici.\n\n" +
                      "- Une fonction `/devhelp` existe, utilise là après avoir posé ta question si tu n'as pas de réponse au bout d'un certains temps.\n\n" +

@@ -8,21 +8,27 @@ import devarea.fr.utils.Logger;
 import devarea.fr.web.backend.entities.userInfos.WebPublicUserInfos;
 import org.springframework.web.bind.annotation.*;
 
+import static devarea.fr.web.SpringBackend.checkStatus;
+
 
 @CrossOrigin()
 @RestController
+@RequestMapping("user-data")
 public class ControllerUserData {
 
-    @GetMapping("user-data/member-profile")
+    @GetMapping("member-profile")
     public static WebPublicUserInfos getMemberProfile(@RequestParam(value = "member_id", required = true) String id) {
+        checkStatus();
         Mem mem = MemberCache.get(id);
         Logger.logMessage("Profile of " + mem.entity.getTag() + " was consulted.");
         return new WebPublicUserInfos(mem);
     }
 
-    @PostMapping("user-data/update-description")
+    @PostMapping("update-description")
     public static boolean updateUserDescription(@RequestBody(required = false) String description,
                                                 @RequestParam(value = "code") String code) {
+        checkStatus();
+
         Mem mem;
         if ((mem = AuthWorker.getMemberOfCode(code)) == null)
             return false;

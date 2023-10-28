@@ -11,15 +11,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
+import static devarea.fr.web.SpringBackend.checkStatus;
+
 @CrossOrigin()
 @RestController
+@RequestMapping("missions")
 public class ControllerMissions {
 
 
-    @GetMapping("missions/preview")
+    @GetMapping("preview")
     public static WebMission.WebMissionPreview[] preview(@RequestParam(value = "start", defaultValue = "0") int start,
                                                          @RequestParam(value = "end", defaultValue =
                                                                  Integer.MAX_VALUE + "") int end) {
+        checkStatus();
+
         final ArrayList<DBMission> missions = DBManager.getMissions();
         final int size = missions.size();
 
@@ -30,17 +35,21 @@ public class ControllerMissions {
         return WebMission.getWebMissionsPreview(new ArrayList<>(missions.subList(start, end)));
     }
 
-    @GetMapping("missions/get")
+    @GetMapping("get")
     public static WebMission getMission(@RequestParam(value = "id", required = true) String id) {
+        checkStatus();
+
         DBMission mission;
         if ((mission = MissionWorker.getMissionBy_Id(id)) == null)
             return null;
         return new WebMission(mission);
     }
 
-    @GetMapping("missions/took")
+    @GetMapping("took")
     public static String[] tookMission(@RequestParam(value = "missionID", required = true) String missionID,
                                        @RequestParam(value = "code", required = true) String code) {
+        checkStatus();
+
         Mem mem;
         if ((mem = AuthWorker.getMemberOfCode(code)) == null)
             return new String[]{"wrong_code"};
@@ -51,9 +60,10 @@ public class ControllerMissions {
         return new String[]{MissionFollowWorker.webTookMission(mission, mem)};
     }
 
-    @GetMapping("missions/delete")
+    @GetMapping("delete")
     public static String[] delete(@RequestParam(value = "missionID") String id,
                                   @RequestParam(value = "code") String code) {
+        checkStatus();
 
         Mem mem;
         if ((mem = AuthWorker.getMemberOfCode(code)) == null)
@@ -68,8 +78,9 @@ public class ControllerMissions {
         return new String[]{"deleted"};
     }
 
-    @PostMapping("missions/create")
+    @PostMapping("create")
     public static boolean postMission(@RequestBody WebMission.ReceiveMission mission, @RequestParam(value = "code") String code) {
+        checkStatus();
 
         Mem mem;
         if ((mem = AuthWorker.getMemberOfCode(code)) == null)

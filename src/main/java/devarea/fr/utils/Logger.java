@@ -65,9 +65,9 @@ public class Logger {
 
                     if (logs.isEmpty() || message.length() + logs.peek().length() >= 1994) {
                         ((GuildMessageChannel) ChannelCache.watch(Core.data.log_channel.asString()).entity)
-                                .createMessage(message.append("```").toString()).subscribe(msg -> {
-                                }, throwable -> {
-                                });
+                            .createMessage(message.append("```").toString()).subscribe(msg -> {
+                            }, throwable -> {
+                            });
                         message = new StringBuilder("```");
                     }
                 }
@@ -109,14 +109,16 @@ public class Logger {
         @Override
         public void println(String x) {
             super.println(x);
-            logs.add(x);
+            if (!developing)
+                logs.add(x);
         }
 
 
         @Override
         public void println(Object x) {
             super.println(x);
-            logs.add(x.toString());
+            if (!developing)
+                logs.add(x.toString());
         }
 
     }

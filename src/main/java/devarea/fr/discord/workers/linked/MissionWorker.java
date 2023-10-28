@@ -209,13 +209,13 @@ public class MissionWorker implements Worker {
     private static void sendMissionDeleteSuccessful(ButtonInteractionEventFiller filler, DBMission current_mission) {
         // This action is private channel ChannelCache cannot be used !
         filler.event.getInteraction().getChannel().block().getMessageById(Snowflake.of(current_mission.getMessageUpdate().getMessageID())).block()
-                .edit(MessageEditSpec.builder().addEmbed(EmbedCreateSpec.builder()
-                                .title("Mission supprimée !")
-                                .description("La mission : **" + current_mission.getTitle() + "**, a été " +
-                                        "définitivement supprimée !")
-                                .color(ColorsUsed.just).build())
-                        .components(Possible.of(Optional.of(new ArrayList<>())))
-                        .build()).subscribe();
+            .edit(MessageEditSpec.builder().addEmbed(EmbedCreateSpec.builder()
+                    .title("Mission supprimée !")
+                    .description("La mission : **" + current_mission.getTitle() + "**, a été " +
+                                 "définitivement supprimée !")
+                    .color(ColorsUsed.just).build())
+                .components(Possible.of(Optional.of(new ArrayList<>())))
+                .build()).subscribe();
     }
 
     /**
@@ -227,14 +227,14 @@ public class MissionWorker implements Worker {
     private static void sendMissionRevalidateSuccessful(ButtonInteractionEventFiller filler, DBMission current_mission) { // TODO Extract message
         // This action is private channel ChannelCache cannot be used !
         filler.event.getInteraction().getChannel().block().getMessageById(Snowflake.of(current_mission.getMessageUpdate().getMessageID())).block()
-                .edit(MessageEditSpec.builder().addEmbed(EmbedCreateSpec.builder()
-                                .title("Mission actualisée !")
-                                .description("La mission : **" + current_mission.getTitle() + "**, a été définie comme" +
-                                        " valide pour encore 7 jours.\n\nVous recevrez une nouvelle demande de " +
-                                        "validation dans 7 jours.")
-                                .color(ColorsUsed.just).build())
-                        .components(Possible.of(Optional.of(new ArrayList<>())))
-                        .build()).block();
+            .edit(MessageEditSpec.builder().addEmbed(EmbedCreateSpec.builder()
+                    .title("Mission actualisée !")
+                    .description("La mission : **" + current_mission.getTitle() + "**, a été définie comme" +
+                                 " valide pour encore 7 jours.\n\nVous recevrez une nouvelle demande de " +
+                                 "validation dans 7 jours.")
+                    .color(ColorsUsed.just).build())
+                .components(Possible.of(Optional.of(new ArrayList<>())))
+                .build()).block();
         current_mission.setLastUpdate(System.currentTimeMillis());
         current_mission.setMessageUpdate(null);
         DBManager.updateMission(current_mission);
@@ -254,15 +254,15 @@ public class MissionWorker implements Worker {
         Mem mission_member = MemberCache.get(mission.getCreatedById());// TODO Extract message
         try {
             Message message = mission_member.entity.getPrivateChannel().block().createMessage(MessageCreateSpec.builder()
-                    .addEmbed(EmbedCreateSpec.builder()
-                            .title("Vérification de la validité d'une mission.")
-                            .description("Vous avez une mission actuellement active !\n\nLe titre de cette mission est : " +
-                                    "**" + mission.getTitle() + "**\n\nIl vous reste 3 jours pour nous confirmer ou non " +
-                                    "si cette mission est toujours d'actualité.\n\nSi oui : <:ayy:" + Core.data.yes.asString() + "> si non : <:ayy:" + Core.data.no.asString() + ">.")
-                            .color(ColorsUsed.same).build())
-                    .addComponent(ActionRow.of(Button.primary("mission_yes", ReactionEmoji.custom(GuildEmojiCache.watch(Core.data.yes.asString()))),
-                            Button.primary("mission_no", ReactionEmoji.custom(GuildEmojiCache.watch(Core.data.no.asString())))))
-                    .build()).block();
+                .addEmbed(EmbedCreateSpec.builder()
+                    .title("Vérification de la validité d'une mission.")
+                    .description("Vous avez une mission actuellement active !\n\nLe titre de cette mission est : " +
+                                 "**" + mission.getTitle() + "**\n\nIl vous reste 3 jours pour nous confirmer ou non " +
+                                 "si cette mission est toujours d'actualité.\n\nSi oui : <:ayy:" + Core.data.yes.asString() + "> si non : <:ayy:" + Core.data.no.asString() + ">.")
+                    .color(ColorsUsed.same).build())
+                .addComponent(ActionRow.of(Button.primary("mission_yes", ReactionEmoji.custom(GuildEmojiCache.watch(Core.data.yes.asString()))),
+                    Button.primary("mission_no", ReactionEmoji.custom(GuildEmojiCache.watch(Core.data.no.asString())))))
+                .build()).block();
             mission.setLastUpdate(System.currentTimeMillis() - 604800000);
             mission.setMessageUpdate(new DBMessage(message));
             DBManager.updateMission(mission);
@@ -284,14 +284,14 @@ public class MissionWorker implements Worker {
     public static void validateSpoilAction(DBMission mission) {
         Mem mission_member = MemberCache.get(mission.getCreatedById());
         mission_member.entity.getPrivateChannel().block().getMessageById(Snowflake.of(mission.getMessageUpdate().getMessageID())).block()
-                .edit(MessageEditSpec.builder()
-                        .addEmbed(EmbedCreateSpec.builder()
-                                .title("Mission supprimée !")
-                                .description("Le délai des 3 jours a expiré. La mission : **" + mission.getTitle() +
-                                        "**, a été définitivement supprimée !")
-                                .color(ColorsUsed.wrong).build())
-                        .components(new ArrayList<>()).build())
-                .subscribe();
+            .edit(MessageEditSpec.builder()
+                .addEmbed(EmbedCreateSpec.builder()
+                    .title("Mission supprimée !")
+                    .description("Le délai des 3 jours a expiré. La mission : **" + mission.getTitle() +
+                                 "**, a été définitivement supprimée !")
+                    .color(ColorsUsed.wrong).build())
+                .components(new ArrayList<>()).build())
+            .subscribe();
         clearThisMission(mission);
         DBManager.deleteMission(mission.get_id());
         Logger.logMessage("La mission de " + mission_member.entity.getTag() + " : \"" + mission.getTitle() + "\" a été transféré au spoil. Mission data " + mission);
@@ -321,14 +321,14 @@ public class MissionWorker implements Worker {
     public static EmbedCreateSpec getEmbedOf(final DBMission mission) {
         Member member = mission.getMember().entity;
         return EmbedCreateSpec.builder()
-                .title(mission.getTitle())
-                .description(mission.getDescription() + "\n\nPrix: " + mission.getBudget() + "\nDate de retour: " + mission.getDeadLine() +
-                        "\nType de support: " + mission.getSupport() + "\nLangage: " + mission.getLanguage() + "\nNiveau estimé:" +
-                        " " + mission.getDifficulty() + "\n\nCette mission est posté par : " + "<@" + mission.getCreatedById() + ">.")
-                .color(ColorsUsed.same)
-                .author(member.getDisplayName(), DOMAIN_NAME + "member-profile?member_id=" + member.getId().asString(), member.getAvatarUrl())
-                .timestamp(Instant.now())
-                .build();
+            .title(mission.getTitle())
+            .description(mission.getDescription() + "\n\nPrix: " + mission.getBudget() + "\nDate de retour: " + mission.getDeadLine() +
+                         "\nType de support: " + mission.getSupport() + "\nLangage: " + mission.getLanguage() + "\nNiveau estimé:" +
+                         " " + mission.getDifficulty() + "\n\nCette mission est posté par : " + "<@" + mission.getCreatedById() + ">.")
+            .color(ColorsUsed.same)
+            .author(member.getDisplayName(), DOMAIN_NAME + "member-profile?member_id=" + member.getId().asString(), member.getAvatarUrl())
+            .timestamp(Instant.now())
+            .build();
     }
 
     /**
@@ -362,12 +362,12 @@ public class MissionWorker implements Worker {
         EmbedCreateSpec embed = getEmbedOf(mission);
 
         Message message = missionChannel.createMessage(MessageCreateSpec.builder()
-                .content("**Mission proposée par <@" + mem.getSId() + "> :**")
-                .allowedMentions(AllowedMentions.suppressAll())
-                .addEmbed(embed)
-                .addComponent(ActionRow.of(Button.link(DOMAIN_NAME + "mission?id=" + mission.get_id(),
-                        "devarea.fr"), Button.secondary("took_mission", "Prendre la mission")))
-                .build()).block();
+            .content("**Mission proposée par <@" + mem.getSId() + "> :**")
+            .allowedMentions(AllowedMentions.suppressAll())
+            .addEmbed(embed)
+            .addComponent(ActionRow.of(Button.link(DOMAIN_NAME + "mission?id=" + mission.get_id(),
+                "devarea.fr"), Button.secondary("took_mission", "Prendre la mission")))
+            .build()).block();
 
         mission.setMessage(new DBMessage(message));
 
@@ -379,7 +379,7 @@ public class MissionWorker implements Worker {
 
         updateBottomMessage();
 
-        Logger.logMessage(mem.entity.getTag() + " created a mission : \"" + mission.getTitle() + "\".");
+        Logger.logMessage(mem.entity.getTag() + " <-> " + mem.getSId() + " created a mission : \"" + mission.getTitle() + "\". \n Data : " + mission.toString());
 
         return true;
     }
@@ -401,12 +401,12 @@ public class MissionWorker implements Worker {
     public static class MissionMapper {
 
         protected String title,
-                description,
-                budget,
-                deadLine,
-                language,
-                support,
-                difficulty;
+            description,
+            budget,
+            deadLine,
+            language,
+            support,
+            difficulty;
 
 
         private MissionMapper() {

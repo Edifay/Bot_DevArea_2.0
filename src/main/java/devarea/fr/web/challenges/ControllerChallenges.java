@@ -16,11 +16,14 @@ import static devarea.fr.web.challenges.ChallengesHandler.checkSessionId;
 public class ControllerChallenges {
 
     @GetMapping("create_session")
-    public static int createSession(@RequestParam(value = "key") String clientKey) throws IllegalAccessException {
+    public static SimplePacket createSession(@RequestParam(value = "key") String clientKey, @RequestParam(value = "lang") String lang) throws IllegalAccessException {
         checkStatus();
         checkKey(clientKey);
 
-        return ChallengesHandler.createNewSession(clientKey);
+        if (Language.parse(lang) == null)
+            throw new NullPointerException("No langage with this name !");
+
+        return ChallengesHandler.createNewSession(clientKey, Language.parse(lang));
     }
 
     @GetMapping("challenges_accomplished")
@@ -40,13 +43,12 @@ public class ControllerChallenges {
     }
 
     @RequestMapping("execute_on_challenge/help")
-    public static SimplePacket help(@RequestParam final int sessionId, @RequestBody final SimplePacket packet) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-
+    public static SimplePacket help(@RequestParam final int sessionId, @RequestBody final SimplePacket packet) {
         return new SimplePacket("", "Vous pouvez utiliser la commande 'load : <nom_du_challenge>' pour charger un challenge.");
     }
+
     @RequestMapping("execute_on_challenge/load")
     public static SimplePacket loadChallenge(@RequestParam final int sessionId, @RequestBody final SimplePacket packet) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-
         return loadChallenge(sessionId, packet.getData());
     }
 
@@ -60,7 +62,7 @@ public class ControllerChallenges {
         return executeOnChallenge(sessionId, null, packet);
     }
 
-    @RequestMapping("execute_on_challenge/{action}")
+    @PostMapping("execute_on_challenge/{action}")
     public static SimplePacket executeOnChallenge(@RequestParam final int sessionId, @PathVariable final String action, @RequestBody final SimplePacket packet) throws IllegalAccessException {
         checkStatus();
         checkSessionId(sessionId);

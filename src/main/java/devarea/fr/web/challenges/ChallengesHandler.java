@@ -10,6 +10,8 @@ import org.reflections.util.ConfigurationBuilder;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import static devarea.fr.utils.ThreadHandler.repeatEachMillis;
+
 public class ChallengesHandler {
 
     protected static Random random = new Random();
@@ -20,16 +22,29 @@ public class ChallengesHandler {
 
     public static void init() throws Exception {
         initChallenges();
+
+        repeatEachMillis(() -> {
+            ArrayList<Integer> atRemove = new ArrayList<>();
+            long currentTime = System.currentTimeMillis();
+
+            for (Map.Entry<Integer, Session> entry : sessions.entrySet())
+                if (currentTime - entry.getValue().getCreationDate() > 300000)
+                    atRemove.add(entry.getKey());
+
+            for (Integer key : atRemove)
+                sessions.remove(key);
+
+        }, 300000 /*5 min*/);
     }
 
-    public static int createNewSession(final String clientKey) {
+    public static SimplePacket createNewSession(final String clientKey, final Language lang) {
         int sessionId = random.nextInt() % 100000;
         while (sessions.containsKey(sessionId))
             sessionId = random.nextInt() % 100000;
 
-        sessions.put(sessionId, new Session(clientKey));
+        sessions.put(sessionId, new Session(clientKey, lang));
 
-        return sessionId;
+        return new SimplePacket(String.valueOf(sessionId));
     }
 
     public static List<String> getAccomplishedBy(final String key) {

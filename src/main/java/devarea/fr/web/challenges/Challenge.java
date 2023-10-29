@@ -28,6 +28,10 @@ public abstract class Challenge {
         this.session.validate();
     }
 
+    protected void fail(){
+        this.session.fail();
+    }
+
     public void setState(final String state) {
         this.currentState = state;
     }

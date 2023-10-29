@@ -39,12 +39,18 @@ public class DBChallenge implements DBItem {
         return challengesAccomplished;
     }
 
-    public void addAccomplishedChallenge(final String challenge) {
+    /**
+     *
+     * @param challenge
+     * @return true if the challenge was added, false if the challenge was already done by the member.
+     */
+    public boolean addAccomplishedChallenge(final String challenge) {
         if (this.challengesAccomplished.contains(challenge))
-            return;
+            return false;
         this.challengesAccomplished.add(challenge);
 
         DBManager.updateChallenge(this);
+        return true;
     }
 
     @Override

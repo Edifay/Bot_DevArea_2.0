@@ -2,6 +2,7 @@ package devarea.fr.web.challenges;
 
 import devarea.fr.db.DBManager;
 import devarea.fr.db.data.DBChallenge;
+import devarea.fr.discord.workers.linked.ChallengeWorker;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -13,10 +14,13 @@ public class Session {
     protected long creationDate;
     protected Challenge currentChallenge;
 
-    public Session(final String clientKey) {
+    protected Language lang;
+
+    public Session(final String clientKey, final Language lang) {
         this.clientKey = clientKey;
         this.creationDate = System.currentTimeMillis();
         this.currentChallenge = null;
+        this.lang = lang;
     }
 
 
@@ -40,10 +44,22 @@ public class Session {
     protected void validate() {
         DBChallenge challenge = DBManager.getChallengeForKey(clientKey);
 
-        challenge.addAccomplishedChallenge(this.currentChallenge.name);
+        boolean added = challenge.addAccomplishedChallenge(this.currentChallenge.name);
+        if (added)
+            ChallengeWorker.sendMemberValidatedANewChallenge(challenge.getId(), this.currentChallenge.name);
 
         this.currentChallenge = null;
     }
 
+    protected void fail() {
+        this.currentChallenge = null;
+    }
 
+    public Language getLang() {
+        return lang;
+    }
+
+    public long getCreationDate() {
+        return creationDate;
+    }
 }

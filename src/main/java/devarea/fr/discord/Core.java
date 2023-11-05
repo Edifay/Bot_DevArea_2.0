@@ -42,7 +42,7 @@ public class Core {
     public static InitialData data;
     public static Guild devarea;
 
-    public static boolean initStatus = true;
+    public static boolean initStatus = false;
     protected static final ArrayList<EventOwner<?>> globalListeners = new ArrayList<>();
 
     public static void initCoreDiscordClient() throws FileNotFoundException {

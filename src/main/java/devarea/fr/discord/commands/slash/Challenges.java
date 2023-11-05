@@ -4,6 +4,8 @@ import devarea.fr.db.DBManager;
 import devarea.fr.discord.commands.SlashCommand;
 import devarea.fr.discord.entities.events_filler.SlashCommandFiller;
 import devarea.fr.discord.statics.ColorsUsed;
+import discord4j.core.object.component.ActionRow;
+import discord4j.core.object.component.Button;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
 import discord4j.discordjson.json.ApplicationCommandRequest;
@@ -20,17 +22,24 @@ public class Challenges extends SlashCommand {
     @Override
     public void play(SlashCommandFiller filler) {
         filler.event.reply(InteractionApplicationCommandCallbackSpec.builder()
-            .ephemeral(true)
             .addEmbed(EmbedCreateSpec.builder()
                 .color(ColorsUsed.same)
                 .title("Les Challenges !")
-                .description("Les challenges sont une partie de Dev'Area qui ont pour but de pouvoir proposer des petits défis algorithmqiue de façon ludique de tout niveaux. Et de pouvoir partager avec les autres de leurs résolutions et de leurs difficultées.")
+                .description("""
+                    Les challenges, tout d'abord qu'est ce que c'est ?
+                                            
+                    Un challenge est un petit défi algorithmique et/ou de programmation intéractif proposé par Dev'Area.
+                                            
+                    Le fonctionnement est assez simple, vous avez simplement a télécharger le client dans votre language préféré pour commencer les défis !
+                                            
+                    Le client vous permettra de dialoguer avec le serveur pour recevoir les jeux de tests et validé vos réponses !
+                                            
+                    Vous pouvez voir votre progression dans la page Challenge de [devarea.fr](https://devarea.fr/challenges).
+                    """)
                 .build())
-            .addEmbed(EmbedCreateSpec.builder()
-                .color(ColorsUsed.same)
-                .title("Votre clef challenge :")
-                .description("`" + DBManager.getChallengeForId(filler.mem.getSId()).getKey() + "`")
-                .build())
+            .addComponent(
+                ActionRow.of(Button.secondary("get_challenge_key", "Récupérer ma clef challenge"),
+                    Button.secondary("download_client_redirect", "Récupérer un client")))
             .build()).subscribe();
     }
 }

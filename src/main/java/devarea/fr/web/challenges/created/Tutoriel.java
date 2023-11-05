@@ -38,14 +38,14 @@ public class Tutoriel extends Challenge {
             Voici les bases nécessaires pour réaliser les challenges suivants.
 
             Le Client :
-             - Client client = Client(<key>)
+             - client = Client(<key>)
 
             C'est avec ça que tu communiqueras avec le serveur.
              - La <key> peut être envoyé à d'autres développeurs sans risque. Pas besoin de la caché dans ces codes !
 
             Comment utiliser le client :
              - client.loadChallenge(<nom_du_challenge>) -> permet de charger un challenge.
-             - String result = client.submit(<valeur>) -> permet d'envoyer une donnée au serveur. 'result' contient la valeur de retour du serveur.
+             - result = client.submit(<valeur>) -> permet d'envoyer une donnée au serveur. 'result' contient la valeur de retour du serveur.
              - client.start() -> l'utilisation de cette methode vous sera explicitement demandé par d'inquiétude !
                         
             Voilà pour le petit tutoriel.

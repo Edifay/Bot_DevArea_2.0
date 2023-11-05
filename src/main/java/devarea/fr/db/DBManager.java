@@ -395,28 +395,40 @@ public class DBManager {
     }
 
 
-    public static DBChallenge getChallengeForId(final String _id) {
+    public static boolean hasChallenge(final String _id) {
+        Document doc = CHALLENGES.find(new Document("_id", _id)).first();
+        return doc != null;
+    }
+
+    public static DBMemberChallenge getChallengeForId(final String _id) {
         Document doc = CHALLENGES.find(new Document("_id", _id)).first();
         if (doc == null)
             return addKeyChallengeFor(_id, PasswordGenerator.passwordGenerator.generate(15));
-        return new DBChallenge(doc);
+        return new DBMemberChallenge(doc);
     }
 
-    public static DBChallenge addKeyChallengeFor(final String _id, final String key) {
-        DBChallenge challenge = new DBChallenge(_id, key);
+    public static DBMemberChallenge addKeyChallengeFor(final String _id, final String key) {
+        DBMemberChallenge challenge = new DBMemberChallenge(_id, key);
         CHALLENGES.insertOne(challenge.toDocument());
         return challenge;
     }
 
-    public static void updateChallenge(final DBChallenge challenge) {
+    public static void updateChallenge(final DBMemberChallenge challenge) {
         CHALLENGES.updateOne(new Document("_id", challenge.getId()), challenge.toUpdates());
     }
 
-    public static DBChallenge getChallengeForKey(final String key) {
+    public static DBMemberChallenge getChallengeForKey(final String key) {
         Document doc = CHALLENGES.find(new Document("key", key)).first();
         if (doc == null)
             return null;
-        return new DBChallenge(doc);
+        return new DBMemberChallenge(doc);
     }
 
+    public static ArrayList<DBMemberChallenge> getChallenges() {
+        ArrayList<DBMemberChallenge> challenges = new ArrayList<>();
+        FindIterable<Document> docs = CHALLENGES.find();
+        for (Document doc : docs)
+            challenges.add(new DBMemberChallenge(doc));
+        return challenges;
+    }
 }

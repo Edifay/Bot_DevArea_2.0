@@ -2,7 +2,7 @@ package devarea.fr.web.challenges;
 
 
 import devarea.fr.db.DBManager;
-import devarea.fr.db.data.DBChallenge;
+import devarea.fr.db.data.DBMemberChallenge;
 import devarea.fr.utils.Logger;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
@@ -48,7 +48,7 @@ public class ChallengesHandler {
     }
 
     public static List<String> getAccomplishedBy(final String key) {
-        DBChallenge challenge = DBManager.getChallengeForKey(key);
+        DBMemberChallenge challenge = DBManager.getChallengeForKey(key);
         return challenge.getChallengesAccomplished();
     }
 
@@ -129,5 +129,14 @@ public class ChallengesHandler {
         }
 
         Logger.logMessage("Load challenge completed.");
+    }
+
+    public static HashMap<String, String[]> getChallengeMap() {
+        HashMap<String, String[]> map = new HashMap<>();
+
+        for (Map.Entry<String, Challenge.ChallengeSkull> entry : challenges.entrySet())
+            map.put(entry.getKey(), entry.getValue().challengeNeeded);
+
+        return map;
     }
 }

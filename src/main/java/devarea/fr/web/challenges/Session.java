@@ -1,7 +1,7 @@
 package devarea.fr.web.challenges;
 
 import devarea.fr.db.DBManager;
-import devarea.fr.db.data.DBChallenge;
+import devarea.fr.db.data.DBMemberChallenge;
 import devarea.fr.discord.workers.linked.ChallengeWorker;
 
 import java.lang.reflect.Constructor;
@@ -42,7 +42,7 @@ public class Session {
     }
 
     protected void validate() {
-        DBChallenge challenge = DBManager.getChallengeForKey(clientKey);
+        DBMemberChallenge challenge = DBManager.getChallengeForKey(clientKey);
 
         boolean added = challenge.addAccomplishedChallenge(this.currentChallenge.name);
         if (added)

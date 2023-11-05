@@ -79,4 +79,12 @@ public class DBMember {
         return this.id;
     }
 
+    public DBMemberChallenge getChallenges() {
+        return DBManager.getChallengeForId(this.id);
+    }
+
+    public boolean hasChallenge() {
+        return DBManager.hasChallenge(this.id);
+    }
+
 }

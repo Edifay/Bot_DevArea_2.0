@@ -2,15 +2,16 @@ package devarea.fr.web.backend.entities.userInfos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import devarea.fr.db.data.DBAvis;
 import devarea.fr.discord.badges.Badges;
 import devarea.fr.discord.entities.Mem;
 import devarea.fr.discord.workers.self.XPWorker;
 import devarea.fr.web.backend.entities.WebAvis;
+import devarea.fr.web.backend.entities.WebValidatedChallenge;
 import devarea.fr.web.backend.entities.WebFreelance;
 import devarea.fr.web.backend.entities.WebMission;
 
 import java.util.Arrays;
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class WebUserInfos {
@@ -49,6 +50,9 @@ public abstract class WebUserInfos {
     @JsonProperty
     Badges[] badges;
 
+    @JsonProperty
+    protected List<WebValidatedChallenge> challengesAccomplished;
+
     public WebUserInfos(Mem mem) {
         this.id = mem.getSId();
         this.urlAvatar = mem.entity.getAvatarUrl();
@@ -69,6 +73,12 @@ public abstract class WebUserInfos {
         this.avis = Arrays.stream(mem.db().getAvis()).map(WebAvis::new).toList().toArray(new WebAvis[0]);
 
         this.badges = mem.getBadges();
+
+        if (mem.db().hasChallenge())
+            this.challengesAccomplished = mem.db()
+                .getChallenges()
+                .getFullChallengesAccomplished().stream().map(WebValidatedChallenge::of)
+                .toList();
     }
 
 }

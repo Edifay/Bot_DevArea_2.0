@@ -53,13 +53,13 @@ public class Calculette extends Challenge {
         setState("result");
         this.currentCalculus = "3 + 5";
         this.currentCalculusResult = "8";
-        return new SimplePacket(this.currentCalculus, "");
+        return new SimplePacket(this.currentCalculus, startExplication);
     }
 
 
     @Controller(name = "result", freeToUse = false)
     public SimplePacket result(final SimplePacket packet) {
-        if (packet.getData().trim().equalsIgnoreCase(this.currentCalculusResult)) {
+        if (!packet.getData().trim().equalsIgnoreCase(this.currentCalculusResult)) {
             this.fail();
             return new SimplePacket("", "Vous avez raté le challenge ! Ce n'est pas la réponses attendue à '" + this.currentCalculus + "'.");
         }

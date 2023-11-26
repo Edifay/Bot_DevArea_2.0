@@ -14,13 +14,11 @@ public class SimplePacket {
 
 
     public SimplePacket() {
-        this.data = "";
-        this.toShow = "";
+        this("", "");
     }
 
     public SimplePacket(final String data) {
-        this.data = data;
-        this.toShow = "";
+        this(data, "");
     }
 
     public SimplePacket(final String data, final String toShow) {

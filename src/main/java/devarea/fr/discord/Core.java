@@ -46,6 +46,8 @@ public class Core {
     protected static final ArrayList<EventOwner<?>> globalListeners = new ArrayList<>();
 
     public static void initCoreDiscordClient() throws FileNotFoundException {
+        long startEpoch = System.currentTimeMillis();
+
         data = InitialData.loadInitialData();
 
         Logger.logTitle("Loading assets.");
@@ -78,6 +80,8 @@ public class Core {
         Logger.logMessage("Events setup success.");
 
         initStatus = true;
+
+        Logger.logTitle("Initialization end. Took " + ((System.currentTimeMillis() - startEpoch) / 1000f) + "s.");
     }
 
     private static void assetsLoader() {

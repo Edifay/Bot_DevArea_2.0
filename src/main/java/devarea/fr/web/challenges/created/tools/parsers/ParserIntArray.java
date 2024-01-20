@@ -1,11 +1,12 @@
 package devarea.fr.web.challenges.created.tools.parsers;
 
+import devarea.fr.web.challenges.ChallengeErrorException;
 import devarea.fr.web.challenges.created.tools.TextStream;
 
 public class ParserIntArray {
 
 
-    public static String intListToString(int[] numbers) throws NumberFormatException {
+    public static String intListToString(int[] numbers) {
         StringBuilder builder = new StringBuilder(20 + 4 * numbers.length);
         builder.append(numbers.length)
             .append(" [");
@@ -32,23 +33,29 @@ public class ParserIntArray {
      * @param text the text at parse.
      * @return the result of parsing.
      */
-    public static int[] intListParser(final String text) {
-        TextStream stream = new TextStream(text)
-            .appendDelimiter(" ")
-            .appendDelimiter(",")
-            .appendDelimiter("[")
-            .appendDelimiter("]");
+    public static int[] intListParser(final String text) throws ChallengeErrorException {
+        try {
+            TextStream stream = new TextStream(text)
+                .appendDelimiter(" ")
+                .appendDelimiter(",")
+                .appendDelimiter("[")
+                .appendDelimiter("]");
 
 
-        int size = Integer.parseInt(stream.nextWord());
+            int size = Integer.parseInt(stream.nextWord());
 
-        if (size > 10000) {
-            throw new IllegalArgumentException("Unable to parse a list of size > 10000.");
+            if (size > 10000) {
+                throw new ChallengeErrorException("Unable to parse a list of size > 10000.");
+            }
+
+            int[] list = new int[size];
+            fillIntListUsingStream(stream, list);
+            return list;
+        } catch (ChallengeErrorException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ChallengeErrorException("Le serveur n'as pas pu parser votre liste.");
         }
-
-        int[] list = new int[size];
-        fillIntListUsingStream(stream, list);
-        return list;
     }
 
 
@@ -62,31 +69,49 @@ public class ParserIntArray {
     }
 
 
-    public static int[][] parse2DIntArray(final String text) {
-        TextStream stream = new TextStream(text)
-            .appendDelimiter(" ")
-            .appendDelimiter(",")
-            .appendDelimiter("[")
-            .appendDelimiter("]");
+    public static int[][] parse2DIntArray(final String text) throws ChallengeErrorException {
+        try {
 
-        int size = Integer.parseInt(stream.nextWord());
+            TextStream stream = new TextStream(text)
+                .appendDelimiter(" ")
+                .appendDelimiter(",")
+                .appendDelimiter("[")
+                .appendDelimiter("]");
 
-        if (size > 10000) {
-            throw new IllegalArgumentException("Unable to parse a list of size > 10000.");
+            int size = Integer.parseInt(stream.nextWord());
+
+            if (size > 10000) {
+                throw new ChallengeErrorException("Unable to parse a list of size > 10000.");
+            }
+
+            int[][] list = new int[size][];
+
+            int currentIndex = 0;
+
+            String nextWord;
+            while (currentIndex < size && !(nextWord = stream.nextWord()).isEmpty()) {
+                int insideSize = Integer.parseInt(nextWord);
+
+                if (insideSize > 10000) {
+                    throw new ChallengeErrorException("Unable to parse a list of size > 10000.");
+                }
+
+                list[currentIndex] = new int[insideSize];
+
+                fillIntListUsingStream(stream, list[currentIndex]);
+                currentIndex++;
+            }
+
+            if (currentIndex != size)
+                throw new ChallengeErrorException("La liste de contient pas le nombre d'élément attendu !");
+
+            return list;
+
+        } catch (ChallengeErrorException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ChallengeErrorException("Le serveur n'as pas pu parser la liste");
         }
-
-        int[][] list = new int[size][];
-
-        int currentIndex = 0;
-
-        String nextWord;
-        while (currentIndex < size && !(nextWord = stream.nextWord()).isEmpty()) {
-            list[currentIndex] = new int[Integer.parseInt(nextWord)];
-            fillIntListUsingStream(stream, list[currentIndex]);
-            currentIndex++;
-        }
-
-        return list;
     }
 
 }

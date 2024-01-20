@@ -1,7 +1,6 @@
 package devarea.fr.web.challenges.created.tools.parsers;
 
-import devarea.fr.web.challenges.created.tools.TextStream;
-
+import devarea.fr.web.challenges.ChallengeErrorException;
 import java.nio.charset.StandardCharsets;
 
 import static devarea.fr.web.challenges.created.tools.parsers.ParserIntArray.*;
@@ -11,7 +10,7 @@ public class ParserArrayString {
         return StandardCharsets.US_ASCII.newEncoder().canEncode(v);
     }
 
-    public static String encodeStringList(final String[] list) throws Exception {
+    public static String encodeStringList(final String[] list) {
         for (String str : list) {
             if (!isPureAscii(str))
                 throw new IllegalArgumentException("list need contain String composed by ascii char.");
@@ -59,8 +58,7 @@ public class ParserArrayString {
     }
 
 
-    public static String[] parseStringList(final String text)
-    {
+    public static String[] parseStringList(final String text) throws ChallengeErrorException {
         int[][] _2DIntArray = parse2DIntArray(text);
         return convert2DArrayToStringArray(_2DIntArray);
     }

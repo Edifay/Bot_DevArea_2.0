@@ -104,7 +104,7 @@ public class ChallengesHandler {
             return session.executeAction(method.getMethod(), receivedPacket);
         } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
-            return new SimplePacket("", "Une interne est survenue veuillez nous contacter !");
+            return new SimplePacket("", "Une erreur interne est survenue veuillez nous contacter !");
         }
     }
 

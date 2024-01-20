@@ -1,6 +1,7 @@
 package devarea.fr.web.challenges.created;
 
 import devarea.fr.web.challenges.Challenge;
+import devarea.fr.web.challenges.ChallengeErrorException;
 import devarea.fr.web.challenges.Session;
 import devarea.fr.web.challenges.SimplePacket;
 import devarea.fr.web.challenges.created.tools.parsers.ParserIntArray;
@@ -175,9 +176,9 @@ public class ListeDeNombres extends Challenge {
         int[] receivedList;
         try {
             receivedList = ParserIntArray.intListParser(packet.getData());
-        } catch (NumberFormatException e) {
+        } catch (ChallengeErrorException e) {
             this.fail();
-            return new SimplePacket("", "La liste envoyé n'as pas pu être lu ! Revoyez le format d'envois ! Vous avez perdu.");
+            return new SimplePacket("", e.getMessage());
         }
 
         applyOperations(this.currentSent);

@@ -2,10 +2,12 @@ package devarea.fr.web.challenges.created;
 
 import devarea.fr.discord.Core;
 import devarea.fr.web.challenges.Challenge;
+import devarea.fr.web.challenges.ChallengeErrorException;
 import devarea.fr.web.challenges.Session;
 import devarea.fr.web.challenges.SimplePacket;
 import devarea.fr.web.challenges.created.tools.parsers.ParserArrayString;
 
+import java.nio.charset.MalformedInputException;
 import java.util.Random;
 
 @Challenge.ChallengeDefinition(name = "ListeDeTexte", requiredChallenge = {"ListeDeNombres"})
@@ -67,6 +69,27 @@ public class ListeDeTexte extends Challenge {
         Le résultat de 'start' contient la première liste.
         """;
 
+
+    private static final String explicationCheckReader = """
+        Bravo ! Vous avez passé la première étape !
+                
+        La deuxième étape consiste en l'action inverse du parser. Le but est de pouvoir créer une fonction qui à partir d'une liste de string retourne une chaine de caractère pouvant être envoyé au serveur.
+                
+        Vous allez recevoir 20 chaines de caractères contenant chacune une phrase.
+                
+        Le but ici est de renvoyer la liste des mots séparés par des espaces.
+                
+        Par exemple :
+                
+        "bonjour devarea !" -> ["bonjour", "devarea", "!"]
+                
+        ["bonjour", "devarea", "!"] est l'objet informatique. Je pense que vous savez sous quel format envoyer celle-ci.
+                
+        La première phrase est :
+                
+        "oui non yes no"
+        """;
+
     private int currentAsked;
     private String[] currentSent;
     private static final String[] firstList = {"oui", "non", "yes", "no"};
@@ -106,27 +129,64 @@ public class ListeDeTexte extends Challenge {
         if (this.currentAsked == 20) {
             setState("checkReader");
             this.currentAsked = 1;
-            return new SimplePacket("", "");
+            this.currentSent = firstList;
+            return new SimplePacket(joinList(this.currentSent), explicationCheckReader);
         } else if (this.currentAsked == 19) {
             this.currentSent = new String[0];
             return new SimplePacket(ParserArrayString.encodeStringList(this.currentSent), ParserArrayString.encodeStringList(this.currentSent));
         } else if (this.currentAsked > 15) {
-            String[] tab = pickNRandomWord(rand.nextInt(2000, 3000));
-            this.currentSent = tab;
-            return new SimplePacket(ParserArrayString.encodeStringList(tab), "Le contenu du message est trop long pour être affiché.");
+            this.currentSent = pickNRandomWord(rand.nextInt(2000, 3000));
+            return new SimplePacket(ParserArrayString.encodeStringList(this.currentSent), "Le contenu du message est trop long pour être affiché.");
         } else if (this.currentAsked > 10) {
-            String[] tab = pickNRandomWord(rand.nextInt(1000, 2000));
-            this.currentSent = tab;
-            return new SimplePacket(ParserArrayString.encodeStringList(tab), "Le contenu du message est trop long pour être affiché.");
+            this.currentSent = pickNRandomWord(rand.nextInt(1000, 2000));
+            return new SimplePacket(ParserArrayString.encodeStringList(this.currentSent), "Le contenu du message est trop long pour être affiché.");
         } else {
-            String[] tab = pickNRandomWord(rand.nextInt(4, 10));
-            this.currentSent = tab;
-            return new SimplePacket(ParserArrayString.encodeStringList(tab), ParserArrayString.encodeStringList(tab));
+            this.currentSent = pickNRandomWord(rand.nextInt(4, 10));
+            return new SimplePacket(ParserArrayString.encodeStringList(this.currentSent), ParserArrayString.encodeStringList(this.currentSent));
         }
     }
 
     @Controller(name = "checkReader", freeToUse = false)
-    public SimplePacket checkReader(final SimplePacket packet) {
+    public SimplePacket checkReader(final SimplePacket packet) throws MalformedInputException {
+
+        String[] result;
+        try {
+            result = ParserArrayString.parseStringList(packet.getData());
+        } catch (ChallengeErrorException e) {
+            this.fail();
+            return new SimplePacket("", e.getMessage());
+        }
+
+        int resultStatus;
+        if ((resultStatus = compareList(result, this.currentSent)) != -2) {
+            this.fail();
+            if (resultStatus == -1) {
+                return new SimplePacket("", "Le résultat attendu n'est pas de la bonne taille ! Vous avez perdu");
+            } else {
+                return new SimplePacket("", "Le résultat attendu n'est pas le bon ! Index " + resultStatus + " reçu : " + subStringArroundOfLength(result[resultStatus], 0, 30) + " attendu : " + subStringArroundOfLength(this.currentSent[resultStatus], 0, 30) + ". Vous avez perdu !");
+            }
+        }
+
+        this.currentAsked++;
+
+        Random rand = new Random();
+
+        if (this.currentAsked == 20) {
+            this.validate();
+            return new SimplePacket("", "Bravo vous avez réussi le challenge !");
+        } else if (this.currentAsked == 19) {
+            this.currentSent = new String[0];
+            return new SimplePacket(joinList(this.currentSent), joinList(this.currentSent));
+        } else if (this.currentAsked > 15) {
+            this.currentSent = pickNRandomWord(rand.nextInt(2000, 3000));
+            return new SimplePacket(joinList(this.currentSent), "Le contenu du message est trop long pour être affiché.");
+        } else if (this.currentAsked > 10) {
+            this.currentSent = pickNRandomWord(rand.nextInt(100, 200));
+            return new SimplePacket(joinList(this.currentSent), "Le contenu du message est trop long pour être affiché.");
+        } else {
+            this.currentSent = pickNRandomWord(rand.nextInt(4, 10));
+            return new SimplePacket(joinList(this.currentSent), joinList(this.currentSent));
+        }
 
     }
 
@@ -186,6 +246,35 @@ public class ListeDeTexte extends Challenge {
             str[i] = Core.mots.get(rand.nextInt(0, Core.mots.size()));
         }
         return str;
+    }
+
+    private static String joinList(final String[] str) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < str.length; i++) {
+            builder.append(str[i]);
+            if (str.length - 1 != i) {
+                builder.append(' ');
+            }
+        }
+
+
+        return builder.toString();
+    }
+
+
+    private static int compareList(final String[] first, final String[] second) {
+        if (first.length != second.length)
+            return -1;
+
+        for (int i = 0; i < first.length; i++) {
+            if (!first[i].equals(second[i])) {
+                return i;
+            }
+        }
+
+        return -2;
+
     }
 
 

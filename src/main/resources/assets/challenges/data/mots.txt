@@ -337,7 +337,7 @@ prendre
 resultat
 liberte
 manifestation
-porte parole
+porte-parole
 opposition
 etat
 victoire
@@ -435,7 +435,7 @@ prison
 matin
 commission
 fonction
-non vaccines
+non-vaccines
 rien
 laisser
 sept
@@ -773,7 +773,7 @@ placer
 deposer
 porte
 revenir
-peut etre
+peut-etre
 long
 propre
 entendre
@@ -885,7 +885,7 @@ possibilite
 nouvel
 important
 point
-apres midi
+apres-midi
 bas
 reprendre
 soiree

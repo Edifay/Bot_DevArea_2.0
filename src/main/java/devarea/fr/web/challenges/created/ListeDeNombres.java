@@ -3,13 +3,14 @@ package devarea.fr.web.challenges.created;
 import devarea.fr.web.challenges.Challenge;
 import devarea.fr.web.challenges.Session;
 import devarea.fr.web.challenges.SimplePacket;
+import devarea.fr.web.challenges.created.tools.parsers.ParserIntArray;
 
 import java.util.Random;
 
 @Challenge.ChallengeDefinition(name = "ListeDeNombres")
-public class ListParse extends Challenge {
+public class ListeDeNombres extends Challenge {
 
-    public ListParse(String name, Session session) {
+    public ListeDeNombres(String name, Session session) {
         super(name, session);
     }
 
@@ -41,19 +42,14 @@ public class ListParse extends Challenge {
         !!! ATTENTION !!!
         6 [0,1,2,3,4,5] -> est aussi un format valide et représente la même liste.
                 
-        Les types possible de listes seront pour l'instant :
-         - int -> représenteront les entiers relatif {-1,2,3,5,9} (int).
-         - string -> représenteront les chaines de charactères {bonjour, mot, devarea} (string).
-         - plus à venir...
-                
         Utilisez 'start' pour commencer le challenge.
                 
         """;
 
     private static final String startExplication = """
-        Nous allons d'abord commencer par le type 'd'.
+        Les listes de nombres.
                 
-        Vous allez recevoir un total de 20 listes, conter nant uniquement des nombres. Il faudra renvoyer la somme des nombres de la liste.
+        Vous allez recevoir un total de 20 listes, contenant uniquement des nombres. Il faudra renvoyer la somme des nombres de la liste.
                 
         Par exemple :
                 
@@ -91,9 +87,9 @@ public class ListParse extends Challenge {
          << 6 [10, 2, 6, 10, 14, 18]
          
          
-        Une fois les opérations appliqué renvoyez la liste au serveur en format texte identique à celui envoyé par le serveur.
+        Une fois les opérations appliquées renvoyez la liste au serveur en format texte identique à celui envoyé par le serveur.
                 
-        Le résultat de ce 'submit' contient déjà la première liste sur le quel appliquer ces modification.
+        Le résultat de ce 'submit' contient déjà la première liste sur la quelle appliquer ces opérations.
                 
         6 [0, 1, 2, 3, 4, 5]
         """;
@@ -101,7 +97,6 @@ public class ListParse extends Challenge {
     private final int[] firstList = {0, 1, 2, 3, 4, 5};
     private int result;
     private int currentAsked = 1;
-
     private int[] currentSent;
 
     @Override
@@ -113,7 +108,7 @@ public class ListParse extends Challenge {
     public SimplePacket start(final SimplePacket packet) {
         setState("parserCheck");
         result = 15;
-        return new SimplePacket(Tools.intListToString(firstList), startExplication);
+        return new SimplePacket(ParserIntArray.intListToString(firstList), startExplication);
     }
 
     @Controller(name = "parserCheck", freeToUse = false)
@@ -128,19 +123,19 @@ public class ListParse extends Challenge {
 
         if (n != result) {
             this.fail();
-            return new SimplePacket("", n + " n'était pas le résultat attendu ! Vous avez perdu ! (Résultat attendu : "+this.result + ").");
+            return new SimplePacket("", n + " n'était pas le résultat attendu ! Vous avez perdu ! (Résultat attendu : " + this.result + ").");
         }
 
         this.currentAsked++;
 
         if (this.currentAsked == 20) {
-            setState("readerCheck");
+            setState("checkReader");
             this.currentAsked = 1;
             this.currentSent = firstList;
-            return new SimplePacket(Tools.intListToString(firstList), parserCheckValidated);
+            return new SimplePacket(ParserIntArray.intListToString(firstList), parserCheckValidated);
         } else if (this.currentAsked == 19) {
             result = 0;
-            return new SimplePacket(Tools.intListToString(new int[0]), Tools.intListToString(new int[0]));
+            return new SimplePacket(ParserIntArray.intListToString(new int[0]), ParserIntArray.intListToString(new int[0]));
         } else if (this.currentAsked > 15) {
             Random rand = new Random();
             int size = rand.nextInt(2000, 10000);
@@ -150,7 +145,7 @@ public class ListParse extends Challenge {
                 tab[i] = rand.nextInt(-200, 200);
                 result += tab[i];
             }
-            return new SimplePacket(Tools.intListToString(tab), "Le contenu du message est trop long pour être affiché.");
+            return new SimplePacket(ParserIntArray.intListToString(tab), "Le contenu du message est trop long pour être affiché.");
         } else if (this.currentAsked > 10) {
             Random rand = new Random();
             int size = rand.nextInt(2000, 10000);
@@ -160,7 +155,7 @@ public class ListParse extends Challenge {
                 tab[i] = rand.nextInt(0, 200);
                 result += tab[i];
             }
-            return new SimplePacket(Tools.intListToString(tab), "Le contenu du message est trop long pour être affiché.");
+            return new SimplePacket(ParserIntArray.intListToString(tab), "Le contenu du message est trop long pour être affiché.");
         } else {
             Random rand = new Random();
             int size = rand.nextInt(4, 30);
@@ -170,14 +165,21 @@ public class ListParse extends Challenge {
                 tab[i] = rand.nextInt(0, 50);
                 result += tab[i];
             }
-            return new SimplePacket(Tools.intListToString(tab), Tools.intListToString(tab));
+            return new SimplePacket(ParserIntArray.intListToString(tab), ParserIntArray.intListToString(tab));
         }
 
     }
 
-    @Controller(name = "readerCheck", freeToUse = false)
-    public SimplePacket readerCheck(final SimplePacket packet) {
-        int[] receivedList = Tools.intListParser(packet.getData());
+    @Controller(name = "checkReader", freeToUse = false)
+    public SimplePacket checkReader(final SimplePacket packet) {
+        int[] receivedList;
+        try {
+            receivedList = ParserIntArray.intListParser(packet.getData());
+        } catch (NumberFormatException e) {
+            this.fail();
+            return new SimplePacket("", "La liste envoyé n'as pas pu être lu ! Revoyez le format d'envois ! Vous avez perdu.");
+        }
+
         applyOperations(this.currentSent);
 
         int result;
@@ -197,7 +199,7 @@ public class ListParse extends Challenge {
             return new SimplePacket("", "Bravo vous avez passé ce challenge !");
         } else if (this.currentAsked == 19) {
             this.currentSent = new int[0];
-            return new SimplePacket(Tools.intListToString(this.currentSent), Tools.intListToString(this.currentSent));
+            return new SimplePacket(ParserIntArray.intListToString(this.currentSent), ParserIntArray.intListToString(this.currentSent));
         } else if (this.currentAsked > 15) {
             Random rand = new Random();
             int size = rand.nextInt(2000, 10000);
@@ -207,7 +209,7 @@ public class ListParse extends Challenge {
                 this.currentSent[i] = rand.nextInt(-200, 200);
                 result += this.currentSent[i];
             }
-            return new SimplePacket(Tools.intListToString(this.currentSent), "Le contenu du message est trop long pour être affiché.");
+            return new SimplePacket(ParserIntArray.intListToString(this.currentSent), "Le contenu du message est trop long pour être affiché.");
         } else if (this.currentAsked > 10) {
             Random rand = new Random();
             int size = rand.nextInt(2000, 10000);
@@ -217,7 +219,7 @@ public class ListParse extends Challenge {
                 this.currentSent[i] = rand.nextInt(0, 200);
                 result += this.currentSent[i];
             }
-            return new SimplePacket(Tools.intListToString(this.currentSent), "Le contenu du message est trop long pour être affiché.");
+            return new SimplePacket(ParserIntArray.intListToString(this.currentSent), "Le contenu du message est trop long pour être affiché.");
         } else {
             Random rand = new Random();
             int size = rand.nextInt(4, 30);
@@ -227,14 +229,14 @@ public class ListParse extends Challenge {
                 this.currentSent[i] = rand.nextInt(0, 50);
                 result += this.currentSent[i];
             }
-            return new SimplePacket(Tools.intListToString(this.currentSent), Tools.intListToString(this.currentSent));
+            return new SimplePacket(ParserIntArray.intListToString(this.currentSent), ParserIntArray.intListToString(this.currentSent));
         }
     }
 
 
     /**
-     * @param first
-     * @param second
+     * @param first  first
+     * @param second second
      * @return -1 is not the same size ; -2 same lists ; or the index of the first difference.
      */
     private static int compareList(final int[] first, final int[] second) {
@@ -255,9 +257,9 @@ public class ListParse extends Challenge {
         int last = list[list.length - 1];
         for (int i = list.length - 1; i >= 0; i--) {
             if (i == 0) {
-                list[i] = list[i] + last;
+                list[i] = (list[i] + last) * 2;
             } else {
-                list[i] = list[i] + list[i - 1];
+                list[i] = (list[i] + list[i - 1]) * 2;
             }
         }
     }

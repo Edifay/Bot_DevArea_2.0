@@ -105,6 +105,8 @@ public class InitialData {
     // -> Badges
     public HashMap<String, String> badgesImages = null;
 
+    public String pathsMots = null;
+
     public InitialData() {
 
     }

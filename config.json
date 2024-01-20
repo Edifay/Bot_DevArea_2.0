@@ -53,5 +53,6 @@
     "occasionedMember_badge": "/assets/badges/107x107/xp_badges/occasionedmember_badge.png",
     "activeMember_badge": "/assets/badges/107x107/xp_badges/activemember_badge.png",
     "regularMember_badge": "/assets/badges/107x107/xp_badges/regularmember_badge.png"
-  }
+  },
+  "pathsMots": "/assets/challenges/data/mots.txt"
 }

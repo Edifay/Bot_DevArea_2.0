@@ -25,10 +25,9 @@ import org.reflections.util.ConfigurationBuilder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.Buffer;
 import java.util.*;
 
 import static devarea.fr.utils.ThreadHandler.startAway;
@@ -37,6 +36,7 @@ public class Core {
 
     public static final HashMap<String, BufferedImage> assetsImages = new HashMap<>();
     public static HashMap<String, BufferedImage> badgesImages = new HashMap<>();
+    public static final ArrayList<String> mots = new ArrayList<>();
 
     public static GatewayDiscordClient client;
     public static InitialData data;
@@ -93,6 +93,9 @@ public class Core {
 
             for (Map.Entry<String, String> entry : data.badgesImages.entrySet())
                 badgesImages.put(entry.getKey(), loadImageInPot(entry.getValue()));
+
+            new BufferedReader(new InputStreamReader(Core.class.getResource(data.pathsMots).openStream()))
+                .lines().forEach(mots::add);
 
             Logger.logMessage("Assets took : " + (System.currentTimeMillis() - ms) + "ms to load !");
         } catch (Exception e) {

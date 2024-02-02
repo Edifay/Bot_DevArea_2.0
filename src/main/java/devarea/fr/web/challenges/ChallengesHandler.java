@@ -52,6 +52,10 @@ public class ChallengesHandler {
         return challenge.getChallengesAccomplished();
     }
 
+    public static Challenge.ChallengeSkull getChallenge(final String key) {
+        return challenges.get(key);
+    }
+
     public static void checkKey(final String key) throws IllegalAccessException {
         if (DBManager.getChallengeForKey(key) == null)
             throw new IllegalAccessException("ERROR ! This key doesn't exist !");

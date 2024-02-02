@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
 
 public class Main {
 
-    public static final boolean developing = true;
+    public static final boolean developing = false;
 
     public static void main(String[] args) throws Exception {
         Logger.preInit();

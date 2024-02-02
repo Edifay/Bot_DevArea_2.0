@@ -5,12 +5,10 @@ import devarea.fr.db.data.DBMemberChallenge;
 import devarea.fr.discord.cache.MemberCache;
 import devarea.fr.web.backend.entities.WebValidatedChallenge;
 import devarea.fr.web.backend.entities.WebValidatedChallengeCard;
-import devarea.fr.web.challenges.ChallengesHandler;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import devarea.fr.web.challenges.*;
+import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -43,6 +41,22 @@ public class ControllerChallenge {
         }
 
         return sorted;
+    }
+
+    @GetMapping("load_message_challenge")
+    public static String[] getOnLoadMessageForChallenge(@RequestParam(name = "challenge") final String challenge) {
+        Challenge.ChallengeSkull challengeSkull;
+        if ((challengeSkull = ChallengesHandler.getChallenge(challenge)) == null) {
+            return new String[]{"This challenge wasn't found."};
+        }
+
+        Session fictiveSession = new Session("fictive key", Language.PYTHON);
+        try {
+            SimplePacket packet = fictiveSession.startChallenge(challenge, challengeSkull.getConstructor());
+            return new String[]{packet.getToShow()};
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            return new String[]{"Internal Error. Please contact administrator."};
+        }
     }
 
     @GetMapping("map")

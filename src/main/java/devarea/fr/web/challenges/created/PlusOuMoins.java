@@ -20,7 +20,7 @@ public class PlusOuMoins extends Challenge {
 
     @Override
     public SimplePacket onLoad() {
-        return new SimplePacket("", "Tu dois rendre visite à un amis à 17h.\n\nArrivé en bas de l'immeuble de 200 étages, tu n'as malheureusement pas pensé à lui demander au quel il se trouve.\n\nMais tu as une idée de génie !\nVous avez tout les deux installé une application qui te permet de savoir si tu es plus haut ou plus bas que lui.\n\nTu vas donc méthodiquement mettre en place un algorithme, permettant de trouver l'étage de ton amis.\n\nTu te situes l'ascenseur de l'immeuble, envois au serveur l'étage au quel tu veux aller, une fois arrivé, le serveur te retourneras si tu es au dessus ('+') ou en dessous ('-') de ton amis .\n\nUtilise l'action 'start' pour commencer.");
+        return new SimplePacket("", "Tu dois rendre visite à un amis à 17h.\n\nArrivé en bas de l'immeuble de 200 étages, tu n'as malheureusement pas pensé à lui demander au quel il se trouve.\n\nMais tu as une idée de génie !\nVous avez tout les deux installé une application qui te permet de savoir si tu es plus haut ou plus bas que lui.\n\nTu vas donc méthodiquement mettre en place un algorithme, permettant de trouver l'étage de ton amis.\n\nTu te situes dans l'ascenseur de l'immeuble, envois au serveur l'étage au quel tu veux aller, une fois arrivé, le serveur te retourneras si tu es au dessus ('+') ou en dessous ('-') de ton amis .\n\nUtilise l'action 'start' pour commencer.");
     }
 
     @Controller(name = "start", freeToUse = true)

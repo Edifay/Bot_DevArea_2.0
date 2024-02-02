@@ -120,7 +120,7 @@ Les commandes sont stockées dans le répertoire ``discord.commands.slash``.
 
 Pour créer une nouvelle commande il suffit de créer une nouvelle `class` héritant de `SlashCommand`, dans le répertoire donné ci-dessus.
 
-Puis d'implémenter les commandes héritant de `SlashCommand` : `challengeDefinition()`, `play()`, `permissions()`.
+Puis d'implémenter les commandes héritant de `SlashCommand` : `definition()`, `play()`, `permissions()`.
 
 ```java
 package devarea.fr.discord.commands.slash;
@@ -133,7 +133,7 @@ import discord4j.discordjson.json.ApplicationCommandRequest;
 public class MaCommande extends SlashCommand {
 
     @Override
-    public ApplicationCommandRequest challengeDefinition() {
+    public ApplicationCommandRequest definition() {
         return null;
     }
 
@@ -149,16 +149,16 @@ public class MaCommande extends SlashCommand {
 }
 ```
 
-La définition de la commande est chargée au démarrage du bot avec l'appel de `challengeDefinition()`.
+La définition de la commande est chargée au démarrage du bot avec l'appel de `definition()`.
 
 Cette définition contient les informations de la commande slash, tel que le nom, la description, les options...
 
-`challengeDefinition()` doit être implémenté et ne peut pas retourner `null`.
+`definition()` doit être implémenté et ne peut pas retourner `null`.
 
 ```java
 public class MaCommande extends SlashCommand {
     @Override
-    public ApplicationCommandRequest challengeDefinition() {
+    public ApplicationCommandRequest definition() {
         return ApplicationCommandRequest.builder()
                 .name("commande")
                 .description("Ma commande fait...")
@@ -186,7 +186,7 @@ Voici un exemple de commande :
 public class MaCommande extends SlashCommand {
 
     @Override
-    public ApplicationCommandRequest challengeDefinition() {
+    public ApplicationCommandRequest definition() {
         return ApplicationCommandRequest.builder()
                 .name("commande")
                 .description("Ma commande fait...")

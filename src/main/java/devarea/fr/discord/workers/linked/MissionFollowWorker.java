@@ -47,11 +47,17 @@ public class MissionFollowWorker implements Worker {
                 try {
                     GuildMessageChannel channel = dbMissionFollow.getMessage().getChannel();
                     Message lastMessage = channel.getLastMessage().block();
+
                     if (lastMessage.getTimestamp().isBefore(Instant.now().minus(2, ChronoUnit.DAYS)) && lastMessage.getAuthor().get().getId().equals(Core.client.getSelfId())) {
+
                         Logger.logMessage("Auto-closing suivis-n°" + dbMissionFollow.getN() + ".");
+
                         closeFollowedMission(Core.client.getSelfId().asString(), dbMissionFollow);
+
                     } else if (lastMessage.getTimestamp().isBefore(Instant.now().minus(3, ChronoUnit.DAYS))) {
+
                         Logger.logMessage("Ask to close suivis-n°" + dbMissionFollow.getN() + ".");
+
                         channel.createMessage(MessageCreateSpec.builder()
                             .content("<@" + dbMissionFollow.getClientId() + ">, <@" + dbMissionFollow.getDevId() + ">.")
                             .addEmbed(EmbedCreateSpec.builder()
@@ -62,7 +68,9 @@ public class MissionFollowWorker implements Worker {
                                 .build())
                             .addComponent(ActionRow.of(Button.secondary("followMission_close", "Cloturer le channel")))
                             .build()).subscribe();
+
                     }
+
                 } catch (Exception e) {
                     Logger.logError("Error when trying to access to suivis-n°" + dbMissionFollow.getN() + " :\n    -> " + e.getMessage());
                 }
@@ -198,11 +206,20 @@ public class MissionFollowWorker implements Worker {
         // Create a channel
         Set<PermissionOverwrite> set = getPermissionsOverrideCreatePrivateChannel(mission, member_react_id);
         DBManager.incrementMissionFollowCount();
-        GuildMessageChannel channel = Core.devarea.createTextChannel(TextChannelCreateSpec.builder()
-            .parentId(Core.data.mission_follow_category)
-            .name("Suivis n°" + DBManager.currentMissionFollowCount())
-            .permissionOverwrites(set)
-            .build()).block();
+        GuildMessageChannel channel;
+        try {
+            channel = Core.devarea.createTextChannel(TextChannelCreateSpec.builder()
+                .parentId(Core.data.mission_follow_category)
+                .name("Suivis n°" + DBManager.currentMissionFollowCount())
+                .permissionOverwrites(set)
+                .build()).block();
+        } catch (Exception e) {
+            ((GuildMessageChannel) ChannelCache.get(Core.data.log_channel.asString()).entity)
+                .createMessage(MessageCreateSpec.builder()
+                    .content("@Admin catégorie des suivis pleine !")
+                    .build()).block();
+            throw e;
+        }
 
 
         // Send basics information

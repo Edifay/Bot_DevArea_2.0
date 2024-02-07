@@ -26,6 +26,7 @@ public class SimplePacket {
         this.toShow = toShow;
     }
 
+
     public String getData() {
         return data;
     }

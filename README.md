@@ -18,6 +18,7 @@ Mais aussi pour rendre son code plus accessible. En effet, le code du bot a pour
 - [Télécharger le projet](https://github.com/Edifay/Bot_DevArea_2.0#t%C3%A9l%C3%A9charger-le-projet-get-started)
 - [L'Architecture](https://github.com/Edifay/Bot_DevArea_2.0#larchitecture)
 - [Ajouter une fonctionnalité](https://github.com/Edifay/Bot_DevArea_2.0#tutoriel-sur-lajout-de-fonctionnalit%C3%A9s)
+- [Les Challenges](https://devarea.fr)
 - [Conclusion](https://github.com/Edifay/Bot_DevArea_2.0#merci-)
 - [Licence](https://github.com/Edifay/Bot_DevArea_2.0#licence)
 
@@ -31,6 +32,7 @@ Pour mettre en place l'environnement pour développer sur le serveur, il faudra 
 ### Cloner le repo
 
 Tout d'abord il faudra télécharger les fichiers du projet :
+
  - En utilisant git ``git clone https://github.com/Edifay/Bot_DevArea_2.0.git``.
  - Ou en téléchargeant les fichiers à partir du repo ci-dessus.
 
@@ -46,13 +48,16 @@ Le bot a besoin de l'url de la base de donnée, il vous sera demandé de créer 
 (Généralement au même niveau que ``build.gradle`` si l'exécution est faites dans l'IDE).
 
 Pour obtenir l'url de la base de donnée, il faut tout d'abord installer mongodb en suivant ces étapes :
+
  - [Installer et lancer mongodb](https://www.mongodb.com/docs/manual/administration/install-community/)
  - Puis créer et/ou compléter le fichier ``db.url`` avec l'url vers la db.
 
 > L'url de la db sera sous la forme :
+> 
 > - ``mongodb://user:password@adress:port/DEVAREA``
 > 
 > Généralement si mongodb est installé sur la même machine l'url par défault sera :
+> 
 >  - ``mongodb://localhost:27017/DEVAREA``
 
 À noter que le bot peut tourner avec une url non valide, cependant un bon nombre de fonctionnalités ne seront pas disponibles en plus des nombreuses erreurs provoquées.
@@ -60,6 +65,7 @@ Pour obtenir l'url de la base de donnée, il faut tout d'abord installer mongodb
 ### Configurer le bot
 
 Tout d'abord il vous faudra avoir un Bot à disposition sur un serveur discord.
+
  - [Créer un bot discord](https://appmaster.io/fr/blog/bot-discord-comment-le-creer-et-lajouter-au-serveur)
 
 Après avoir lancé le projet et après avoir créé le fichier ``db.url``, un fichier ``config.json`` devrait avoir été créé à côté de celui-ci (il était possiblement déjà existant, étant fourni dans le repo).
@@ -69,6 +75,7 @@ Il permet de donner toutes les informations nécessaires au bot, tel que les cha
 Il suffit d'éditer le fichier et de le modifier avec les valeurs voulues.
 
 Exemple :
+
  - ``"paidMissions_channel":null`` -> ``"paidMissions_channel":"943817647060025354"``.
 
 > Pensez bien à mettre les guillemets pour les ids, ils sont traités comme des chaines de caractère et non comme des nombres.
@@ -221,6 +228,7 @@ Les services ou systèmes sont des parties du code qui se lancent au démarrage 
 Comme les commandes slash, les workers sont situés au même endroit dans le code pour plus de clarté, dans le repertoire `discord.workers`.
 
 Ils sont ensuite classés dans 3 répertoires différents :
+
 - `core`: les `workers` principaux qui constituent le noyau du bot.
 - `linked`: les `workers` qui sont liés aux commandes.
 - `self`: les `workers` autonomes dont le fonctionnement reste interne et n'as pas de lien avec d'autres classes (autre que `db`).
@@ -373,7 +381,7 @@ Ce sont des objets pouvant supporter l'écoute d'évènement.
 ```java
 Mem mem = MemberCache.get(id);
 mem.listen((ActionEvent<MessageCreateEventFiller>) filler -> {
-Logger.logMessage("Le membre " + mem.entity.getUsername() + " a envoyé un message !");
+    Logger.logMessage("Le membre " + mem.entity.getUsername() + " a envoyé un message !");
 });
 ```
 
@@ -385,6 +393,127 @@ chan.listen((ActionEvent<MessageCreateInChannelFiller>) filler -> {
 ```
 
 Vous pouvez combiner ça avec un `Worker` ou une `SlashCommand`.
+
+
+# Les Challenges
+
+> Si vous rencontrez la moindre difficulté n'hésitez pas à venir voir Edifay sur le serveur discord.
+
+Les challenges sont une partie de Dev'Area qui a pour but d'être intéractive.
+
+Le principe est simple, des défis sont proposés, pour accéder à ces défis le serveur propose une API en passant par 
+l'url suivante : `https://devarea.fr/data/challenge/{actions}`.
+
+Le côté client de cette API est implémenté dans différents langages que vous pouvez retrouver sur le site de [devarea.fr](https://devarea.fr/challenges/download).
+
+Les membres peuvent donc utiliser simplement ces clients pour accéder aux challenges.
+
+Le code de résolution des challenges s'exécute directement sur la machine cliente et valide les challenges à travers l'échange de donnés de l'API.
+
+### Créer un client
+
+Si vous souhaitez implémenter l'API dans un langage qui n'est actuellement pas disponible, cela est assez simple.
+
+Prenez le code d'un langage déjà implémenté, il suffit de faire la portabilité dans le nouveau langage de programmation.
+
+### Créer un challenge
+
+[//]: # ( TODO tutoriel sur la création d'un challenge )
+
+Tout d'abord les challenges sont situé dans le répertoire `devarea.fr.web.challenges`. Vous pourrez
+y retrouver l'implémentation du système.
+
+Les implémentations des challenges "fonctionnels" se trouvent dans le repertoire `created`.
+
+La première étape pour créer un nouveau challenge est de créer une nouvelle classe héritant de la classe `Challenge`.
+
+Voici un "template" pour créer un nouveau challenge :
+
+```java
+package devarea.fr.web.challenges.created;
+
+import devarea.fr.web.challenges.Challenge;
+import devarea.fr.web.challenges.Session;
+import devarea.fr.web.challenges.SimplePacket;
+
+@Challenge.ChallengeDefinition(name = "MonChallenge", requiredChallenge = {"tutoriel"})
+public class MonChallenge extends Challenge {
+
+    public MonChallenge(String name, Session session) {
+        super(name, session);
+    }
+
+    private static final String explicationOnLoad = """
+                Mes explications...
+        """;
+
+    @Override
+    public SimplePacket onLoad() {
+        return new SimplePacket("", explicationOnLoad);
+    }
+
+}
+```
+
+Maintenant que le challenge existe, il faut pouvoir rajouter de la logique derrière.
+
+Avant cela, il faut comprendre comment les informations vont être échangés entre le serveur et le client.
+
+L'objet `SimplePacket` va avoir ce rôle, de passer de l'information simple. `SimplePacket` est composé de 2 valeurs, `data` et `toShow` : 
+
+ - `toShow` -> contiendra le texte à afficher lors de la réception du packet.
+ - `data` -> contiendra l'information en elle-même, celle qui sera fournie au client pour qu'il puisse la traîter.
+
+> ```java 
+> new SimplePacket(data, toShow);
+> ```
+> Les packets sont ensuite transformé en JSON puis envoyé à travers le protocole https, certains caractères ne pourront pas passer.
+> 
+> C'est pour quoi uniquement les caractères ascii sont conseillés (les accents peuvent être utilisé, certaines modifications chez les clients ont été effectués pour cela).
+
+
+### Enfin place à la logique d'un challenge.
+
+Chaque challenge possède un état. Cet état correspond à la méthode qui sera exécutée lors de la reception d'un nouveau packet.
+
+Pour lier une méthode à un état il suffit de rajouter `@Controller(name = "monEtat", freeToUse = false)` au dessus de la méthode en question.
+
+Cela donne :
+
+```java
+@Override
+public SimplePacket onLoad() {
+    this.setState("monEtat");
+    return new SimplePacket("", explicationOnLoad);
+}
+
+@Controller(name = "monEtat", freeToUse = false)
+public SimplePacket maMethode(final SimplePacket packet) {
+    
+    String donneeDuMessageRecu = packet.getData();
+
+    if (donneeDuMessageRecu.equals("....")) {
+        this.validate();
+        return new SimplePacket("", "Gagné !");
+    } else {
+        this.fail();
+        return new SimplePacket("", "Perdu !");
+    }
+}
+```
+
+Explications :
+
+ - Toutes les méthodes ayant l'annotation `@Controller` doivent prendre comme paramètre un `SimplePacket`, et retourner un `SimplePacket`, sinon le code vous criera dessus ;).
+ - Changer l'état actuel du challenge se fait à l'aide de la méthode `setState("monEtat")`.
+ - Valider un challenge se fait à l'aide de la méthode `validate()`.
+ - Louper un challenge se fait à l'aide de la méthode `fail()`.
+
+> La valeur `freeToUse` de l'annotation `@Controller`, permet de définir si le client peut lui-même demander d'accéder à cette méthode.
+> 
+> C'est le cas dans la plupart des challenges pour la méthode `start()`.
+
+Vous avez désormais les bases pour créer un challenge. Je vous laisse pour la suite prendre inspiration sur les challenges déjà existants !
 
 
 # Merci !!

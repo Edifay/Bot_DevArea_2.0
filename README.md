@@ -18,7 +18,7 @@ Mais aussi pour rendre son code plus accessible. En effet, le code du bot a pour
 - [Télécharger le projet](https://github.com/Edifay/Bot_DevArea_2.0#t%C3%A9l%C3%A9charger-le-projet-get-started)
 - [L'Architecture](https://github.com/Edifay/Bot_DevArea_2.0#larchitecture)
 - [Ajouter une fonctionnalité](https://github.com/Edifay/Bot_DevArea_2.0#tutoriel-sur-lajout-de-fonctionnalit%C3%A9s)
-- [Les Challenges](https://devarea.fr)
+- [Les Challenges](https://github.com/Edifay/Bot_DevArea_2.0?tab=readme-ov-file#les-challenges)
 - [Conclusion](https://github.com/Edifay/Bot_DevArea_2.0#merci-)
 - [Licence](https://github.com/Edifay/Bot_DevArea_2.0#licence)
 

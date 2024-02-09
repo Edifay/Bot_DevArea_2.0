@@ -73,7 +73,12 @@ public class Core {
         Logger.logMessage(MemberCache.cacheSize() + " members loaded.");
 
         Logger.logTitle("Setup Workers");
-        final int workersCount = setupWorkers();
+
+        final int workersCount =
+            + setupWorkers("devarea.fr.discord.workers.core")
+            + setupWorkers("devarea.fr.discord.workers.linked")
+            + setupWorkers("devarea.fr.discord.workers.self");
+
         Logger.logTitle(workersCount + " workers loaded.");
 
         Logger.logTitle("Setup Events");
@@ -126,10 +131,10 @@ public class Core {
         client.getEventDispatcher().on(MemberUpdateEvent.class).subscribe(event -> startAway(() -> Dispatcher.onMemberUpdateEvent(event)));
     }
 
-    public static int setupWorkers() {
+    public static int setupWorkers(final String path) {
         int count = 0;
 
-        Reflections reflections = new Reflections(new ConfigurationBuilder().forPackages("devarea.fr"));
+        Reflections reflections = new Reflections(path);
         Set<Class<? extends Worker>> classes = reflections.getSubTypesOf(Worker.class);
 
         for (Class<? extends Worker> workerClass : classes) {
@@ -141,7 +146,7 @@ public class Core {
                 if ((event = worker.setupEvent()) != null)
                     globalListeners.add(new EventOwner<>(event, true));
 
-                count += 1;
+                count++;
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                      NoSuchMethodException e) {
                 e.printStackTrace();

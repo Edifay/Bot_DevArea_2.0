@@ -6,6 +6,7 @@ import devarea.fr.discord.entities.events_filler.*;
 import discord4j.core.event.domain.VoiceStateUpdateEvent;
 import discord4j.core.event.domain.guild.MemberJoinEvent;
 import discord4j.core.event.domain.guild.MemberLeaveEvent;
+import discord4j.core.event.domain.guild.MemberUpdateEvent;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.ModalSubmitInteractionEvent;
@@ -89,9 +90,9 @@ public class Dispatcher {
             MemberCache.use(event.getInteraction().getMember().get());
         else {
             event.reply(InteractionApplicationCommandCallbackSpec.builder()
-                    .ephemeral(true)
-                    .content("Les commandes sont désactivées dans les messages privés.")
-                    .build()).subscribe();
+                .ephemeral(true)
+                .content("Les commandes sont désactivées dans les messages privés.")
+                .build()).subscribe();
             return;
         }
         Core.executeGlobal(new SlashCommandFiller(event));
@@ -101,6 +102,11 @@ public class Dispatcher {
     public static void onModalSubmitInteractionEvent(final ModalSubmitInteractionEvent event) {
         Core.executeGlobal(new ModalSubmitInteractionEventFiller(event));
         MemberCache.get(event.getInteraction().getUser().getId().asString()).execute(new ModalSubmitInteractionEventFiller(event));
+    }
+
+    public static void onMemberUpdateEvent(final MemberUpdateEvent event) {
+        Core.executeGlobal(new MemberUpdateEventFiller(event));
+        MemberCache.get(event.getMemberId().asString()).execute(new MemberUpdateEventFiller(event));
     }
 
 }

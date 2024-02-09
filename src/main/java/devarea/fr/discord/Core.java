@@ -11,6 +11,7 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.VoiceStateUpdateEvent;
 import discord4j.core.event.domain.guild.MemberJoinEvent;
 import discord4j.core.event.domain.guild.MemberLeaveEvent;
+import discord4j.core.event.domain.guild.MemberUpdateEvent;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.ModalSubmitInteractionEvent;
@@ -122,6 +123,7 @@ public class Core {
         client.getEventDispatcher().on(VoiceStateUpdateEvent.class).subscribe(event -> startAway(() -> Dispatcher.onVoiceStateUpdateEvent(event)));
         client.getEventDispatcher().on(ChatInputInteractionEvent.class).subscribe(event -> startAway(() -> Dispatcher.onChatInputInteractionEvent(event)));
         client.getEventDispatcher().on(ModalSubmitInteractionEvent.class).subscribe(event -> startAway(() -> Dispatcher.onModalSubmitInteractionEvent(event)));
+        client.getEventDispatcher().on(MemberUpdateEvent.class).subscribe(event -> startAway(() -> Dispatcher.onMemberUpdateEvent(event)));
     }
 
     public static int setupWorkers() {

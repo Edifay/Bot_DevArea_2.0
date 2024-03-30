@@ -1,4 +1,4 @@
-package devarea.fr.web.challenges.created.tools;
+package devarea.fr.web.challenges.created;
 
 import devarea.fr.web.challenges.Challenge;
 import devarea.fr.web.challenges.Session;
@@ -6,6 +6,7 @@ import devarea.fr.web.challenges.SimplePacket;
 
 @Challenge.ChallengeDefinition(name = "TriSimple", requiredChallenge = {"ListeDeTexte"})
 public class TriSimple extends Challenge {
+
     public TriSimple(String name, Session session) {
         super(name, session);
     }

@@ -86,6 +86,7 @@ public class InitialData {
     public Snowflake general_category = null;
     public Snowflake assistance_category = null;
     public Snowflake mission_follow_category = null;
+    public Snowflake sanction_discuss_category = null;
 
     // Roles
     public Snowflake rulesAccepted_role = null;

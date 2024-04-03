@@ -8,6 +8,7 @@ import discord4j.core.object.component.Button;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
 import discord4j.core.spec.MessageCreateSpec;
+import discord4j.rest.util.Color;
 
 import java.time.Instant;
 import java.util.Calendar;
@@ -462,4 +463,31 @@ public class TextMessage {
                     .color(ColorsUsed.wrong)
                     .build())
             .build();
+
+
+    /* Messages d'AntiSpamButtonsWorker */
+
+    public static EmbedCreateSpec userHasBeenBanned = EmbedCreateSpec.builder()
+        .title("Utilisateur banni  ⛔")
+        .description("L'utilisateur reporté par l'antiSpam a été banni avec succès !")
+        .color(Color.GREEN)
+        .build();
+
+    public static EmbedCreateSpec userHasBeenMutedWeek = EmbedCreateSpec.builder()
+        .title("Utilisateur mute  🔇")
+        .description("L'utilisateur reporté par l'antiSpam a été mute pour une durée d'une semaine avec succès !")
+        .color(Color.GREEN)
+        .build();
+
+    public static EmbedCreateSpec userHasBeenMutedDay = EmbedCreateSpec.builder()
+        .title("Utilisateur mute  🔉")
+        .description("L'utilisateur reporté par l'antiSpam a été mute pour une durée d'un jour avec succès !")
+        .color(Color.GREEN)
+        .build();
+    
+    public static EmbedCreateSpec userHasBeenReleased = EmbedCreateSpec.builder()
+        .title("Utilisateur libéré  ✅")
+        .description("L'utilisateur reporté par l'antiSpam a été libéré avec succès !")
+        .color(Color.GREEN)
+        .build();
 }

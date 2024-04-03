@@ -9,7 +9,7 @@ bot de Dev'Area.
 
 Le code ci-dessus est la 2ème version du bot, qui est la refonte complète de la [version 1](https://github.com/DevAreaServer/Bot_DevArea).
 
-Cette version 2 a pour but de rendre le code plus portable pour les nouveautés discord. Tels que les intéractions plus complèxes `Menu`, `Boutons`, `Modals`.
+Cette version 2 a pour but de rendre le code plus portable pour les nouveautés discord. Tels que les intéractions plus complexes `Menu`, `Boutons`, `Modals`.
 
 Mais aussi pour rendre son code plus accessible. En effet, le code du bot a pour but d'être amélioré et maintenu par la communauté. C'est pour quoi la simplicité et la facilité de créer de nouvelles commandes a été un des objectifs principal dans la conception du bot. Et cela doit rester un des objectifs pour les modifications futures apportés au code.
 
@@ -25,7 +25,7 @@ Mais aussi pour rendre son code plus accessible. En effet, le code du bot a pour
 
 # Télécharger le projet (get started)
 
-Pour mettre en place l'environnement pour développer sur le serveur, il faudra mettre en places quelques petites choses.
+Pour mettre en place l'environnement pour développer sur le serveur, il faudra mettre en place quelques petites choses.
 
 > Pour afficher les logs dans la console, mettre à ``true`` la variable ``developing`` dans ``main.Main``.
 
@@ -44,7 +44,7 @@ Toutes les librairies nécessaires au fonctionnement du bot devraient être auto
 
 ### MongoDB
 
-Le bot a besoin de l'url de la base de donnée, il vous sera demandé de créer un fichier ``db.url`` dans le repertoire de lancement du programme.
+Le bot a besoin de l'url de la base de données, il vous sera demandé de créer un fichier ``db.url`` dans le repertoire de lancement du programme.
 (Généralement au même niveau que ``build.gradle`` si l'exécution est faites dans l'IDE).
 
 Pour obtenir l'url de la base de donnée, il faut tout d'abord installer mongodb en suivant ces étapes :
@@ -158,7 +158,7 @@ public class MaCommande extends SlashCommand {
 
 La définition de la commande est chargée au démarrage du bot avec l'appel de `definition()`.
 
-Cette définition contient les informations de la commande slash, tel que le nom, la description, les options...
+Cette définition contient les informations de la commande slash, telles que le nom, la description, les options...
 
 `definition()` doit être implémenté et ne peut pas retourner `null`.
 
@@ -223,7 +223,7 @@ public class MaCommande extends SlashCommand {
 ### Créer un service ou système :
 
 
-Les services ou systèmes sont des parties du code qui se lancent au démarrage du bot. Et peuvent effectuer des actions très variées. Dans la suite du tuto j'appellerais ces systèmes/services des `workers`
+Les services ou systèmes sont des parties du code qui se lancent au démarrage du bot. Et peuvent effectuer des actions très variées. Dans la suite du tuto j'appellerai ces systèmes/services des `workers`
 
 Comme les commandes slash, les workers sont situés au même endroit dans le code pour plus de clarté, dans le repertoire `discord.workers`.
 
@@ -264,7 +264,7 @@ public class MonWorker implements Worker {
 
 Tout d'abord, la méthode `onStart()`. Cette méthode est appelée une seule fois, lors de la création des workers. C'est-à-dire au début de l'exécution du bot.
 
-Cette méthode peu ne pas être implémenté, l'interface `worker` possède une version par default de la méthode.
+Cette méthode peut ne pas être implémentée, l'interface `worker` possède une version par defaut de la méthode.
 
 ```java
 public class MonWorker implements Worker {
@@ -277,13 +277,13 @@ public class MonWorker implements Worker {
 La méthode `onStop()` n'a pour l'instant pas encore de "caller". C'est-à-dire qu'elle n'est jamais appelée par le noyau du bot.
 
 
-La méthode `setupEvent()` est appelé juste après `onStart()` elle permet d'ajouter rapidement un "listener" sur le noyau.
+La méthode `setupEvent()` est appelée juste après `onStart()` elle permet d'ajouter rapidement un "listener" sur le noyau.
 
 En effet, le noyau est capable de distribuer les évènements provenant de l'api discord. La méthode `setupEvent()` retourne un `ActionEvent<.?>`.
-L'objet `ActionEvent<?>`  correspond à une action a effectuer lors de la reception d'un event. La valeur retournée peut être `null`.
+L'objet `ActionEvent<?>`  correspond à une action à effectuer lors de la réception d'un event. La valeur retournée peut être `null`.
 
 Les évènements d'écoute disponibles sont tous des objets héritant de `Filler<T>`.
-Tout les fillers existants se trouvent dans `discord.entities.events_filler`.
+Tous les fillers existants se trouvent dans `discord.entities.events_filler`.
 
 Par exemple un `worker` qui ajoute automatiquement une action au noyau se déclare comme ceci :
 

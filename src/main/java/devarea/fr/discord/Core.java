@@ -75,9 +75,9 @@ public class Core {
         Logger.logTitle("Setup Workers");
 
         final int workersCount =
-            + setupWorkers("devarea.fr.discord.workers.core")
-            + setupWorkers("devarea.fr.discord.workers.linked")
-            + setupWorkers("devarea.fr.discord.workers.self");
+            + setupWorkers("devarea.fr.discord.workers");
+//            + setupWorkers("devarea.fr.discord.workers.linked")
+//            + setupWorkers("devarea.fr.discord.workers.self");
 
         Logger.logTitle(workersCount + " workers loaded.");
 
@@ -134,7 +134,8 @@ public class Core {
     public static int setupWorkers(final String path) {
         int count = 0;
 
-        Reflections reflections = new Reflections(path);
+
+        Reflections reflections = new Reflections(new ConfigurationBuilder().forPackages(path));
         Set<Class<? extends Worker>> classes = reflections.getSubTypesOf(Worker.class);
 
         for (Class<? extends Worker> workerClass : classes) {

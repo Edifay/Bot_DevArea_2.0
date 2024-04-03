@@ -100,7 +100,7 @@ public class SlashCommandDispatcherWorker implements Worker {
                 SlashCommand command = slashCommands.get(filler.event.getCommandName()).newInstance();
 
                 if (filler.event.getInteraction().getMember().isPresent())
-                    if (command.permissions() == null || command.permissions().isMemberHasPermissions(filler.event.getInteraction().getMember().get())) {
+                    if (command.permissions() == null || command.permissions().isMemberOwningPermissions(filler.event.getInteraction().getMember().get())) {
                         command.play(filler);
                         Logger.logMessage("Command " + filler.event.getCommandName() + " was executed by " + filler.mem.entity.getTag() + ".");
                     } else {

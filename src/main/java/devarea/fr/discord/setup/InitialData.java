@@ -90,11 +90,14 @@ public class InitialData {
 
     // Roles
     public Snowflake rulesAccepted_role = null;
+    public Snowflake helper_role = null;
     public Snowflake modo_role = null;
     public Snowflake admin_role = null;
     public Snowflake pingMeetup_role = null;
     public Snowflake devHelper_role = null;
     public Snowflake debutant_role = null;
+    public Snowflake spam_detected_role = null;
+
 
     // Bots
     public Snowflake disboard_bot = null;

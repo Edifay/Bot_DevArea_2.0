@@ -15,7 +15,8 @@ public class MemberCache {
     public static Mem get(@NonNull final String memberID) {
         CachedMember cachedMember = getCachedMember(memberID);
         if (cachedMember == null) {
-            if (!working(memberID)) return null;
+            if (nullID(memberID))
+                throw new NullPointerException();
             cachedMember = new CachedMember(memberID);
             members.put(memberID, cachedMember);
         }
@@ -26,7 +27,8 @@ public class MemberCache {
     public static Mem fetch(@NonNull final String memberID) {
         CachedMember cachedMember = getCachedMember(memberID);
         if (cachedMember == null) {
-            if (!working(memberID)) return null;
+            if (nullID(memberID))
+                throw new NullPointerException();
             cachedMember = new CachedMember(memberID);
             members.put(memberID, cachedMember);
         }
@@ -35,23 +37,22 @@ public class MemberCache {
     }
 
     public static Mem watch(@NonNull final String memberID) {
-        if (!working(memberID)) return null;
+        if (nullID(memberID))
+            throw new NullPointerException();
         CachedMember cachedMember = getCachedMember(memberID);
         if (cachedMember == null) {
-            if (!working(memberID)) return null;
             cachedMember = new CachedMember(memberID);
             members.put(memberID, cachedMember);
-            cachedMember.get();
+            return cachedMember.get();
         }
-        if (getCachedMember(memberID) == null)
-            return null;
         return cachedMember.watch();
     }
 
     public static void reset(@NonNull final String memberID) {
         CachedMember cachedMember = getCachedMember(memberID);
         if (cachedMember == null) {
-            if (!working(memberID)) return;
+            if (nullID(memberID))
+                throw new NullPointerException();
             cachedMember = new CachedMember(memberID);
             members.put(memberID, cachedMember);
         }
@@ -97,11 +98,8 @@ public class MemberCache {
         return members.containsKey(memberID);
     }
 
-    private static boolean working(final String memberID) {
-        boolean working = true;
-        if (memberID == null)
-            working = false;
-        return working;
+    private static boolean nullID(final String memberID) {
+        return memberID == null;
     }
 
 }

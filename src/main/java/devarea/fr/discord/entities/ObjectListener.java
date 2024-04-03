@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import static devarea.fr.utils.ThreadHandler.startAway;
 
-public class ObjectListener<T extends Entity> implements Entity {
+public abstract class ObjectListener<T extends Entity> implements Entity {
 
 
     public T entity;

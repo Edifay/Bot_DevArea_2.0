@@ -41,7 +41,7 @@ public class Permissions {
      * @param member the member to check
      * @return true if the member contain the current object permissions, false if not.
      */
-    public boolean isMemberHasPermissions(Member member) {
+    public boolean isMemberOwningPermissions(Member member) {
         PermissionSet perm = member.getBasePermissions().block();
         PermissionSet current = getSet();
 

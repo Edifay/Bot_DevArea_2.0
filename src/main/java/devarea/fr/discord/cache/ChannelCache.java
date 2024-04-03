@@ -15,7 +15,8 @@ public class ChannelCache {
     public static Chan get(@NonNull final String channelID) {
         CachedChannel cachedChannel = getCachedChannel(channelID);
         if (cachedChannel == null) {
-            if (!working(channelID)) return null;
+            if (nullID(channelID))
+                throw new NullPointerException();
             cachedChannel = new CachedChannel(channelID);
             channels.put(channelID, cachedChannel);
         }
@@ -26,7 +27,8 @@ public class ChannelCache {
     public static Chan fetch(@NonNull final String channelID) {
         CachedChannel cachedChannel = getCachedChannel(channelID);
         if (cachedChannel == null) {
-            if (!working(channelID)) return null;
+            if (nullID(channelID))
+                throw new NullPointerException();
             cachedChannel = new CachedChannel(channelID);
             channels.put(channelID, cachedChannel);
         }
@@ -35,16 +37,14 @@ public class ChannelCache {
     }
 
     public static Chan watch(@NonNull final String channelID) {
-        if (!working(channelID)) return null;
+        if (nullID(channelID))
+            throw new NullPointerException();
         CachedChannel cachedChannel = getCachedChannel(channelID);
         if (cachedChannel == null) {
-            if (!working(channelID)) return null;
             cachedChannel = new CachedChannel(channelID);
             channels.put(channelID, cachedChannel);
-            cachedChannel.get();
+            return cachedChannel.get();
         }
-        if (getCachedChannel(channelID) == null)
-            return null;
         return cachedChannel.watch();
     }
 
@@ -68,7 +68,7 @@ public class ChannelCache {
     public static void reset(@NonNull final String channelID) {
         CachedChannel cachedChannel = getCachedChannel(channelID);
         if (cachedChannel == null) {
-            if (!working(channelID)) return;
+            if (nullID(channelID)) return;
             cachedChannel = new CachedChannel(channelID);
             channels.put(channelID, cachedChannel);
         }
@@ -96,11 +96,8 @@ public class ChannelCache {
         return channels.containsKey(channelID);
     }
 
-    private static boolean working(final String channelID) {
-        boolean working = true;
-        if (channelID == null)
-            working = false;
-        return working;
+    private static boolean nullID(final String channelID) {
+        return channelID == null;
     }
 
 }

@@ -258,8 +258,8 @@ public class MissionFollowWorker implements Worker {
         set.add(PermissionOverwrite.forRole(Core.devarea.getEveryoneRole().block().getId(), PermissionSet.of(), PermissionSet.of(Permission.VIEW_CHANNEL)));
         set.add(PermissionOverwrite.forMember(member_react_id, PermissionSet.of(Permission.VIEW_CHANNEL, Permission.READ_MESSAGE_HISTORY, Permission.SEND_MESSAGES), PermissionSet.of()));
         set.add(PermissionOverwrite.forMember(Snowflake.of(mission.getCreatedById()), PermissionSet.of(Permission.VIEW_CHANNEL, Permission.READ_MESSAGE_HISTORY, Permission.SEND_MESSAGES), PermissionSet.of()));
-        set.add(PermissionOverwrite.forRole(Snowflake.of("777782222920744990"), PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.of()));
-        set.add(PermissionOverwrite.forRole(Snowflake.of("768383784571240509"), PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.of()));
+        set.add(PermissionOverwrite.forRole(Core.data.admin_role, PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.of()));
+        set.add(PermissionOverwrite.forRole(Core.data.modo_role, PermissionSet.of(Permission.VIEW_CHANNEL), PermissionSet.of()));
         return set;
     }
 

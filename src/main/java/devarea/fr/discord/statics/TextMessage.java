@@ -427,7 +427,10 @@ public class TextMessage {
                                 "\n\nCeci a pour but d'augmenter la fiabilité des clients et des développeurs " +
                                 "pour qu'une mission puisse se passer de la meilleure des manières" +
                                 ".\nRèglementation des missions : <#768435208906735656>." +
-                                "\n\nVous pouvez clôturer ce channel à tout moment !")
+                                "\n\nVous pouvez clôturer ce channel à tout moment !"+
+                                "\n\n:rotating_light: Le serveur Dev'Area et son équipe ne sont **pas responsables**"+
+                                " des missions publiées. Nous vous recommandons de **rester vigilant** et de **prendre "+
+                                "toutes les précautions** nécessaires concernant la **rémunération** et la réalisation de votre mission. :rotating_light:")
                         .color(ColorsUsed.same)
                         .build())
                 .addComponent(ActionRow.of(Button.secondary("followMission_close", "Cloturer le channel")))

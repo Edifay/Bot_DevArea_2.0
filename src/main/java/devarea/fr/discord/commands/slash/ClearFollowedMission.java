@@ -16,21 +16,23 @@ public class ClearFollowedMission extends SlashCommand {
     @Override
     public ApplicationCommandRequest definition() {
         return ApplicationCommandRequest.builder()
-                .name("clearfollowedmission")
-                .description("Supprime tous les suivis de missions fermé !")
-                .build();
+            .name("clearfollowedmission")
+            .description("Supprime tous les suivis de missions fermé !")
+            .build();
     }
 
     @Override
     public void play(SlashCommandFiller filler) {
-        filler.event.reply(InteractionApplicationCommandCallbackSpec.builder()
+        if (filler != null) {
+            filler.event.reply(InteractionApplicationCommandCallbackSpec.builder()
                 .ephemeral(true)
                 .addEmbed(EmbedCreateSpec.builder()
-                        .title("Followed Mission Cleared.")
-                        .color(ColorsUsed.same)
-                        .description("Les suivis de missions fermé vont petit à petit être supprimé !")
-                        .build())
+                    .title("Followed Mission Cleared.")
+                    .color(ColorsUsed.same)
+                    .description("Les suivis de missions fermé vont petit à petit être supprimé !")
+                    .build())
                 .build()).subscribe();
+        }
 
         ((Category) Core.devarea.getChannelById(Core.data.mission_follow_category).block()).getChannels().toIterable().forEach(categorizableChannel -> {
             if (categorizableChannel.getName().startsWith("closed")) {

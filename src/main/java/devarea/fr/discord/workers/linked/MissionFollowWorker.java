@@ -6,6 +6,7 @@ import devarea.fr.db.data.*;
 import devarea.fr.discord.Core;
 import devarea.fr.discord.cache.ChannelCache;
 import devarea.fr.discord.cache.MemberCache;
+import devarea.fr.discord.commands.slash.ClearFollowedMission;
 import devarea.fr.discord.entities.ActionEvent;
 import devarea.fr.discord.entities.Mem;
 import devarea.fr.discord.entities.events_filler.ButtonInteractionEventFiller;
@@ -219,10 +220,9 @@ public class MissionFollowWorker implements Worker {
                 .permissionOverwrites(set)
                 .build()).block();
         } catch (Exception e) {
-            ((GuildMessageChannel) ChannelCache.get(Core.data.log_channel.asString()).entity)
-                .createMessage(MessageCreateSpec.builder()
-                    .content("@Admin catégorie des suivis pleine !")
-                    .build()).block();
+            // Simulate the clearFollowedMissionCommand.
+            new ClearFollowedMission().play(null);
+            Logger.logMessage("Next error should be now handled. (Too much channel in suivis)");
             throw e;
         }
 

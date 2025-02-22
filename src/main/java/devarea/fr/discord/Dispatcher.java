@@ -1,6 +1,8 @@
 package devarea.fr.discord;
 
+import devarea.fr.discord.cache.ChannelCache;
 import devarea.fr.discord.cache.MemberCache;
+import devarea.fr.discord.entities.Chan;
 import devarea.fr.discord.entities.Mem;
 import devarea.fr.discord.entities.events_filler.*;
 import discord4j.core.event.domain.VoiceStateUpdateEvent;
@@ -13,6 +15,7 @@ import discord4j.core.event.domain.interaction.ModalSubmitInteractionEvent;
 import discord4j.core.event.domain.interaction.SelectMenuInteractionEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.*;
+import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.spec.InteractionApplicationCommandCallbackSpec;
 
 public class Dispatcher {
@@ -49,6 +52,8 @@ public class Dispatcher {
 
     public static void onMessageDeleteEvent(final MessageDeleteEvent event) {
         Core.executeGlobal(new MessageDeleteEventFiller(event));
+        if (ChannelCache.contain(event.getChannelId().asString()))
+            ChannelCache.get(event.getChannelId().asString()).execute(new MessageDeleteInChannelFiller(event));
     }
 
     public static void onMessageUpdateEvent(final MessageUpdateEvent event) {

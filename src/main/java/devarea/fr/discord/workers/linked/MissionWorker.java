@@ -9,8 +9,10 @@ import devarea.fr.discord.cache.ChannelCache;
 import devarea.fr.discord.cache.GuildEmojiCache;
 import devarea.fr.discord.cache.MemberCache;
 import devarea.fr.discord.entities.ActionEvent;
+import devarea.fr.discord.entities.Chan;
 import devarea.fr.discord.entities.Mem;
 import devarea.fr.discord.entities.events_filler.ButtonInteractionEventFiller;
+import devarea.fr.discord.entities.events_filler.MessageDeleteInChannelFiller;
 import devarea.fr.discord.entities.events_filler.ReadyEventFiller;
 import devarea.fr.discord.statics.ColorsUsed;
 import devarea.fr.discord.workers.Worker;
@@ -54,12 +56,21 @@ public class MissionWorker implements Worker {
      */
     @Override
     public ActionEvent<?> setupEvent() {
-        Core.listen((ActionEvent<ButtonInteractionEventFiller>) filler -> {
-            interact(filler);
-        });
-        return (ActionEvent<ReadyEventFiller>) event -> {
+        Core.listen((ActionEvent<ButtonInteractionEventFiller>) MissionWorker::interact);
 
-            missionChannel = (GuildMessageChannel) ChannelCache.fetch(Core.data.paidMissions_channel.asString()).entity;
+        Core.listen((ActionEvent<ReadyEventFiller>) event -> {
+            Chan<GuildMessageChannel> chan = ChannelCache.fetch(Core.data.paidMissions_channel.asString());
+            missionChannel = chan.entity;
+
+            chan.listen((ActionEvent<MessageDeleteInChannelFiller>) filler -> {
+                DBMission mission = DBManager.getMissionFromMessage(
+                    new DBMessage(filler.event.getMessageId().asString(), filler.event.getChannelId().asString())
+                );
+                if (mission != null) {
+                    Logger.logMessage("La mission " + mission.getTitle() + " a été supprimée par détection de la suppression du message ! Mission data " + mission);
+                    DBManager.deleteMission(mission.get_id());
+                }
+            }, true);
 
             setupBottomMessage();
 
@@ -68,7 +79,10 @@ public class MissionWorker implements Worker {
                     checkForUpdate();
             }, 3600000);
 
-        };
+        }, false);
+
+
+        return null;
     }
 
     @Override
@@ -136,7 +150,13 @@ public class MissionWorker implements Worker {
      * @param mission the mission at clear.
      */
     public static void clearThisMission(DBMission mission) {
-        startAway(() -> mission.getMessage().getMessage().delete().subscribe());
+        startAway(() -> {
+            try {
+                mission.getMessage().getMessage().delete().subscribe();
+            } catch (Exception e) {
+                Logger.logMessage("Unable to message of mission : " + mission.getTitle());
+            }
+        });
     }
 
     /**

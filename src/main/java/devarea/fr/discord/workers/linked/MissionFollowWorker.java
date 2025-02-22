@@ -46,15 +46,20 @@ public class MissionFollowWorker implements Worker {
             missionFollows.forEach(dbMissionFollow -> {
                 try {
                     GuildMessageChannel channel = dbMissionFollow.getMessage().getChannel();
-                    Message lastMessage = channel.getLastMessage().block();
+                    Message lastMessage = null;
+                    try {
+                        lastMessage = channel.getLastMessage().block();
+                    } catch (Exception e) {
+                        Logger.logMessage("Unable to fetch bottom message of suivis-n°" + dbMissionFollow.getN() + ".");
+                    }
 
-                    if (lastMessage.getTimestamp().isBefore(Instant.now().minus(2, ChronoUnit.DAYS)) && lastMessage.getAuthor().get().getId().equals(Core.client.getSelfId())) {
+                    if (lastMessage != null && lastMessage.getTimestamp().isBefore(Instant.now().minus(2, ChronoUnit.DAYS)) && lastMessage.getAuthor().get().getId().equals(Core.client.getSelfId())) {
 
                         Logger.logMessage("Auto-closing suivis-n°" + dbMissionFollow.getN() + ".");
 
                         closeFollowedMission(Core.client.getSelfId().asString(), dbMissionFollow);
 
-                    } else if (lastMessage.getTimestamp().isBefore(Instant.now().minus(3, ChronoUnit.DAYS))) {
+                    } else if (lastMessage == null || lastMessage.getTimestamp().isBefore(Instant.now().minus(3, ChronoUnit.DAYS))) {
 
                         Logger.logMessage("Ask to close suivis-n°" + dbMissionFollow.getN() + ".");
 

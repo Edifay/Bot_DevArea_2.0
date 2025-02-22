@@ -201,7 +201,11 @@ public class DBManager {
     }
 
     public static DBMission getMissionFromMessage(final DBMessage message) {
-        return new DBMission(MISSIONS.find(new Document("message", message.toDocument())).first());
+        Document document = MISSIONS.find(new Document("message", message.toDocument())).first();
+        if (document == null)
+            return null;
+
+        return new DBMission(document);
     }
 
     public static int currentMissionFollowCount() {

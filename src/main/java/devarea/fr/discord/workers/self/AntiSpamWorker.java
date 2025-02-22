@@ -72,11 +72,15 @@ public class AntiSpamWorker implements Worker {
 
         return (ActionEvent<MessageCreateEventFiller>) filler -> {
 
-
             if (filler.event.getMember().isEmpty()) { // Private channel.
                 return;
             }
+
             Mem mem = MemberCache.get(filler.event.getMember().get().getId().asString());
+
+            if (mem.entity.isBot()) // avoid flag bots
+                return;
+
             if (throughCheckPermission.isMemberOwningPermissions(mem.entity)) { // TODO May improve permission system.
                 return;
             }

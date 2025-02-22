@@ -19,4 +19,4 @@ public class TriSimple extends Challenge {
     public SimplePacket onLoad() {
         return new SimplePacket("", explicationOnLoad);
     }
-}
+}   

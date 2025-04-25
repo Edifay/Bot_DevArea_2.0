@@ -68,7 +68,7 @@ public class MissionFollowWorker implements Worker {
                             .content("<@" + dbMissionFollow.getClientId() + ">, <@" + dbMissionFollow.getDevId() + ">.")
                             .addEmbed(EmbedCreateSpec.builder()
                                 .title("Fermeture du suivis ?")
-                                .description("Cela fait plus de 3 jours que ce suivis est inactif ! Il serait peut être temps de le fermer ?\n\nSi oui il vous suffit de cliquer sur le bouton ci-dessous.")
+                                .description("Cela fait plus de 3 jours que ce suivis est inactif ! Il serait peut être temps de le fermer ?\n\nSi oui il vous suffit de cliquer sur le bouton ci-dessous. Si aucun message n'est envoyé d'ici 2 jours le suivis sera automatiquement fermé.")
                                 .footer("Ceci est un message automatique.", null)
                                 .color(ColorsUsed.same)
                                 .build())
@@ -81,7 +81,7 @@ public class MissionFollowWorker implements Worker {
                     Logger.logError("Error when trying to access to suivis-n°" + dbMissionFollow.getN() + " :\n    -> " + e.getMessage());
                 }
             });
-        }, 86400000 /*1 day*/);
+        }, 86400000 / 12 /*2 hour */);
 
         return (ActionEvent<ButtonInteractionEventFiller>) MissionFollowWorker::interact;
     }
